@@ -1,0 +1,124 @@
+import pandas as pd
+import io
+
+
+class Bed:
+    BED_TITLE = (
+        'chr',
+        'start',
+        'end',
+        'name',
+        'score',
+        'strand',
+        'thickStart',
+        'thickEnd',
+        'itemRGB',
+        'blockCount',
+        'blockSizes',
+        'blockStarts'
+    )
+
+    def __init__(self, regions, name='.'):
+        self.regions = regions
+        self.name = name
+
+        self._parse_region(regions)
+
+    def _parse_region(self, regions):
+        if type(regions[0]) == list:
+            self._parse_region(regions[0])
+            for region in regions[1:]:
+                self._add_block(region)
+
+            if self.strand == '-':
+                self._reverse_region()
+        else:
+            region = regions
+            self.chrom = region[0]
+            self.start = int(region[1]) - 1
+            self.end = int(region[2])
+            self.strand = region[3]
+
+            self.block_count = 1
+            self.block_sizes = [self.end - self.start]
+            self.block_starts = [0]
+
+    def _add_block(self, region):
+        other = Bed(region)
+
+        assert self.strand == other.strand
+
+        self.block_count += other.block_count
+        self.block_sizes += other.block_sizes
+
+        all_starts = [
+            start + self.start for start in self.block_starts
+        ] + [other.start]
+
+        if other.start < self.start:
+            self.start = other.start
+
+        self.block_starts = [start - self.start for start in all_starts]
+
+        if other.end > self.end:
+            self.end = other.end
+
+    def _reverse_region(self):
+        self.block_sizes = list(reversed(self.block_sizes))
+        self.block_starts = list(reversed(self.block_starts))
+
+    def get_data(self, all_fields=False):
+        fields = [
+            self.chrom,
+            self.start,
+            self.end,
+            self.name,
+            '.',
+            self.strand
+        ]
+
+        if all_fields:
+            fields += [
+                self.start,
+                self.end,
+                0,
+                self.block_count,
+                self._list_to_str(self.block_sizes, sep=','),
+                self._list_to_str(self.block_starts, sep=',')
+            ]
+
+        return fields
+
+    def to_string(self, all_fields=False):
+        data = self.get_data(all_fields=all_fields)
+        bed_txt = self._list_to_str(data)
+        return bed_txt
+
+    @staticmethod
+    def _list_to_str(list_, sep='\t', end=''):
+        with io.StringIO() as tmp:
+            print(*list_, sep=sep, end=end, file=tmp)
+            return tmp.getvalue()
+
+
+class BedUtils:
+    @staticmethod
+    def _exons_to_bed(exons, name=None):
+        exons = list(map(lambda exon: exon.region, exons))
+        bed = Bed(exons)
+        if name:
+            bed.name = name
+        return bed
+
+    @classmethod
+    def _to_bed(cls, s):
+        exons = s['inter_exons']
+        exons_id = s['exons_id']
+        bed = cls._exons_to_bed(exons, name=exons_id)
+        return pd.Series(bed.get_data(all_fields=True))
+
+    @classmethod
+    def to_bed(cls, exons_df):
+        bed_df = exons_df.apply(cls._to_bed, axis=1)
+        bed_df.columns = Bed.BED_TITLE
+        return bed_df
