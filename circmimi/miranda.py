@@ -267,7 +267,7 @@ class MirandaUtils:
             {
                 'query_id': 'mirna',
                 'score': 'max_score',
-                'aln': 'count'
+                'aln_id': 'count'
             },
             axis=1
         )
