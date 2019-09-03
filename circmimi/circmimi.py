@@ -15,7 +15,14 @@ class Circmimi:
         self.miranda_df = None
         self.grouped_res_df = None
 
-    def run(self, circ_file, anno_db_file, ref_file, mir_ref_file, num_proc=1):
+    def run(self,
+            circ_file,
+            anno_db_file,
+            ref_file,
+            mir_ref_file,
+            mir_target_file,
+            num_proc=1):
+
         self.anno_utils = AnnotationUtils(anno_db_file)
 
         self.circ_events = CircEvents(circ_file)
@@ -51,6 +58,8 @@ class Circmimi:
 
         self.grouped_res_df = MirandaUtils.get_grouped_results(self.miranda_df)
 
+        self.mir_target_db = get_mir_target_db(mir_target_file)
+
     def get_result_table(self):
         gene_symbol_df = self.anno_df.apply(
             lambda s: pd.Series(
@@ -58,7 +67,7 @@ class Circmimi:
                     s['ev_id'],
                     s['transcript'].gene.gene_symbol
                 ],
-                index=['ev_id', 'gene_symbol']
+                index=['ev_id', 'host_gene']
             ),
             axis=1
         ).drop_duplicates(
@@ -78,6 +87,10 @@ class Circmimi:
         ).drop(
             ['index', 'ev_id'],
             axis=1
+        ).merge(
+            self.mir_target_db,
+            on='mirna',
+            how='left'
         )
 
         return res_df
@@ -120,3 +133,29 @@ class CircEvents:
         res = pd.Series(res, index=['chr', 'donor', 'acceptor', 'strand'])
 
         return res
+
+
+def get_mir_target_db(mir_tar_db_path):
+    db = pd.read_csv(mir_tar_db_path, sep='\t')
+    formatted_db = db[[
+        'miRNA',
+        'Target Gene',
+        'References (PMID)'
+    ]].groupby(
+        [
+            'miRNA',
+            'Target Gene'
+        ]
+    ).agg(
+        'count'
+    ).reset_index(
+    ).rename(
+        {
+            'miRNA': 'mirna',
+            'Target Gene': 'target_gene',
+            'References (PMID)': 'ref_count'
+        },
+        axis=1
+    ).astype({'ref_count': "Int64"})
+
+    return formatted_db
