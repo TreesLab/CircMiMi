@@ -194,19 +194,16 @@ class MirandaUtils:
 
     @classmethod
     def append_cross_boundary(cls, miranda_df_with_len):
-        cross_boundary_df = pd.DataFrame(
-            miranda_df_with_len.apply(cls._is_cross_boundary, axis=1),
-            columns=['cross_boundary']
-        )
-        df_with_cross_boundary = pd.concat(# TODO: replace 'concat' by 'assign'
-            [
-                miranda_df_with_len,
-                cross_boundary_df
-            ],
+        cross_boundary_res = miranda_df_with_len.apply(
+            cls._is_cross_boundary,
             axis=1
+        ).astype("Int64")
+
+        appended_res_df = miranda_df_with_len.assign(
+            cross_boundary=cross_boundary_res
         )
 
-        return df_with_cross_boundary
+        return appended_res_df
 
     @staticmethod
     def append_ev_id(df, exons_ev_id_df):
@@ -270,6 +267,10 @@ class MirandaUtils:
                 'aln_id': 'count'
             },
             axis=1
+        ).astype(
+            {
+                'count': "Int64"
+            }
         )
 
         return grouped_res_df
