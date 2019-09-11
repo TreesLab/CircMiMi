@@ -131,10 +131,6 @@ class Exon(Base):
             self.chr_.name, self.start, self.end, self.strand.name
         )
 
-    def __iter__(self):
-        for region_data in self.region:
-            yield region_data
-
     def __len__(self):
         return self.end - self.start + 1
 
