@@ -1,0 +1,40 @@
+import os
+import configparser
+
+
+DEFAULT_REF_CONFIG = 'refs.cfg'
+
+
+class RefConfig:
+    def __init__(self):
+        self.config = configparser.ConfigParser()
+        self.config['info'] = {'species': '', 'source': '', 'version': ''}
+        self.config['refs'] = {
+            'anno_db': '',
+            'ref_file': '',
+            'mir_ref': '',
+            'mir_target': ''
+        }
+
+    def read(self, cfg_file):
+        self.config.read(cfg_file)
+
+    def write(self, ref_dir, cfg_file_name=DEFAULT_REF_CONFIG):
+        cfg_file = os.path.join(ref_dir, cfg_file_name)
+        with open(cfg_file, 'w') as config_file:
+            self.config.write(config_file)
+
+
+def get_refs(ref_dir):
+    cfg_file = os.path.join(ref_dir, DEFAULT_REF_CONFIG)
+
+    configObj = RefConfig()
+    configObj.read(cfg_file)
+    config = configObj.config
+
+    anno_db = os.path.join(ref_dir, config['refs']['anno_db'])
+    ref_file = os.path.join(ref_dir, config['refs']['ref_file'])
+    mir_ref = os.path.join(ref_dir, config['refs']['mir_ref'])
+    mir_target = os.path.join(ref_dir, config['refs']['mir_target'])
+
+    return anno_db, ref_file, mir_ref, mir_target
