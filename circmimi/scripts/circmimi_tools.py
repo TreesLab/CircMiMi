@@ -20,7 +20,7 @@ def run(circ_file, ref_dir, output_dir, num_proc, header):
     from circmimi.config import get_refs
     anno_db, ref_file, mir_ref, mir_target = get_refs(ref_dir)
 
-    from circmimi import Circmimi
+    from circmimi.circmimi import Circmimi
 
     circmimi_result = Circmimi()
     circmimi_result.run(
