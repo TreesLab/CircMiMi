@@ -136,26 +136,10 @@ class CircEvents:
 
 
 def get_mir_target_db(mir_tar_db_path):
-    db = pd.read_csv(mir_tar_db_path, sep='\t')
-    formatted_db = db[[
-        'miRNA',
-        'Target Gene',
-        'References (PMID)'
-    ]].groupby(
-        [
-            'miRNA',
-            'Target Gene'
-        ]
-    ).agg(
-        'count'
-    ).reset_index(
-    ).rename(
-        {
-            'miRNA': 'mirna',
-            'Target Gene': 'target_gene',
-            'References (PMID)': 'ref_count'
-        },
-        axis=1
-    ).astype({'ref_count': "Int64"})
+    db = pd.read_csv(mir_tar_db_path, sep='\t', dtype='object')
 
-    return formatted_db
+    assert list(db.columns[:2]) == ['mirna', 'target_gene'], \
+        ("The column names of the first two columns"
+         " should be 'mirna' and 'target_gene'")
+
+    return db
