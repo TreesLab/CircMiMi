@@ -63,9 +63,9 @@ def genref(species, source, version, ref_dir, init):
 @click.argument('gtf_path')
 @click.argument('db_path', metavar='OUT_PATH')
 def gendb(gtf_path, db_path):
-    from circmimi.reference import generate_db
+    from circmimi.reference import gendb
 
-    generate_db(gtf_path, db_path)
+    gendb.generate(gtf_path, db_path)
 
 
 if __name__ == "__main__":

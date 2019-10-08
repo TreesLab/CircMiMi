@@ -176,7 +176,7 @@ def _write_data_to_db(session, data, DataModal):
     session.commit()
 
 
-def generate_db(gtf_path, db_path):
+def generate(gtf_path, db_path):
     engine = create_engine('sqlite:///{}'.format(db_path))
 
     # create tables
