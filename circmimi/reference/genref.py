@@ -3,6 +3,7 @@ import os
 import subprocess as sp
 import pandas as pd
 import csv
+from contextlib import contextmanager
 from circmimi.reference import gendb
 from circmimi.reference.species import species_list
 from circmimi.seq import parse_fasta
@@ -93,56 +94,63 @@ def unzip(zipped_file):
     sp.run(['gunzip', zipped_file])
 
 
+@contextmanager
+def cwd(path):
+    origin_pwd = os.getcwd()
+    os.chdir(path)
+    yield
+    os.chdir(origin_pwd)
+
+
 def generate(species, source, version, ref_dir):
-    os.chdir(ref_dir)
+    with cwd(ref_dir):
+        species = species_list[species]
 
-    species = species_list[species]
+        if source == "ensembl":
+            anno_file = rs.EnsemblAnnotation(species.name, version)
+            genome_file = rs.EnsemblGenome(species.name, version)
+        elif source == "gencode":
 
-    if source == "ensembl":
-        anno_file = rs.EnsemblAnnotation(species.name, version)
-        genome_file = rs.EnsemblGenome(species.name, version)
-    elif source == "gencode":
+            if species.key == 'hsa':
+                species_key = 'human'
+            elif species.key == 'mmu':
+                species_key = 'mouse'
 
-        if species.key == 'hsa':
-            species_key = 'human'
-        elif species.key == 'mmu':
-            species_key = 'mouse'
+            anno_file = rs.GencodeAnnotation(species_key, version)
+            genome_file = rs.GencodeGenome(species_key, version)
 
-        anno_file = rs.GencodeAnnotation(species_key, version)
-        genome_file = rs.GencodeGenome(species_key, version)
+        mir_seq_file = rs.MiRBaseMiRNA(None, "21")
+        mir_taret_file = rs.MiRTarBaseResource(None, "7.0")
 
-    mir_seq_file = rs.MiRBaseMiRNA(None, "21")
-    mir_taret_file = rs.MiRTarBaseResource(None, "7.0")
+        # Download
+        anno_file.download()
+        genome_file.download()
+        mir_seq_file.download()
+        mir_taret_file.download()
 
-    # Download
-    anno_file.download()
-    genome_file.download()
-    mir_seq_file.download()
-    mir_taret_file.download()
+        # genref
+        anno_ref = AnnoRef(anno_file.filename)
+        genome_ref = GenomeRef(genome_file.filename)
+        mir_ref = MirRef(mir_seq_file.filename)
+        mir_taret_ref = MiRTarBaseRef(mir_taret_file.filename)
 
-    # genref
-    anno_ref = AnnoRef(anno_file.filename)
-    genome_ref = GenomeRef(genome_file.filename)
-    mir_ref = MirRef(mir_seq_file.filename)
-    mir_taret_ref = MiRTarBaseRef(mir_taret_file.filename)
+        anno_ref.generate()
+        genome_ref.generate()
+        mir_ref.generate(species)
+        mir_taret_ref.generate(species)
 
-    anno_ref.generate()
-    genome_ref.generate()
-    mir_ref.generate(species)
-    mir_taret_ref.generate(species)
+        # config
+        info = {
+            'species': species.key,
+            'source': source,
+            'version': anno_file.version
+        }
 
-    # config
-    info = {
-        'species': species.key,
-        'source': source,
-        'version': anno_file.version
-    }
+        ref_files = {
+            'anno_db': anno_ref.filename,
+            'ref_file': genome_ref.filename,
+            'mir_ref': mir_ref.filename,
+            'mir_target': mir_taret_ref.filename
+        }
 
-    ref_files = {
-        'anno_db': anno_ref.filename,
-        'ref_file': genome_ref.filename,
-        'mir_ref': mir_ref.filename,
-        'mir_target': mir_taret_ref.filename
-    }
-
-    return info, ref_files
+        return info, ref_files
