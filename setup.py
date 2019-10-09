@@ -32,7 +32,8 @@ setup(
     install_requires=[
         'Click',
         'sqlalchemy',
-        'pandas'
+        'pandas',
+        'xlrd'
     ],
     entry_points={
         'console_scripts': [

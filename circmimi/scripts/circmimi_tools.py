@@ -41,7 +41,7 @@ def run(circ_file, ref_dir, output_dir, num_proc, header):
 @click.option('--source', 'source')
 @click.option('--gencode', 'source', flag_value='gencode', type=click.STRING)
 @click.option('--ensembl', 'source', flag_value='ensembl', type=click.STRING)
-@click.option('--version', 'version')
+@click.option('--version', 'version', default='current')
 @click.option('--init', 'init', is_flag=True, help="Create an init template ref_dir.")
 @click.argument('ref_dir')
 def genref(species, source, version, ref_dir, init):
@@ -51,10 +51,11 @@ def genref(species, source, version, ref_dir, init):
     config = RefConfig()
 
     if not init:
-        # TO BE DONE!!
-        print("Not implemented yet!")
-        print("species: {}\nsource: {}\nversion: {}\nref_dir: {}".format(
-            species, source, version, ref_dir))
+        from circmimi.reference import genref
+        info, ref_files = genref.generate(species, source, version, ref_dir)
+
+        config['info'].update(info)
+        config['refs'].update(ref_files)
 
     config.write(ref_dir)
 

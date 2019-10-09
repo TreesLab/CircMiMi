@@ -24,6 +24,9 @@ class RefConfig:
         with open(cfg_file, 'w') as config_file:
             self.config.write(config_file)
 
+    def __getitem__(self, key):
+        return self.config[key]
+
 
 def get_refs(ref_dir):
     cfg_file = os.path.join(ref_dir, DEFAULT_REF_CONFIG)
