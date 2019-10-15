@@ -96,7 +96,8 @@ class EnsemblResource(FTPResource):
 
 
 class EnsemblGenome(EnsemblResource):
-    file_pattern = r".+\.dna\.primary_assembly\.fa\.gz$"
+    file_pattern_1 = r".+\.dna\.primary_assembly\.fa\.gz$"
+    file_pattern_2 = r".+\.dna\.toplevel\.fa\.gz$"
 
     def get_dir_path(self):
         dir_path = os.path.join(
@@ -109,6 +110,20 @@ class EnsemblGenome(EnsemblResource):
         )
 
         return dir_path
+
+    @classmethod
+    def get_the_filename(cls, dir_list):
+        for name in dir_list:
+            m1 = re.search(cls.file_pattern_1, name)
+            if m1:
+                return m1.group(0)
+        else:
+            for name in dir_list:
+                m2 = re.search(cls.file_pattern_2, name)
+                if m2:
+                    return m2.group(0)
+            else:
+                return ""
 
 
 class EnsemblAnnotation(EnsemblResource):
