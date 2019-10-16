@@ -128,6 +128,7 @@ class EnsemblGenome(EnsemblResource):
 
 class EnsemblAnnotation(EnsemblResource):
     file_pattern = r".+\.chr\.gtf\.gz$"
+    another_pat = (r".+\.[0-9]+\.gtf\.gz$",)
 
     def get_dir_path(self):
         dir_path = os.path.join(
@@ -139,6 +140,21 @@ class EnsemblAnnotation(EnsemblResource):
         )
 
         return dir_path
+
+    @classmethod
+    def get_the_filename(cls, dir_list):
+        for name in dir_list:
+            m1 = re.search(cls.file_pattern, name)
+            if m1:
+                return m1.group(0)
+        else:
+            for pat in cls.another_pat:
+                for name in dir_list:
+                    m2 = re.search(pat, name)
+                    if m2:
+                        return m2.group(0)
+            else:
+                return ""
 
 
 class GencodeResource(FTPResource):
