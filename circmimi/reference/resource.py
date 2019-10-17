@@ -34,6 +34,7 @@ class FTPResource(ResourceBase):
     release_dir = ""
     release_pattern = r""
     file_pattern = r""
+    another_pats = ()
 
     def __init__(self, species, version):
         self.species = species
@@ -82,11 +83,17 @@ class FTPResource(ResourceBase):
     @classmethod
     def get_the_filename(cls, dir_list):
         for name in dir_list:
-            m = re.search(cls.file_pattern, name)
-            if m:
-                return m.group(0)
+            m1 = re.search(cls.file_pattern, name)
+            if m1:
+                return m1.group(0)
         else:
-            return ""
+            for pat in cls.another_pats:
+                for name in dir_list:
+                    m2 = re.search(pat, name)
+                    if m2:
+                        return m2.group(0)
+            else:
+                return ""
 
 
 class EnsemblResource(FTPResource):
@@ -96,8 +103,8 @@ class EnsemblResource(FTPResource):
 
 
 class EnsemblGenome(EnsemblResource):
-    file_pattern_1 = r".+\.dna\.primary_assembly\.fa\.gz$"
-    file_pattern_2 = r".+\.dna\.toplevel\.fa\.gz$"
+    file_pattern = r".+\.dna\.primary_assembly\.fa\.gz$"
+    another_pats = (r".+\.dna\.toplevel\.fa\.gz$",)
 
     def get_dir_path(self):
         dir_path = os.path.join(
@@ -111,24 +118,10 @@ class EnsemblGenome(EnsemblResource):
 
         return dir_path
 
-    @classmethod
-    def get_the_filename(cls, dir_list):
-        for name in dir_list:
-            m1 = re.search(cls.file_pattern_1, name)
-            if m1:
-                return m1.group(0)
-        else:
-            for name in dir_list:
-                m2 = re.search(cls.file_pattern_2, name)
-                if m2:
-                    return m2.group(0)
-            else:
-                return ""
-
 
 class EnsemblAnnotation(EnsemblResource):
     file_pattern = r".+\.chr\.gtf\.gz$"
-    another_pat = (r".+\.[0-9]+\.gtf\.gz$",)
+    another_pats = (r".+\.[0-9]+\.gtf\.gz$",)
 
     def get_dir_path(self):
         dir_path = os.path.join(
@@ -140,21 +133,6 @@ class EnsemblAnnotation(EnsemblResource):
         )
 
         return dir_path
-
-    @classmethod
-    def get_the_filename(cls, dir_list):
-        for name in dir_list:
-            m1 = re.search(cls.file_pattern, name)
-            if m1:
-                return m1.group(0)
-        else:
-            for pat in cls.another_pat:
-                for name in dir_list:
-                    m2 = re.search(pat, name)
-                    if m2:
-                        return m2.group(0)
-            else:
-                return ""
 
 
 class GencodeResource(FTPResource):
