@@ -30,11 +30,7 @@ class Circmimi:
         self.uniq_exons_df = self.anno_df.pipe(self.anno_utils.get_uniq_exons)
         self.bed_df = self.uniq_exons_df.pipe(BedUtils.to_bed)
 
-        self.seq_df = self.bed_df.pipe(Seq.get_seq, ref_file=ref_file)
-        self.seq_df['seq'] = self.seq_df.apply(
-            Seq.extend_seq_for_circ_js,
-            axis=1
-        )
+        self.seq_df = self.bed_df.pipe(Seq.get_extended_seq, ref_file=ref_file)
 
         self.miranda_df = self.seq_df.pipe(
             get_binding_sites,
@@ -61,19 +57,9 @@ class Circmimi:
         self.mir_target_db = get_mir_target_db(mir_target_file)
 
     def get_result_table(self):
-        gene_symbol_df = self.anno_df.apply(
-            lambda s: pd.Series(
-                [
-                    s['ev_id'],
-                    s['transcript'].gene.gene_symbol
-                ],
-                index=['ev_id', 'host_gene']
-            ),
-            axis=1
-        ).drop_duplicates(
-        ).reset_index(
-            drop=True
-        )
+        gene_symbol_df = self.anno_df.assign(
+            host_gene=lambda df: df['transcript'].apply(lambda t: t.gene.gene_symbol)
+        ).loc[:, ['ev_id', 'host_gene']].drop_duplicates().reset_index(drop=True)
 
         res_df = self.circ_events.original_df.reset_index().merge(
             gene_symbol_df,
@@ -100,7 +86,7 @@ class CircEvents:
     def __init__(self, filename):
         self._filename = filename
         self.original_df = self._read_file(self._filename)
-        self.df = self.original_df.apply(self._get_donor_acceptor, axis=1)
+        self.df = self.get_donor_acceptor_df()
 
     @staticmethod
     def _read_file(filename):
@@ -133,6 +119,14 @@ class CircEvents:
         res = pd.Series(res, index=['chr', 'donor', 'acceptor', 'strand'])
 
         return res
+
+    def get_donor_acceptor_df(self):
+        if self.original_df.empty:
+            df = pd.DataFrame([], columns=['chr', 'donor', 'acceptor', 'strand'])
+        else:
+            df = self.original_df.apply(self._get_donor_acceptor, axis=1)
+
+        return df
 
 
 def get_mir_target_db(mir_tar_db_path):

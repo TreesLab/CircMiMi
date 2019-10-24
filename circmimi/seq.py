@@ -35,6 +35,17 @@ class Seq:
         extended_seq = seq + seq[:30]
         return extended_seq
 
+    @classmethod
+    def get_extended_seq(cls, bed_df, ref_file):
+        fasta_df = cls.get_seq(bed_df, ref_file)
+        if not fasta_df.empty:
+            fasta_df['seq'] = fasta_df.apply(
+                cls.extend_seq_for_circ_js,
+                axis=1
+            )
+
+        return fasta_df
+
 
 def get_fasta(bed_file, ref_file, use_blocks=False, bedtools_bin='bedtools'):
     cmd = [bedtools_bin, 'getfasta']

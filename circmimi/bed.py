@@ -119,6 +119,10 @@ class BedUtils:
 
     @classmethod
     def to_bed(cls, exons_df):
-        bed_df = exons_df.apply(cls._to_bed, axis=1)
-        bed_df.columns = Bed.BED_TITLE
+        if exons_df.empty:
+            bed_df = pd.DataFrame([], columns=Bed.BED_TITLE)
+        else:
+            bed_df = exons_df.apply(cls._to_bed, axis=1)
+            bed_df.columns = Bed.BED_TITLE
+
         return bed_df

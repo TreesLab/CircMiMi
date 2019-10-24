@@ -116,20 +116,34 @@ class AnnotationUtils:
 
         transcripts_data_df = pd.DataFrame(transcripts_data, columns=df_cols)
 
-        int_cols = [
-            'ev_id',
-            'exon_number_d',
-            'exon_number_a'
-        ]
+        if not transcripts_data_df.empty:
+            int_cols = [
+                'ev_id',
+                'exon_number_d',
+                'exon_number_a'
+            ]
 
-        transcripts_data_df[int_cols] = \
-            transcripts_data_df[int_cols].replace('NA', np.nan).astype('Int64')
+            transcripts_data_df[int_cols] = \
+                transcripts_data_df[int_cols].replace('NA', np.nan).astype('Int64')
 
         return transcripts_data_df
 
     def get_annotation(self, df):
-        raw_anno_dfs = df.apply(self._get_anno_data_of_ev, axis=1)
-        anno_df = pd.concat(list(raw_anno_dfs)).reset_index(drop=True)
+        if df.empty:
+            anno_df = pd.DataFrame(
+                [],
+                columns=[
+                    'ev_id',
+                    'transcript',
+                    'exon_number_d',
+                    'exon_number_a',
+                    'inter_exons'
+                ]
+            )
+        else:
+            raw_anno_dfs = df.apply(self._get_anno_data_of_ev, axis=1)
+            anno_df = pd.concat(list(raw_anno_dfs)).reset_index(drop=True)
+
         return anno_df
 
     @staticmethod
@@ -137,18 +151,24 @@ class AnnotationUtils:
         return sum(map(len, list_of_obj))
 
     def get_uniq_exons(self, anno_df):
-        uniq_exons_df = anno_df[['inter_exons', 'ev_id']]\
-            .drop_duplicates()\
-            .reset_index(drop=True)
+        if anno_df.empty:
+            uniq_exons_df = pd.DataFrame(
+                [],
+                columns=['inter_exons', 'ev_id', 'total_len', 'exons_id']
+            )
+        else:
+            uniq_exons_df = anno_df[['inter_exons', 'ev_id']]\
+                .drop_duplicates()\
+                .reset_index(drop=True)
 
-        uniq_exons_df['total_len'] = uniq_exons_df.apply(
-            lambda s: self._get_total_length(s['inter_exons']),
-            axis=1
-        )
+            uniq_exons_df['total_len'] = uniq_exons_df.apply(
+                lambda s: self._get_total_length(s['inter_exons']),
+                axis=1
+            )
 
-        uniq_exons_df['exons_id'] = uniq_exons_df.apply(
-            lambda s: "exons_{}".format(s.name),
-            axis=1
-        )
+            uniq_exons_df['exons_id'] = uniq_exons_df.apply(
+                lambda s: "exons_{}".format(s.name),
+                axis=1
+            )
 
         return uniq_exons_df

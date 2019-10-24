@@ -153,29 +153,25 @@ class MirandaUtils:
 
         return miranda_df_with_total_len
 
-    @staticmethod
-    def _get_extended_ref_end(s):
-        ext_ref_end = s['ref_end'] + s['total_len']
-        ext_s = pd.concat([
-            s[['query_id', 'reference_id']],
-            pd.Series([ext_ref_end], index=['ext_ref_end'])
-        ])
-        return ext_s
-
     @classmethod
     def remove_redundant_result(cls, miranda_df):
-        filtered_df = miranda_df[
-            miranda_df['ref_start'] <= miranda_df['total_len']
-        ]
+        filtered_df = miranda_df.query('ref_start <= total_len')
 
-        dropped_index = filtered_df[filtered_df['ref_start'] == 1]\
-            .apply(cls._get_extended_ref_end, axis=1)\
-            .reset_index()\
-            .merge(filtered_df,
-                   left_on=['query_id', 'reference_id', 'ext_ref_end'],
-                   right_on=['query_id', 'reference_id', 'ref_end'],
-                   how='inner')\
-            .loc[:, 'index']
+        dropped_index = filtered_df.query(
+            'ref_start == 1'
+        ).assign(
+            ext_ref_end=lambda df: df['ref_end'] + df['total_len']
+        ).loc[:, [
+            'query_id',
+            'reference_id',
+            'ext_ref_end'
+        ]].reset_index(
+        ).merge(
+            filtered_df,
+            left_on=['query_id', 'reference_id', 'ext_ref_end'],
+            right_on=['query_id', 'reference_id', 'ref_end'],
+            how='inner'
+        ).loc[:, 'index']
 
         filtered_df = filtered_df.drop(dropped_index).reset_index(drop=True)
 
@@ -194,10 +190,13 @@ class MirandaUtils:
 
     @classmethod
     def append_cross_boundary(cls, miranda_df_with_len):
-        cross_boundary_res = miranda_df_with_len.apply(
-            cls._is_cross_boundary,
-            axis=1
-        ).astype("Int64")
+        if miranda_df_with_len.empty:
+            cross_boundary_res = pd.Series(dtype='Int64')
+        else:
+            cross_boundary_res = miranda_df_with_len.apply(
+                cls._is_cross_boundary,
+                axis=1
+            ).astype("Int64")
 
         appended_res_df = miranda_df_with_len.assign(
             cross_boundary=cross_boundary_res
@@ -223,11 +222,9 @@ class MirandaUtils:
 
     @staticmethod
     def append_merged_aln(miranda_df):
-        merged_aln = reduce(
-            lambda c1, c2: c1.add(c2),
-            map(miranda_df.get, ['aln_mirna', 'aln_map', 'aln_utr'])
+        miranda_df_with_merged_aln = miranda_df.assign(
+            aln=lambda df: df['aln_mirna'] + df['aln_map'] + df['aln_utr']
         )
-        miranda_df_with_merged_aln = miranda_df.assign(aln=merged_aln)
 
         return miranda_df_with_merged_aln
 
@@ -269,6 +266,8 @@ class MirandaUtils:
             axis=1
         ).astype(
             {
+                'ev_id': 'object',
+                'mirna': 'object',
                 'count': "Int64"
             }
         )
