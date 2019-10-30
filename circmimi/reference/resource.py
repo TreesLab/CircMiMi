@@ -135,6 +135,51 @@ class EnsemblAnnotation(EnsemblResource):
         return dir_path
 
 
+class EnsemblSisterResource(FTPResource):
+    ftp_site = "ftp.ensemblgenomes.org"
+    release_dir = "/pub"
+    release_pattern = r"^release-([0-9]+)$"
+
+    def __init__(self, field, species, version):
+        self.field = field
+        super().__init__(species, version)
+
+
+class EnsemblSisterGenome(EnsemblSisterResource):
+    file_pattern = r".+\.dna\.primary_assembly\.fa\.gz$"
+    another_pats = (r".+\.dna\.toplevel\.fa\.gz$",)
+
+    def get_dir_path(self):
+        dir_path = os.path.join(
+            '/',
+            'pub',
+            'release-{}'.format(self.version),
+            self.field,
+            'fasta',
+            self.species,
+            'dna'
+        )
+
+        return dir_path
+
+
+class EnsemblSisterAnnotation(EnsemblSisterResource):
+    file_pattern = r".+\.chr\.gtf\.gz$"
+    another_pats = (r".+\.[0-9]+\.gtf\.gz$",)
+
+    def get_dir_path(self):
+        dir_path = os.path.join(
+            '/',
+            'pub',
+            'release-{}'.format(self.version),
+            self.field,
+            'gtf',
+            self.species
+        )
+
+        return dir_path
+
+
 class GencodeResource(FTPResource):
     ftp_site = "ftp.ebi.ac.uk"
     release_dir = "/pub/databases/gencode/Gencode_{species}/"

@@ -109,6 +109,7 @@ def generate(species, source, version, ref_dir):
         if source == "ensembl":
             anno_file = rs.EnsemblAnnotation(species.name, version)
             genome_file = rs.EnsemblGenome(species.name, version)
+
         elif source == "gencode":
 
             if species.key == 'hsa':
@@ -118,6 +119,11 @@ def generate(species, source, version, ref_dir):
 
             anno_file = rs.GencodeAnnotation(species_key, version)
             genome_file = rs.GencodeGenome(species_key, version)
+
+        elif source.startswith("ensembl_"):
+            field = source.split('_')[1]
+            anno_file = rs.EnsemblSisterAnnotation(field, species.name, version)
+            genome_file = rs.EnsemblSisterGenome(field, species.name, version)
 
         mir_seq_file = rs.MiRBaseMiRNA(None, "21")
         mir_taret_file = rs.MiRTarBaseResource(None, "7.0")
