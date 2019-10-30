@@ -130,10 +130,10 @@ ssc | Sus scrofa              |    ✔️   |         |
 tgu | Taeniopygia guttata     |    ✔️   |         |
 xtr | Xenopus tropicalis      |    ✔️   |         |
 
-△ : Not implemented yet
+△ : Only in the alternative source
 
 ##### Note:
-To access the species from the alternative source, just directly assign the source by, for example:
+To access the alternative source, just assign the source name to the "source" option:
 ```
 $ circmimi_tools genref --species ath --source ensembl_plants --version 45 ./refs
 ```
