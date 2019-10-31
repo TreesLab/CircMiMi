@@ -125,6 +125,9 @@ def generate(species, source, version, ref_dir):
             anno_file = rs.EnsemblSisterAnnotation(field, species.name, version)
             genome_file = rs.EnsemblSisterGenome(field, species.name, version)
 
+        else:
+            raise rs.SourceNotSupportError(source)
+
         mir_seq_file = rs.MiRBaseMiRNA(None, "21")
         mir_taret_file = rs.MiRTarBaseResource(None, "7.0")
 

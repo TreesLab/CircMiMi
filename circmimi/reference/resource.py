@@ -51,7 +51,11 @@ class FTPResource(ResourceBase):
 
             dir_path = self.get_dir_path()
 
-            ftp.cwd(dir_path)
+            try:
+                ftp.cwd(dir_path)
+            except ftplib.error_perm:
+                raise URLError(dir_path) from None
+
             dir_list = ftp.nlst()
 
             filename = self.get_the_filename(dir_list)
@@ -251,3 +255,13 @@ class MiRTarBaseResource(ResourceBase):
     def get_url(self):
         url = self.url_templ.format(species=self.species, version=self.version)
         return url
+
+
+class Error(Exception):
+    pass
+
+class URLError(Error):
+    pass
+
+class SourceNotSupportError(Error):
+    pass
