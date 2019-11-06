@@ -49,12 +49,12 @@ and activate this new environment by:
 $ conda activate circmimi
 ```
 
-2. Install the externel tools through the `bioconda` channel:
+2. We may install the externel tools with `conda` through the `bioconda`(https://bioconda.github.io/) channel:
 ```
 $ conda install -c bioconda bedtools miranda
 ```
 
-3. Install the `circmimi` package:
+3. Finally, install the `circmimi` package with `pip`:
 ```
 $ pip install circmimi
 ```
