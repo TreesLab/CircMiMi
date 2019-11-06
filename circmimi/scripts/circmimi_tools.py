@@ -3,16 +3,28 @@ import click
 import os
 
 
-@click.group()
+@click.group(help="""
+    A toolset for investigating the interactions between circRNA, miRNA, and mRNA.
+
+    Example.                                                    
+    circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
+    circmimi_tools run -r ./refs -p 10 circ_events.tsv > out.tsv
+    """)
 def cli():
     pass
 
 
-@cli.command(help="Main pipeline.")
+@cli.command(help="""
+    Main pipeline.
+
+    Example.                                                    
+    circmimi_tools run -r ./refs -p 10 circ_events.tsv > out.tsv
+    """)
 @click.argument('circ_file')
-@click.option('-r', '--ref', 'ref_dir', required=True, help="Assign the path of ref_dir.", type=click.Path())
+@click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
 @click.option('-o', '--out', 'output_dir', hidden=True) # Not implemented yet.
-@click.option('-p', '--num_proc', default=1, type=click.INT, help="The number of processes.")
+@click.option('-p', '--num_proc', default=1, type=click.INT, metavar="NUM_PROC",
+    help="Number of processes")
 @click.option('--header', 'header', flag_value=True, type=click.BOOL,
               default=True, hidden=True)
 @click.option('--no-header', 'header', flag_value=False, type=click.BOOL)
@@ -36,13 +48,50 @@ def run(circ_file, ref_dir, output_dir, num_proc, header):
     print(result_table.to_csv(sep='\t', index=False, header=header), end='')
 
 
-@cli.command()
-@click.option('--species', 'species')
-@click.option('--source', 'source')
-@click.option('--gencode', 'source', flag_value='gencode', type=click.STRING)
-@click.option('--ensembl', 'source', flag_value='ensembl', type=click.STRING)
-@click.option('--version', 'version', default='current')
-@click.option('--init', 'init', is_flag=True, help="Create an init template ref_dir.")
+@cli.command(help="""
+    Generate index and references.                                          
+    The generated files would be saved in the directory REF_DIR.
+
+    Example.                                                    
+    circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
+    
+    ---------------------                                                    
+    | Available Species |                                                   
+    --------------------------------------------------------------------------
+    | Key | Name                    | Ensembl | Gencode | Alternative Source |
+    | --- | ----------------------- | ------- | ------- | --------------------
+    | ath | Arabidopsis thaliana    |    *    |         | Ensembl Plants     |
+    | bmo | Bombyx mori             |    *    |         | Ensembl Metazoa    |
+    | bta | Bos taurus              |    V    |         |                    |
+    | cel | Caenorhabditis elegans  |    V    |         | Ensembl Metazoa    |
+    | cfa | Canis familiaris        |    V    |         |                    |
+    | dre | Danio rerio             |    V    |         |                    |
+    | dme | Drosophila melanogaster |    V    |         |                    |
+    | gga | Gallus gallus           |    V    |         |                    |
+    | hsa | Homo sapiens            |    V    |    V    |                    |
+    | mmu | Mus musculus            |    V    |    V    |                    |
+    | osa | Oryza sativa            |    *    |         | Ensembl Plants     |
+    | ola | Oryzias latipes         |    V    |         |                    |
+    | oar | Ovis aries              |    V    |         |                    |
+    | rno | Rattus norvegicus       |    V    |         |                    |
+    | ssc | Sus scrofa              |    V    |         |                    |
+    | tgu | Taeniopygia guttata     |    V    |         |                    |
+    | xtr | Xenopus tropicalis      |    V    |         |                    |
+    --------------------------------------------------------------------------
+    * Only in the alternative source
+    """)
+@click.option('--species', 'species', metavar="SPECIES_KEY", required=True)
+@click.option('--source', 'source', metavar="SOURCE", required=True,
+    help="""
+        Available sources are "gencode", "ensembl", "ensembl_plants", and "ensembl_metazoa"
+    """)
+@click.option('--gencode', 'source', flag_value='gencode', type=click.STRING, help="--source gencode", hidden=True)
+@click.option('--ensembl', 'source', flag_value='ensembl', type=click.STRING, help="--source ensembl", hidden=True)
+@click.option('--version', 'version', default='current', metavar="VERSION",
+    help="""
+        The release version. If not assigned, it will be automatically set to the latest version of the SOURCE.
+    """)
+@click.option('--init', 'init', is_flag=True, help="Create an init template ref_dir.", hidden=True)
 @click.argument('ref_dir')
 def genref(species, source, version, ref_dir, init):
     os.makedirs(ref_dir, exist_ok=True)
@@ -60,7 +109,7 @@ def genref(species, source, version, ref_dir, init):
     config.write(ref_dir)
 
 
-@cli.command()
+@cli.command(hidden=True)
 @click.argument('gtf_path')
 @click.argument('db_path', metavar='OUT_PATH')
 def gendb(gtf_path, db_path):
