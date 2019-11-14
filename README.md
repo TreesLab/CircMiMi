@@ -6,7 +6,7 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
 # Table of Contents
 - [Dependency](#dependency)
     - [Packages](#packages)
-    - [Externel tools](#externel-tools)
+    - [External tools](#external-tools)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
@@ -27,7 +27,7 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
 - pandas
 - xlrd
 
-### Externel tools
+### External tools
 
 - bedtools (https://github.com/arq5x/bedtools2)
 - miranda (http://www.microrna.org/microrna/getDownloads.do)
@@ -49,7 +49,7 @@ and activate this new environment by:
 $ conda activate circmimi
 ```
 
-2. We may install the externel tools with `conda` through the `bioconda`(https://bioconda.github.io/) channel:
+2. We may install the external tools with `conda` through the `bioconda`(https://bioconda.github.io/) channel:
 ```
 $ conda install -c bioconda bedtools miranda
 ```
@@ -72,7 +72,7 @@ it should print out with the help messages.
 
 1. Generate the index and references
 ```
-$ circmimi_tools genref --species hsa --ensembl --version 98 ./refs
+$ circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
 ```
 
 
