@@ -104,12 +104,12 @@ class BedUtils:
     @classmethod
     def to_regions_df(cls, exons_df):
         if exons_df.empty:
-            regions_df = pd.DataFrame([], columns=['name', 'regions'])
+            regions_df = pd.DataFrame([], columns=['regions_id', 'regions'])
         else:
             regions_df = exons_df[['exons_id', 'exons']].assign(
-                name=lambda df: df.exons_id,
+                regions_id=lambda df: df.exons_id,
                 regions=lambda df: df.exons.apply(cls._exons_to_regions)
-            )[['name', 'regions']]
+            )[['regions_id', 'regions']]
 
         return regions_df
 
@@ -130,5 +130,5 @@ class BedUtils:
 
     @classmethod
     def _to_bed(cls, s):
-        bed = Bed(s.regions, name=s.name)
+        bed = Bed(s.regions, name=s.regions_id)
         return pd.Series(bed.get_data(all_fields=True))
