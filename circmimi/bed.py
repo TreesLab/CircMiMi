@@ -22,29 +22,28 @@ class Bed:
         self.regions = regions
         self.name = name
 
-        self._parse_region(regions)
+        self._parse_regions(regions)
 
-    def _parse_region(self, regions):
-        if type(regions[0]) == list:
-            self._parse_region(regions[0])
-            for region in regions[1:]:
-                self._add_block(region)
+    def _parse_regions(self, regions):
+        self._parse_region(regions[0])
+        for region in regions[1:]:
+            self._add_block(region)
 
-            if self.strand == '-':
-                self._reverse_region()
-        else:
-            region = regions
-            self.chrom = region[0]
-            self.start = int(region[1]) - 1
-            self.end = int(region[2])
-            self.strand = region[3]
+        if self.strand == '-':
+            self._reverse_region()
 
-            self.block_count = 1
-            self.block_sizes = [self.end - self.start]
-            self.block_starts = [0]
+    def _parse_region(self, region):
+        self.chrom = region[0]
+        self.start = int(region[1]) - 1
+        self.end = int(region[2])
+        self.strand = region[3]
+
+        self.block_count = 1
+        self.block_sizes = [self.end - self.start]
+        self.block_starts = [0]
 
     def _add_block(self, region):
-        other = Bed(region)
+        other = Bed([region])
 
         assert self.strand == other.strand
 
