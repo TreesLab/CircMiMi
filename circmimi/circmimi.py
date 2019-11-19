@@ -28,7 +28,11 @@ class Circmimi:
         self.circ_events = CircEvents(circ_file)
         self.anno_df = self.circ_events.df.pipe(self.anno_utils.get_annotation)
         self.uniq_exons_df = self.anno_df.pipe(self.anno_utils.get_uniq_exons)
-        self.bed_df = self.uniq_exons_df.pipe(BedUtils.to_bed)
+        self.bed_df = self.uniq_exons_df.pipe(
+            BedUtils.to_regions_df
+        ).pipe(
+            BedUtils.to_bed_df
+        )
 
         self.seq_df = self.bed_df.pipe(Seq.get_extended_seq, ref_file=ref_file)
 

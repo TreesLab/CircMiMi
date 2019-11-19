@@ -101,27 +101,34 @@ class Bed:
 
 
 class BedUtils:
-    @staticmethod
-    def _exons_to_bed(exons, name=None):
-        exons = list(map(lambda exon: exon.region, exons))
-        bed = Bed(exons)
-        if name:
-            bed.name = name
-        return bed
-
     @classmethod
-    def _to_bed(cls, s):
-        exons = s['inter_exons']
-        exons_id = s['exons_id']
-        bed = cls._exons_to_bed(exons, name=exons_id)
-        return pd.Series(bed.get_data(all_fields=True))
-
-    @classmethod
-    def to_bed(cls, exons_df):
+    def to_regions_df(cls, exons_df):
         if exons_df.empty:
+            regions_df = pd.DataFrame([], columns=['name', 'regions'])
+        else:
+            regions_df = exons_df[['exons_id', 'exons']].assign(
+                name=lambda df: df.exons_id,
+                regions=lambda df: df.exons.apply(cls._exons_to_regions)
+            )[['name', 'regions']]
+
+        return regions_df
+
+    @staticmethod
+    def _exons_to_regions(exons):
+        regions = list(map(lambda exon: exon.region, exons))
+        return regions
+
+    @classmethod
+    def to_bed_df(cls, regions_df):
+        if regions_df.empty:
             bed_df = pd.DataFrame([], columns=Bed.BED_TITLE)
         else:
-            bed_df = exons_df.apply(cls._to_bed, axis=1)
+            bed_df = regions_df.apply(cls._to_bed, axis=1)
             bed_df.columns = Bed.BED_TITLE
 
         return bed_df
+
+    @classmethod
+    def _to_bed(cls, s):
+        bed = Bed(s.regions, name=s.name)
+        return pd.Series(bed.get_data(all_fields=True))

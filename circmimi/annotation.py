@@ -111,7 +111,7 @@ class AnnotationUtils:
             'transcript',
             'exon_number_d',
             'exon_number_a',
-            'inter_exons'
+            'exons'
         ]
 
         transcripts_data_df = pd.DataFrame(transcripts_data, columns=df_cols)
@@ -137,7 +137,7 @@ class AnnotationUtils:
                     'transcript',
                     'exon_number_d',
                     'exon_number_a',
-                    'inter_exons'
+                    'exons'
                 ]
             )
         else:
@@ -154,15 +154,15 @@ class AnnotationUtils:
         if anno_df.empty:
             uniq_exons_df = pd.DataFrame(
                 [],
-                columns=['inter_exons', 'ev_id', 'total_len', 'exons_id']
+                columns=['exons', 'ev_id', 'total_len', 'exons_id']
             )
         else:
-            uniq_exons_df = anno_df[['inter_exons', 'ev_id']]\
+            uniq_exons_df = anno_df[['exons', 'ev_id']]\
                 .drop_duplicates()\
                 .reset_index(drop=True)
 
             uniq_exons_df['total_len'] = uniq_exons_df.apply(
-                lambda s: self._get_total_length(s['inter_exons']),
+                lambda s: self._get_total_length(s['exons']),
                 axis=1
             )
 
