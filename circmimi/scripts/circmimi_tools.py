@@ -22,19 +22,21 @@ def cli():
     """)
 @click.argument('circ_file')
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
-@click.option('-o', '--out', 'output_dir', hidden=True) # Not implemented yet.
+@click.option('-o', '--out', 'output_dir', metavar="OUT_DIR", required=True)
 @click.option('-p', '--num_proc', default=1, type=click.INT, metavar="NUM_PROC",
     help="Number of processes")
 @click.option('--header', 'header', flag_value=True, type=click.BOOL,
               default=True, hidden=True)
 @click.option('--no-header', 'header', flag_value=False, type=click.BOOL)
 def run(circ_file, ref_dir, output_dir, num_proc, header):
+    os.makedirs(output_dir, exist_ok=True)
+
     from circmimi.config import get_refs
     anno_db, ref_file, mir_ref, mir_target = get_refs(ref_dir)
 
     from circmimi.circmimi import Circmimi
 
-    circmimi_result = Circmimi()
+    circmimi_result = Circmimi(work_dir=output_dir)
     circmimi_result.run(
         circ_file,
         anno_db,
@@ -45,7 +47,8 @@ def run(circ_file, ref_dir, output_dir, num_proc, header):
     )
 
     result_table = circmimi_result.get_result_table()
-    print(result_table.to_csv(sep='\t', index=False, header=header), end='')
+    res_file = os.path.join(output_dir, 'out.tsv')
+    result_table.to_csv(res_file, sep='\t', index=False, header=header)
 
 
 @cli.command(help="""

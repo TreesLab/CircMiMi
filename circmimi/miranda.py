@@ -114,10 +114,10 @@ class Miranda:
             yield cls._get_value(m.group(1))
 
 
-def get_binding_sites(seq_df, mir_ref_file, num_proc=1):
-    miranda = Miranda(mir_ref_file, options=['-quiet'])
+def get_binding_sites(seq_df, mir_ref_file, work_dir='.', num_proc=1):
+    miranda = Miranda(mir_ref_file, work_dir=work_dir, options=['-quiet'])
 
-    with tp.NamedTemporaryFile(dir='.') as tmp_fa_file:
+    with tp.NamedTemporaryFile(dir=work_dir) as tmp_fa_file:
         with open(tmp_fa_file.name, 'w') as fa_out:
             fa_txt = Seq.to_fasta(seq_df)
             fa_out.write(fa_txt)

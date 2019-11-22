@@ -6,7 +6,9 @@ from circmimi.miranda import get_binding_sites, MirandaUtils
 
 
 class Circmimi:
-    def __init__(self):
+    def __init__(self, work_dir='.'):
+        self.work_dir = work_dir
+
         self.circ_events = None
         self.anno_df = None
         self.uniq_exons_df = None
@@ -39,6 +41,7 @@ class Circmimi:
         self.miranda_df = self.seq_df.pipe(
             get_binding_sites,
             mir_ref_file=mir_ref_file,
+            work_dir=self.work_dir,
             num_proc=num_proc
         ).pipe(
             MirandaUtils.append_exons_len,
