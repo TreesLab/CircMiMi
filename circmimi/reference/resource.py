@@ -23,9 +23,14 @@ class ResourceBase:
     def __init__(self, url):
         self.url = url
         self.filename = os.path.basename(url)
+        self.is_downladed = False
 
     def download(self, dir_='.'):
         res = sp.run(['wget', self.url, '-P', dir_])
+
+        if res.returncode == 0:
+            self.is_downladed = True
+
         return res
 
 
@@ -123,6 +128,38 @@ class EnsemblGenome(EnsemblResource):
         return dir_path
 
 
+class EnsemblCDna(EnsemblResource):
+    file_pattern = r".+\.cdna\.all\.fa\.gz$"
+
+    def get_dir_path(self):
+        dir_path = os.path.join(
+            '/',
+            'pub',
+            'release-{}'.format(self.version),
+            'fasta',
+            self.species,
+            'cdna'
+        )
+
+        return dir_path
+
+
+class EnsemblNCRna(EnsemblResource):
+    file_pattern = r".+\.ncrna\.fa\.gz$"
+
+    def get_dir_path(self):
+        dir_path = os.path.join(
+            '/',
+            'pub',
+            'release-{}'.format(self.version),
+            'fasta',
+            self.species,
+            'ncrna'
+        )
+
+        return dir_path
+
+
 class EnsemblAnnotation(EnsemblResource):
     file_pattern = r".+\.chr\.gtf\.gz$"
     another_pats = (r".+\.[0-9]+\.gtf\.gz$",)
@@ -162,6 +199,40 @@ class EnsemblSisterGenome(EnsemblSisterResource):
             'fasta',
             self.species,
             'dna'
+        )
+
+        return dir_path
+
+
+class EnsemblSisterCDna(EnsemblSisterResource):
+    file_pattern = r".+\.cdna\.all\.fa\.gz$"
+
+    def get_dir_path(self):
+        dir_path = os.path.join(
+            '/',
+            'pub',
+            'release-{}'.format(self.version),
+            self.field,
+            'fasta',
+            self.species,
+            'cdna'
+        )
+
+        return dir_path
+
+
+class EnsemblSisterNonCodingTranscripts(EnsemblSisterResource):
+    file_pattern = r".+\.ncrna\.fa\.gz$"
+
+    def get_dir_path(self):
+        dir_path = os.path.join(
+            '/',
+            'pub',
+            'release-{}'.format(self.version),
+            self.field,
+            'fasta',
+            self.species,
+            'ncrna'
         )
 
         return dir_path
@@ -218,6 +289,14 @@ class GencodeResource(FTPResource):
 
 class GencodeGenome(GencodeResource):
     file_pattern = r".+\.primary_assembly\.genome\.fa\.gz$"
+
+
+class GencodeProteinCodingTranscripts(GencodeResource):
+    file_pattern = r".+\.lncRNA_transcripts\.fa\.gz$"
+
+
+class GencodeLongNonCodingTranscripts(GencodeResource):
+    file_pattern = r".+\.pc_transcripts\.fa\.gz$"
 
 
 class GencodeAnnotation(GencodeResource):
