@@ -32,7 +32,7 @@ def run(circ_file, ref_dir, output_dir, num_proc, header):
     os.makedirs(output_dir, exist_ok=True)
 
     from circmimi.config import get_refs
-    anno_db, ref_file, mir_ref, mir_target = get_refs(ref_dir)
+    anno_db, ref_file, mir_ref, mir_target, other_transcripts = get_refs(ref_dir)
 
     from circmimi.circmimi import Circmimi
 

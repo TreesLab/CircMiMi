@@ -13,7 +13,8 @@ class RefConfig:
             'anno_db': '',
             'ref_file': '',
             'mir_ref': '',
-            'mir_target': ''
+            'mir_target': '',
+            'other_transcripts': ''
         }
 
     def read(self, cfg_file):
@@ -39,5 +40,6 @@ def get_refs(ref_dir):
     ref_file = os.path.join(ref_dir, config['refs']['ref_file'])
     mir_ref = os.path.join(ref_dir, config['refs']['mir_ref'])
     mir_target = os.path.join(ref_dir, config['refs']['mir_target'])
+    other_transcripts = os.path.join(ref_dir, config['refs']['other_transcripts'])
 
-    return anno_db, ref_file, mir_ref, mir_target
+    return anno_db, ref_file, mir_ref, mir_target, other_transcripts
