@@ -30,8 +30,21 @@ class ResourceBase:
 
         if res.returncode == 0:
             self.is_downladed = True
+            self.filename = os.path.join(dir_, self.filename)
 
         return res
+
+    def unzip(self):
+        if self.filename.endswith('.gz'):
+            res = sp.run(['gunzip', self.filename])
+
+            if res.returncode == 0:
+                self.filename = re.sub(r'\.gz$', '', self.filename)
+
+            return res
+
+        else:
+            return
 
 
 class FTPResource(ResourceBase):
