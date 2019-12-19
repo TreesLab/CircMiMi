@@ -12,8 +12,8 @@ from circmimi.reference import resource as rs
 
 
 class RefFile:
-    def __init__(self, src):
-        self.src = src
+    def __init__(self, src_name):
+        self.src_name = src_name
         self.filename = None
 
     def generate(self):
@@ -22,24 +22,21 @@ class RefFile:
 
 class AnnoRef(RefFile):
     def generate(self):
-        self.filename = re.sub(r'\.gtf(?:\.gz)?$', '.db', self.src)
-        gendb.generate(self.src, self.filename)
+        self.filename = re.sub(r'\.gtf(?:\.gz)?$', '.db', self.src_name)
+        gendb.generate(self.src_name, self.filename)
         return self.filename
 
 
 class MirRef(RefFile):
-    def generate(self, species):
-        species = species.key
+    def generate(self, species_key):
+        self.filename = re.sub(r'\.fa$', '.{}.fa'.format(species_key), self.src_name)
 
-        unzipped_file = self.src.filename
-        self.filename = re.sub(r'\.fa$', '.{}.fa'.format(species), unzipped_file)
-
-        with open(unzipped_file) as fa_in:
+        with open(self.src_name) as fa_in:
             fa_txt = fa_in.read()
 
         with open(self.filename, 'w') as out:
             for fa_id, fa_seq in parse_fasta(fa_txt):
-                m = re.search(r'^{}-'.format(species), fa_id)
+                m = re.search(r'^{}-'.format(species_key), fa_id)
                 if m:
                     print(">{}\n{}".format(fa_id, fa_seq), file=out)
 
@@ -48,7 +45,7 @@ class MirRef(RefFile):
 
 class MiRTarBaseRef(RefFile):
     def generate(self, species):
-        df = pd.read_excel(self.src)
+        df = pd.read_excel(self.src_name)
 
         formatted_data = df[
             df['Species (miRNA)'] == species.fullname
@@ -85,10 +82,9 @@ class MiRTarBaseRef(RefFile):
 
 class EnsemblTranscriptsFile(RefFile):
     def generate(self, biotype):
-        unzipped_file = self.src.filename
-        self.filename = re.sub(r'\.fa$', '.{}.fa'.format(biotype), unzipped_file)
+        self.filename = re.sub(r'\.fa$', '.{}.fa'.format(biotype), self.src_name)
 
-        with open(unzipped_file) as fa_in:
+        with open(self.src_name) as fa_in:
             fa_txt = fa_in.read()
 
         with open(self.filename, 'w') as out:
@@ -102,11 +98,10 @@ class EnsemblTranscriptsFile(RefFile):
 
 class RepChrM(RefFile):
     def generate(self):
-        unzipped_file = self.src.filename
-        file_path = os.path.dirname(unzipped_file)
+        file_path = os.path.dirname(self.src_name)
         self.filename = os.path.join(file_path, "RepChrM.fa")
 
-        with open(unzipped_file) as fa_in:
+        with open(self.src_name) as fa_in:
             fa_txt = fa_in.read()
 
         with open(self.filename, 'w') as out:
@@ -129,17 +124,17 @@ class OtherTranscripts:
 
     def generate(self):
         if self.src_type == 'ensembl':
-            pc_ref = EnsemblTranscriptsFile(self.pc_src)
+            pc_ref = EnsemblTranscriptsFile(self.pc_src.filename)
             pc_ref.generate('protein_coding')
 
-            lncRNA_ref = EnsemblTranscriptsFile(self.lncRNA_src)
+            lncRNA_ref = EnsemblTranscriptsFile(self.lncRNA_src.filename)
             lncRNA_ref.generate('lncRNA')
 
         elif self.src_type == 'gencode':
             pc_ref = self.pc_src
             lncRNA_ref = self.lncRNA_src
 
-        repChrM_ref = RepChrM(self.repChrM_src)
+        repChrM_ref = RepChrM(self.repChrM_src.filename)
         repChrM_ref.generate()
 
         with open(self.filename, 'wb') as out:
@@ -223,7 +218,7 @@ def generate(species, source, version, ref_dir):
         anno_ref.generate()
 
         mir_ref = MirRef(mir_seq_file.filename)
-        mir_ref.generate(species)
+        mir_ref.generate(species.key)
 
         mir_taret_ref = MiRTarBaseRef(mir_taret_file.filename)
         mir_taret_ref.generate(species)
@@ -240,7 +235,7 @@ def generate(species, source, version, ref_dir):
 
         ref_files = {
             'anno_db': anno_ref.filename,
-            'ref_file': genome_ref.filename,
+            'ref_file': genome_file.filename,
             'mir_ref': mir_ref.filename,
             'mir_target': mir_taret_ref.filename,
             'other_transcripts': others_ref.filename
