@@ -140,11 +140,11 @@ class AmbiguousChecker:
         self.nonAA_circ_events = self.result[self._is_nonAA]
 
     def save_result(self):
-        result_filename = '{}.checkAA.tsv'.format(self.prefix)
-        nonAA_filename = '{}.clear.tsv'.format(self.prefix)
+        self.result_file = '{}.checkAA.tsv'.format(self.prefix)
+        self.clear_circ_file = '{}.clear.tsv'.format(self.prefix)
 
-        self.result.to_csv(result_filename, sep='\t', index=False)
-        self.nonAA_circ_events.to_csv(nonAA_filename, sep='\t', index=False)
+        self.result.to_csv(self.result_file, sep='\t', index=False)
+        self.nonAA_circ_events.to_csv(self.clear_circ_file, sep='\t', index=False)
 
     @staticmethod
     def _get_flanking_region(circ_data):
