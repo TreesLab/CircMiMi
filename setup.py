@@ -37,7 +37,8 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'circmimi_tools = circmimi.scripts.circmimi_tools:cli'
+            'circmimi_tools = circmimi.scripts.circmimi_tools:cli',
+            'mp_blat.py = circmimi.scripts.mp_blat:cli'
         ]
     },
     description=("A toolset for investigating the interactions between"
