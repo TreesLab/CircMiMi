@@ -234,7 +234,7 @@ class EnsemblSisterCDna(EnsemblSisterResource):
         return dir_path
 
 
-class EnsemblSisterNonCodingTranscripts(EnsemblSisterResource):
+class EnsemblSisterNCRna(EnsemblSisterResource):
     file_pattern = r".+\.ncrna\.fa\.gz$"
 
     def get_dir_path(self):

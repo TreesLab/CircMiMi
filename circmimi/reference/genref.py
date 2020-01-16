@@ -188,7 +188,7 @@ def generate(species, source, version, ref_dir):
             other_transcripts_files = (
                 'ensembl',
                 rs.EnsemblSisterCDna(field, species.name, version),
-                rs.EnsemblNCRna(field, species.name, version)
+                rs.EnsemblSisterNCRna(field, species.name, version)
             )
 
         else:
