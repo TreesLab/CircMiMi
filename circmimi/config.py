@@ -4,18 +4,25 @@ import configparser
 
 DEFAULT_REF_CONFIG = 'refs.cfg'
 
+CONFIG_TEMPL = """
+    [info]
+    species =
+    source =
+    version =
+
+    [refs]
+    anno_db =
+    ref_file =
+    mir_ref =
+    mir_target =
+    other_transcripts =
+"""
+
 
 class RefConfig:
     def __init__(self):
         self.config = configparser.ConfigParser()
-        self.config['info'] = {'species': '', 'source': '', 'version': ''}
-        self.config['refs'] = {
-            'anno_db': '',
-            'ref_file': '',
-            'mir_ref': '',
-            'mir_target': '',
-            'other_transcripts': ''
-        }
+        self.config.read_string(CONFIG_TEMPL)
 
     def read(self, cfg_file):
         self.config.read(cfg_file)
