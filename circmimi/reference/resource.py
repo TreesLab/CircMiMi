@@ -19,13 +19,22 @@ import os
 import re
 
 
-class ResourceBase:
+class Resource:
     def __init__(self, url):
         self.url = url
         self.filename = os.path.basename(url)
-        self.is_downladed = False
+
+    def is_downladed(self, dir_='.'):
+        file_path = os.path.join(dir_, self.filename)
+        if os.path.exists(file_path):
+            return True
+        else:
+            return False
 
     def download(self, dir_='.'):
+        if self.is_downladed(dir_):
+            return
+
         res = sp.run(['wget', self.url, '-P', dir_])
 
         if res.returncode == 0:
@@ -47,7 +56,7 @@ class ResourceBase:
             return
 
 
-class FTPResource(ResourceBase):
+class FTPResource(Resource):
     ftp_site = ""
     release_dir = ""
     release_pattern = r""
@@ -335,7 +344,7 @@ class MiRBaseMiRNA(MiRBaseResource):
     file_pattern = r"mature\.fa\.gz"
 
 
-class MiRTarBaseResource(ResourceBase):
+class MiRTarBaseResource(Resource):
     url_templ = "http://mirtarbase.mbc.nctu.edu.tw/cache/download/{version}/miRTarBase_MTI.xlsx"
 
     def __init__(self, species, version):
@@ -347,6 +356,37 @@ class MiRTarBaseResource(ResourceBase):
     def get_url(self):
         url = self.url_templ.format(species=self.species, version=self.version)
         return url
+
+
+class MiRDBResource(Resource):
+    url_templ = "http://www.mirdb.org/download/miRDB_v{version}_prediction_result.txt.gz"
+    url_templ_2 = "http://www.mirdb.org/download/MirTarget2_v{version}_prediction_result.txt.gz"
+
+    def __init__(self, species, version):
+        self.species = species
+        self.version = version
+        url = self.get_url()
+        super().__init__(url)
+
+    def get_url(self):
+        if self.version in ['1.0', '2.0', '3.0', '4.0']:
+            url_templ = self.url_templ_2
+        else:
+            url_templ = self.url_templ
+
+        url = url_templ.format(
+            species=self.species,
+            version=self.version
+        )
+
+        return url
+
+
+class Gene2AccessionResource(Resource):
+    url = "ftp://ftp.ncbi.nih.gov/gene/DATA/gene2accession.gz"
+
+    def __init__(self):
+        super().__init__(self.url)
 
 
 class Error(Exception):
