@@ -27,7 +27,7 @@ def gene_accession_filter(data, species_tax_id):
             yield line
 
 
-def generate(species, version, ref_dir):
+def generate(species, version, ref_dir, out_file="mirdb.tsv"):
     with cwd(ref_dir):
         mirdb_file = MiRDBResource(None, version)
         gene2accession = Gene2AccessionResource()
@@ -94,4 +94,4 @@ def generate(species, version, ref_dir):
             lambda df: df[['mirna', 'target_gene', 'targeting_score']]
         )
 
-        mirdb_df_with_symbol.to_csv('mirdb.tsv', sep='\t', index=None)
+        mirdb_df_with_symbol.to_csv(out_file, sep='\t', index=None)
