@@ -2,6 +2,7 @@ import pandas as pd
 from functools import partial
 from circmimi.reference.utils import cwd, open_file
 from circmimi.reference.resource import MiRDBResource, Gene2AccessionResource
+from circmimi.reference.species import species_list
 
 
 def get_needed_data(filename, data_filter):
@@ -27,7 +28,9 @@ def gene_accession_filter(data, species_tax_id):
             yield line
 
 
-def generate(species, version, ref_dir, out_file="mirdb.tsv"):
+def generate(species, version, ref_dir, out_file):
+    species = species_list[species]
+
     with cwd(ref_dir):
         mirdb_file = MiRDBResource(None, version)
         gene2accession = Gene2AccessionResource()
