@@ -389,6 +389,20 @@ class Gene2AccessionResource(Resource):
         super().__init__(self.url)
 
 
+class MiRDBData(Resource):
+    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/miRDB_data/v{version}/miRDB_v{version}_{species}.tsv.gz"
+
+    def __init__(self, species, version):
+        self.species = species
+        self.version = version
+        url = self.get_url()
+        super().__init__(url)
+
+    def get_url(self):
+        url = self.url_templ.format(species=self.species, version=self.version)
+        return url
+
+
 class Error(Exception):
     pass
 

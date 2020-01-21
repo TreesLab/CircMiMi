@@ -106,9 +106,10 @@ def run(circ_file, ref_dir, output_dir, num_proc, header, checkAA):
     help="""
         The release version. If not assigned, it will be automatically set to the latest version of the SOURCE.
     """)
+@click.option('--mirdb', 'use_miRDB', is_flag=True)
 @click.option('--init', 'init', is_flag=True, help="Create an init template ref_dir.", hidden=True)
 @click.argument('ref_dir')
-def genref(species, source, version, ref_dir, init):
+def genref(species, source, version, ref_dir, use_miRDB, init):
     os.makedirs(ref_dir, exist_ok=True)
 
     from circmimi.config import RefConfig
@@ -116,7 +117,7 @@ def genref(species, source, version, ref_dir, init):
 
     if not init:
         from circmimi.reference import genref
-        info, ref_files = genref.generate(species, source, version, ref_dir)
+        info, ref_files = genref.generate(species, source, version, ref_dir, use_miRDB)
 
         config['info'].update(info)
         config['refs'].update(ref_files)

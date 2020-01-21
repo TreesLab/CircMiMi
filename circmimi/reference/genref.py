@@ -144,7 +144,7 @@ class OtherTranscripts:
         return self.filename
 
 
-def generate(species, source, version, ref_dir):
+def generate(species, source, version, ref_dir, use_miRDB=False):
     with cwd(ref_dir):
         species = species_list[species]
 
@@ -185,14 +185,18 @@ def generate(species, source, version, ref_dir):
         else:
             raise rs.SourceNotSupportError(source)
 
-        mir_seq_file = rs.MiRBaseMiRNA(None, "21")
-        mir_taret_file = rs.MiRTarBaseResource(None, "7.0")
+        if use_miRDB:
+            mir_seq_file = rs.MiRBaseMiRNA(None, "22")
+            mir_target_file = rs.MiRDBData(species.key, "6.0")
+        else:
+            mir_seq_file = rs.MiRBaseMiRNA(None, "21")
+            mir_target_file = rs.MiRTarBaseResource(None, "7.0")
 
         # download
         anno_file.download()
         genome_file.download()
         mir_seq_file.download()
-        mir_taret_file.download()
+        mir_target_file.download()
 
         for file_ in other_transcripts_files[1:]:
             file_.download()
@@ -200,6 +204,7 @@ def generate(species, source, version, ref_dir):
         # unzip
         genome_file.unzip()
         mir_seq_file.unzip()
+        mir_target_file.unzip()
 
         for file_ in other_transcripts_files[1:]:
             file_.unzip()
@@ -211,8 +216,11 @@ def generate(species, source, version, ref_dir):
         mir_ref = MirRef(mir_seq_file.filename)
         mir_ref.generate(species.key)
 
-        mir_taret_ref = MiRTarBaseRef(mir_taret_file.filename)
-        mir_taret_ref.generate(species)
+        if use_miRDB:
+            mir_target_ref = mir_target_file
+        else:
+            mir_target_ref = MiRTarBaseRef(mir_target_file.filename)
+            mir_target_ref.generate(species)
 
         others_ref = OtherTranscripts(*other_transcripts_files, genome_file)
         others_ref.generate()
@@ -228,7 +236,7 @@ def generate(species, source, version, ref_dir):
             'anno_db': anno_ref.filename,
             'ref_file': genome_file.filename,
             'mir_ref': mir_ref.filename,
-            'mir_target': mir_taret_ref.filename,
+            'mir_target': mir_target_ref.filename,
             'other_transcripts': others_ref.filename
         }
 
