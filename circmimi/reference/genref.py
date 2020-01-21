@@ -1,14 +1,13 @@
 import re
 import os
-import subprocess as sp
 import pandas as pd
 import csv
 import shutil
-from contextlib import contextmanager
 from circmimi.reference import gendb
 from circmimi.reference.species import species_list
 from circmimi.seq import parse_fasta
 from circmimi.reference import resource as rs
+from circmimi.reference.utils import cwd
 
 
 class RefFile:
@@ -143,14 +142,6 @@ class OtherTranscripts:
                     shutil.copyfileobj(f_in, out)
 
         return self.filename
-
-
-@contextmanager
-def cwd(path):
-    origin_pwd = os.getcwd()
-    os.chdir(path)
-    yield
-    os.chdir(origin_pwd)
 
 
 def generate(species, source, version, ref_dir):

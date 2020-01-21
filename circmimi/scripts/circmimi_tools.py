@@ -134,6 +134,19 @@ def gendb(gtf_path, db_path):
 
 
 @cli.command(hidden=True)
+@click.option('--species', 'species', metavar="SPECIES_KEY", required=True)
+@click.option('--version', 'version', default='current', metavar="VERSION", required=True)
+@click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
+@click.option('-o', '--out_file', 'out_file', metavar="OUT_FILE", required=True)
+def genmirdb(species, version, ref_dir, out_file):
+    os.makedirs(ref_dir, exist_ok=True)
+
+    from circmimi.reference import genmirdb
+
+    genmirdb.generate(species, version, ref_dir, out_file)
+
+
+@cli.command(hidden=True)
 @click.argument('circ_file')
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
 @click.option('-o', '--out', 'output_dir', metavar="OUT_DIR", required=True)
