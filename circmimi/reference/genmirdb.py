@@ -28,7 +28,7 @@ def gene_accession_filter(data, species_tax_id):
             yield line
 
 
-def generate(species, version, ref_dir, out_file):
+def generate(species, version, ref_dir, out_file, show_accession=False):
     species = species_list[species]
 
     with cwd(ref_dir):
@@ -94,12 +94,18 @@ def generate(species, version, ref_dir, out_file):
             on='accession',
             how='inner'
         ).pipe(
-            lambda df: df[['mirna', 'target_gene', 'targeting_score']]
-        ).groupby(
-            [
-                'mirna',
-                'target_gene'
-            ]
-        ).agg('max').reset_index()
+            lambda df: df[['mirna', 'target_gene', 'targeting_score', 'accession']]
+        )
+
+        if not show_accession:
+            mirdb_df_with_symbol = mirdb_df_with_symbol.drop(
+                'accession',
+                axis=1
+            ).groupby(
+                [
+                    'mirna',
+                    'target_gene'
+                ]
+            ).agg('max').reset_index()
 
         mirdb_df_with_symbol.to_csv(out_file, sep='\t', index=None)
