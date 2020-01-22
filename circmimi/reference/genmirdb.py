@@ -95,6 +95,11 @@ def generate(species, version, ref_dir, out_file):
             how='inner'
         ).pipe(
             lambda df: df[['mirna', 'target_gene', 'targeting_score']]
-        )
+        ).groupby(
+            [
+                'mirna',
+                'target_gene'
+            ]
+        ).agg('max').reset_index()
 
         mirdb_df_with_symbol.to_csv(out_file, sep='\t', index=None)
