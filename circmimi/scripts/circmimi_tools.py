@@ -171,5 +171,31 @@ def checkaa(circ_file, ref_dir, output_dir, num_proc):
     checker.save_result()
 
 
+@cli.group(hidden=True)
+def network():
+    pass
+
+
+@network.command()
+@click.argument('in_file')
+@click.argument('out_file')
+@click.option('-f', '--format', 'format_', default='xgmml',
+              help="Assign the format of the OUT_FILE.", hidden=True)
+def create(in_file, out_file, format_):
+    from circmimi.network.network import Network, Layout, Style
+
+    network = Network()
+    network.load_data(in_file)
+
+    layout = Layout()
+    style = Style()
+
+    network.apply_layout(layout)
+    network.apply_style(style)
+
+    if format_ == "xgmml":
+        network.to_xgmml(out_file)
+
+
 if __name__ == "__main__":
     cli()
