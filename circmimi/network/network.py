@@ -1,10 +1,11 @@
 import networkx as nx
 from circmimi.network.utils import read_table
+from circmimi.network.formats.xgmml import write_xgmml
 
 
-class Network:
+class CyNetwork:
     def __init__(self):
-        self.graph = nx.Graph()
+        self.graph = nx.DiGraph()
 
     def load_data(self, file_):
         for data in read_table(file_):
@@ -55,7 +56,7 @@ class Network:
         pass
 
     def to_xgmml(self, file_):
-        pass
+        write_xgmml(self.graph, file_)
 
 
 class Layout:

@@ -182,9 +182,9 @@ def network():
 @click.option('-f', '--format', 'format_', default='xgmml',
               help="Assign the format of the OUT_FILE.", hidden=True)
 def create(in_file, out_file, format_):
-    from circmimi.network.network import Network, Layout, Style
+    from circmimi.network.network import CyNetwork, Layout, Style
 
-    network = Network()
+    network = CyNetwork()
     network.load_data(in_file)
 
     layout = Layout()
