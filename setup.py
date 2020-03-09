@@ -30,10 +30,13 @@ setup(
     url='https://github.com/TreesLab/CircMiMi',
     packages=find_packages(),
     install_requires=[
-        'Click',
-        'sqlalchemy',
-        'pandas',
-        'xlrd'
+        'click>=7.0',
+        'sqlalchemy>=1.3.8',
+        'numpy>=1.17.2',
+        'pandas>=0.25.1',
+        'xlrd>=1.2.0',
+        'networkx>=2.4',
+        'lxml>=4.5.0'
     ],
     entry_points={
         'console_scripts': [
