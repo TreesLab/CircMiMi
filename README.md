@@ -24,13 +24,17 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
 - python3
 - click
 - sqlalchemy
+- numpy
 - pandas
 - xlrd
+- networkx
+- lxml
 
 ### External tools
 
 - bedtools (https://github.com/arq5x/bedtools2)
 - miranda (http://www.microrna.org/microrna/getDownloads.do)
+- blat (https://genome.ucsc.edu/FAQ/FAQblat.html)
 
 
 # Installation
@@ -47,7 +51,7 @@ $ pip install circmimi
 
 For the external tools, they can be installed via `conda` with the `bioconda`(https://bioconda.github.io/) channel:
 ```
-$ conda install -c bioconda bedtools miranda
+$ conda install -c bioconda bedtools miranda blat
 ```
 
 
