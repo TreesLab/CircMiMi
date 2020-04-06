@@ -39,22 +39,13 @@ The recommended way is via `conda`, a package and environment management system.
 
 
 You may install `circmimi` by the following steps:
-
-1. Create a new environment for `circmimi` (optional, but recommended!),
 ```
 $ conda create -n circmimi python3
-```
-and activate this new environment by:
-```
 $ conda activate circmimi
-```
-
-2. Install the `circmimi` package via `pip`:
-```
 $ pip install circmimi
 ```
 
-For the external tools, we may install them via `conda` with the `bioconda`(https://bioconda.github.io/) channel:
+For the external tools, they can be installed via `conda` with the `bioconda`(https://bioconda.github.io/) channel:
 ```
 $ conda install -c bioconda bedtools miranda
 ```
