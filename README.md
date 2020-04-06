@@ -35,7 +35,7 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
 
 # Installation
 
-The recommended way is through `conda`, a package and environment management system. (https://docs.conda.io/en/latest/)
+The recommended way is via `conda`, a package and environment management system. (https://docs.conda.io/en/latest/)
 
 
 You may install `circmimi` by the following steps:
@@ -49,18 +49,19 @@ and activate this new environment by:
 $ conda activate circmimi
 ```
 
-2. We may install the external tools with `conda` through the `bioconda`(https://bioconda.github.io/) channel:
-```
-$ conda install -c bioconda bedtools miranda
-```
-
-3. Finally, install the `circmimi` package with `pip`:
+2. Install the `circmimi` package via `pip`:
 ```
 $ pip install circmimi
 ```
 
+For the external tools, we may install them via `conda` with the `bioconda`(https://bioconda.github.io/) channel:
+```
+$ conda install -c bioconda bedtools miranda
+```
 
-Now, you can try the following command,
+
+
+Now, you can try the following command to test the installation,
 ```
 $ circmimi_tools --help
 ```
