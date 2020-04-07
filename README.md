@@ -86,30 +86,23 @@ $ circmimi_tools network create ./out/out.tsv ./out/out.xgmml
 
 
 # Usage
-## Generate the index and references
-```
-Usage: circmimi_tools genref [OPTIONS] REF_DIR
+## Generate the references
 
-Options:
-  --species TEXT
-  --source TEXT
-  --gencode
-  --ensembl
-  --version TEXT
-  --init          Create an init template ref_dir.
-  --help          Show this message and exit.
+```
+circmimi_tools genref --species SPECIES --source SOURCE [--version RELEASE_VER] REF_DIR
 ```
 
-##### Example.
-```
-$ circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
-```
-or just
-```
-$ circmimi_tools genref --species hsa --ensembl --version 98 ./refs
-```
+### Options
+Option                | Description
+:-------------------- | :------------------------------
+--species SPECIES     | Use the species code for SPECIES
+--source SOURCE       | Available values for SOURCE: "ensembl", "ensembl_plants", "ensembl_metazoa", "gencode"
+--version RELEASE_VER | The release version of the SOURCE. For examples,  "98" for ("hsa", "ensembl"), "M24" for ("mouse", "gencode") If it is not assigned, the latest version will be used.
 
-### Available species
+
+
+
+### Available species and sources
 
 Key | Name                    | Ensembl | Gencode | Alternative Source
 :-- | :---------------------- | :-----: | :-----: | :------------------
@@ -133,11 +126,6 @@ xtr | Xenopus tropicalis      |    ✔️   |         |
 
 △ : Only in the alternative source
 
-##### Note:
-To access the alternative source, just assign the source name to the "source" option:
-```
-$ circmimi_tools genref --species ath --source ensembl_plants --version 45 ./refs
-```
 
 
 ## Run the main pipeline
