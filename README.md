@@ -75,9 +75,14 @@ $ circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
 2. Run the main pipeline of CircMiMi
 
 ```
-$ circmimi_tools run -r ./refs circ_events.tsv > out.tsv
+$ circmimi_tools run -r ./refs -o ./out circRNAs.tsv
 ```
 
+
+3. Create the network file for Cytoscape
+```
+$ circmimi_tools network create ./out/out.tsv ./out/out.xgmml
+```
 
 
 # Usage
@@ -177,3 +182,18 @@ CircMiMi appends the following columns to the original input.
  10  |  target_gene    | The miRNA-targeted gene
  11  |  ref_count      | The references count from the miRTarBase
 
+
+## Create network file
+```
+Usage: circmimi_tools network create [OPTIONS] IN_FILE OUT_FILE
+
+Options:
+  --help  Show this message and exit.
+```
+
+##### Example.
+```
+$ circmimi_tools network create out.tsv out.xgmml
+```
+
+We may use the subcommand to create the network file (in XGMML format), which can be load into the Cytoscape to visualize the network.
