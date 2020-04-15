@@ -22,7 +22,7 @@ def cli():
     """)
 @click.argument('circ_file')
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
-@click.option('-o', '--out-prefix', 'out_prefix', metavar="OUT_PREFIX", required=True)
+@click.option('-o', '--out-prefix', 'out_prefix', default='./out/', metavar="OUT_PREFIX")
 @click.option('-p', '--num_proc', default=1, type=click.INT, metavar="NUM_PROC",
     help="Number of processes")
 @click.option('--checkAA', 'checkAA', is_flag=True, help="Check if the circRNA has ambiguous alignments.")
