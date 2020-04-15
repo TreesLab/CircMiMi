@@ -22,15 +22,22 @@ def cli():
     """)
 @click.argument('circ_file')
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
-@click.option('-o', '--out', 'output_dir', metavar="OUT_DIR", required=True)
+@click.option('-o', '--out-prefix', 'out_prefix', metavar="OUT_PREFIX", required=True)
 @click.option('-p', '--num_proc', default=1, type=click.INT, metavar="NUM_PROC",
     help="Number of processes")
 @click.option('--checkAA', 'checkAA', is_flag=True, help="Check if the circRNA has ambiguous alignments.")
 @click.option('--header', 'header', flag_value=True, type=click.BOOL,
               default=True, hidden=True)
 @click.option('--no-header', 'header', flag_value=False, type=click.BOOL)
-def run(circ_file, ref_dir, output_dir, num_proc, header, checkAA):
-    os.makedirs(output_dir, exist_ok=True)
+def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
+    from circmimi.utils import add_prefix
+
+    output_dir, prefix_name = os.path.split(out_prefix)
+    if output_dir == '':
+        output_dir = '.'
+    
+    if output_dir != '.':
+        os.makedirs(output_dir, exist_ok=True)
 
     from circmimi.config import get_refs
     anno_db, ref_file, mir_ref, mir_target, other_transcripts = get_refs(ref_dir)
@@ -41,6 +48,7 @@ def run(circ_file, ref_dir, output_dir, num_proc, header, checkAA):
             ref_file=ref_file,
             other_ref_file=other_transcripts,
             work_dir=output_dir,
+            out_prefix=add_prefix('circ', prefix_name),
             num_proc=num_proc
         )
         checker.check(circ_file)
@@ -59,7 +67,7 @@ def run(circ_file, ref_dir, output_dir, num_proc, header, checkAA):
     )
 
     result_table = circmimi_result.get_result_table()
-    res_file = os.path.join(output_dir, 'out.tsv')
+    res_file = os.path.join(output_dir, add_prefix('out.tsv', prefix_name))
     result_table.to_csv(res_file, sep='\t', index=False, header=header)
 
 
