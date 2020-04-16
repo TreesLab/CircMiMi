@@ -144,17 +144,83 @@ class OtherTranscripts:
         return self.filename
 
 
-def generate(species, source, version, ref_dir, use_miRDB=False):
+class Files:
+    def __init__(self, files):
+        self.files = files
+
+    def download(self):
+        for file_ in self.files:
+            file_.download()
+
+    def unzip(self):
+        for file_ in self.files:
+            file_.unzip()
+
+
+class EnsemblFiles(Files):
+    source = "ensembl"
+
+
+class GencodeFiles(Files):
+    source = "gencode"
+
+
+class MirTargetRef:
+    def __init__(self, ref_files, ref_names, species):
+        self.ref_files = ref_files
+        self.ref_names = ref_names
+        self.species = species
+        self.filename = "mir_target.{}.tsv".format(self.species.key)
+
+    def generate(self):
+        merged_df = pd.DataFrame([], columns=['mirna', 'target_gene'])
+        for ref_file, ref_name in zip(ref_files, ref_names):
+            ref_df = pd.read_csv(ref_file.filename, sep='\t', dtype='object')
+            ref_df = ref_df.pipe(add_ref_name, ref_name).pipe(add_ref_col, ref_name)
+            merged_df = merged_df.merge(ref_df, on=['mirna', 'target_gene'], how="outer")
+        
+        for ref_name in ref_names:
+            merged_df[ref_name].fillna('0', inplace=True)
+
+        # promote the refname columns
+        col_names = merged_df.columns
+        merged_df.columns = col_names[:2] + self.promote_items(col_names[2:], ref_names)
+
+        merged_df.to_csv(self.filename, sep='\t', index=False)
+
+
+    @staticmethod
+    def add_ref_name(ref_df, ref_name):
+        data_cols = ref_df.columns[2:]
+        new_col_names = dict(map(lambda col: (col, "{}:{}".format(ref_name, col)), data_cols))
+        return ref_df.rename(new_col_names, axis=1)
+
+    @staticmethod
+    def add_ref_col(ref_df, ref_name):
+        return ref_df.assign(**{ref_name: '1'})
+
+    @staticmethod
+    def promote_items(all_items, to_be_promoted):
+        result_items = all_items.copy()
+        for item in to_be_promoted[::-1]:
+            if item in result_items:
+                item_idx = result_items.index(item)
+                result_items = [result_items[item_idx]] + result_items[:item_idx] + result_items[item_idx+1:]
+        return result_items
+
+
+def generate(species, source, version, ref_dir):
     with cwd(ref_dir):
         species = species_list[species]
 
         if source == "ensembl":
             anno_file = rs.EnsemblAnnotation(species.name, version)
             genome_file = rs.EnsemblGenome(species.name, version)
-            other_transcripts_files = (
-                'ensembl',
-                rs.EnsemblCDna(species.name, version),
-                rs.EnsemblNCRna(species.name, version)
+            other_transcripts_files = EnsemblFiles(
+                [
+                    rs.EnsemblCDna(species.name, version),
+                    rs.EnsemblNCRna(species.name, version)
+                ]
             )
 
         elif source == "gencode":
@@ -166,48 +232,49 @@ def generate(species, source, version, ref_dir, use_miRDB=False):
 
             anno_file = rs.GencodeAnnotation(species_key, version)
             genome_file = rs.GencodeGenome(species_key, version)
-            other_transcripts_files = (
-                'gencode',
-                rs.GencodeProteinCodingTranscripts(species_key, version),
-                rs.GencodeLongNonCodingTranscripts(species_key, version)
+            other_transcripts_files = GencodeFiles(
+                [
+                    rs.GencodeProteinCodingTranscripts(species_key, version),
+                    rs.GencodeLongNonCodingTranscripts(species_key, version)
+                ]
             )
 
         elif source.startswith("ensembl_"):
             field = source.split('_')[1]
             anno_file = rs.EnsemblSisterAnnotation(field, species.name, version)
             genome_file = rs.EnsemblSisterGenome(field, species.name, version)
-            other_transcripts_files = (
-                'ensembl',
-                rs.EnsemblSisterCDna(field, species.name, version),
-                rs.EnsemblSisterNCRna(field, species.name, version)
+            other_transcripts_files = EnsemblFiles(
+                [
+                    rs.EnsemblSisterCDna(field, species.name, version),
+                    rs.EnsemblSisterNCRna(field, species.name, version)
+                ]
             )
 
         else:
             raise rs.SourceNotSupportError(source)
 
-        if use_miRDB:
-            mir_seq_file = rs.MiRBaseMiRNA(None, "22")
-            mir_target_file = rs.MiRDBData(species.key, "6.0")
-        else:
-            mir_seq_file = rs.MiRBaseMiRNA(None, "21")
-            mir_target_file = rs.MiRTarBaseResource(None, "7.0")
+        mir_seq_file = rs.MiRBaseMiRNA(None, "22")
+        mir_target_files = Files(
+            [
+                rs.MiRTarBaseResource(None, "7.0"),
+                rs.MiRDBData(species.key, "6.0")
+            ]
+        )
 
         # download
         anno_file.download()
         genome_file.download()
         mir_seq_file.download()
-        mir_target_file.download()
-
-        for file_ in other_transcripts_files[1:]:
-            file_.download()
+        
+        mir_target_files.download()
+        other_transcripts_files.download()
 
         # unzip
         genome_file.unzip()
         mir_seq_file.unzip()
-        mir_target_file.unzip()
 
-        for file_ in other_transcripts_files[1:]:
-            file_.unzip()
+        mir_target_files.unzip()
+        other_transcripts_files.unzip()
 
         # genref
         anno_ref = AnnoRef(anno_file.filename)
@@ -216,13 +283,19 @@ def generate(species, source, version, ref_dir, use_miRDB=False):
         mir_ref = MirRef(mir_seq_file.filename)
         mir_ref.generate(species.key)
 
-        if use_miRDB:
-            mir_target_ref = mir_target_file
-        else:
-            mir_target_ref = MiRTarBaseRef(mir_target_file.filename)
-            mir_target_ref.generate(species)
+        mir_target_refs = [
+            MiRTarBaseRef(mir_target_files[0].filename),
+            mir_target_files[1]
+        ]
+        mir_target_refs[0].generate(species)
+        mir_target_ref = MirTargetRef(mir_target_refs, ["miRTarBase", "miRDB"], species)
+        mir_target_ref.generate()
 
-        others_ref = OtherTranscripts(*other_transcripts_files, genome_file)
+        others_ref = OtherTranscripts(
+            other_transcripts_files.source,
+            *other_transcripts_files.files
+            genome_file
+        )
         others_ref.generate()
 
         # config
