@@ -156,6 +156,9 @@ class Files:
         for file_ in self.files:
             file_.unzip()
 
+    def __getitem__(self, n):
+        return self.files[n]
+
 
 class EnsemblFiles(Files):
     source = "ensembl"
@@ -174,20 +177,20 @@ class MirTargetRef:
 
     def generate(self):
         merged_df = pd.DataFrame([], columns=['mirna', 'target_gene'])
-        for ref_file, ref_name in zip(ref_files, ref_names):
+        for ref_file, ref_name in zip(self.ref_files, self.ref_names):
             ref_df = pd.read_csv(ref_file.filename, sep='\t', dtype='object')
-            ref_df = ref_df.pipe(add_ref_name, ref_name).pipe(add_ref_col, ref_name)
+            ref_df = ref_df.pipe(self.add_ref_name, ref_name).pipe(self.add_ref_col, ref_name)
             merged_df = merged_df.merge(ref_df, on=['mirna', 'target_gene'], how="outer")
-        
-        for ref_name in ref_names:
+
+        for ref_name in self.ref_names:
             merged_df[ref_name].fillna('0', inplace=True)
 
         # promote the refname columns
-        col_names = merged_df.columns
-        merged_df.columns = col_names[:2] + self.promote_items(col_names[2:], ref_names)
+        col_names = list(merged_df.columns)
+        col_names = col_names[:2] + self.promote_items(col_names[2:], self.ref_names)
+        merged_df = merged_df[col_names]
 
         merged_df.to_csv(self.filename, sep='\t', index=False)
-
 
     @staticmethod
     def add_ref_name(ref_df, ref_name):
@@ -205,7 +208,7 @@ class MirTargetRef:
         for item in to_be_promoted[::-1]:
             if item in result_items:
                 item_idx = result_items.index(item)
-                result_items = [result_items[item_idx]] + result_items[:item_idx] + result_items[item_idx+1:]
+                result_items = [result_items[item_idx]] + result_items[:item_idx] + result_items[(item_idx + 1):]
         return result_items
 
 
@@ -265,7 +268,7 @@ def generate(species, source, version, ref_dir):
         anno_file.download()
         genome_file.download()
         mir_seq_file.download()
-        
+
         mir_target_files.download()
         other_transcripts_files.download()
 
@@ -293,7 +296,7 @@ def generate(species, source, version, ref_dir):
 
         others_ref = OtherTranscripts(
             other_transcripts_files.source,
-            *other_transcripts_files.files
+            *other_transcripts_files.files,
             genome_file
         )
         others_ref.generate()
