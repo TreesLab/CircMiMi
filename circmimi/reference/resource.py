@@ -48,10 +48,16 @@ class Resource:
             if res.returncode == 0:
                 self.filename = re.sub(r'\.gz$', '', self.filename)
 
-            return res
+        return self.filename
 
-        else:
-            return
+    def rename(self, dest_name):
+        if os.path.exists(dest_name):
+            raise FileExistsError
+
+        os.renames(self.filename, dest_name)
+        self.filename = dest_name
+
+        return self.filename
 
 
 class FTPResource(Resource):
