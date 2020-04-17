@@ -24,24 +24,22 @@ class Resource:
         self.url = url
         self.filename = os.path.basename(url)
 
-    def is_downladed(self, dir_='.'):
-        file_path = os.path.join(dir_, self.filename)
-        if os.path.exists(file_path):
-            return True
-        else:
-            return False
-
     def download(self, dir_='.'):
-        if self.is_downladed(dir_):
-            return
+        dest_path = os.path.join(dir_, self.filename)
 
-        res = sp.run(['wget', self.url, '-P', dir_])
+        if os.path.exists(dest_path):
+            self.filename = dest_path
 
-        if res.returncode == 0:
-            self.is_downladed = True
-            self.filename = os.path.join(dir_, self.filename)
+        elif os.path.exists(dest_path.rstrip('.gz')):
+            self.filename = dest_path.rstrip('.gz')
 
-        return res
+        else:
+            res = sp.run(['wget', self.url, '-P', dir_])
+
+            if res.returncode == 0:
+                self.filename = dest_path
+
+        return self.filename
 
     def unzip(self):
         if self.filename.endswith('.gz'):
