@@ -343,9 +343,31 @@ class MiRBaseResource(FTPResource):
 
         return dir_path
 
+    def rename_with_version(self):
+        dirname, filename = os.path.split(self.filename)
+        name_with_ver = self._add_version_to_name(filename, self.version)
+        dest_name = os.path.join(dirname, name_with_ver)
+        self.rename(dest_name)
+
+        return self.filename
+
+    @staticmethod
+    def _add_version_to_name(filename, version):
+        sep_name = filename.split('.')
+        sep_name.insert(1, "v{}".format(version))
+        return '.'.join(sep_name)
+
 
 class MiRBaseMiRNA(MiRBaseResource):
     file_pattern = r"mature\.fa\.gz"
+
+
+class MiRBaseDiff(MiRBaseResource):
+    file_pattern = r"miRNA\.diff\.gz"
+
+
+class MiRBaseDat(MiRBaseResource):
+    file_pattern = r"miRNA\.dat\.gz"
 
 
 class MiRTarBaseResource(Resource):
