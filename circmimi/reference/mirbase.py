@@ -92,19 +92,24 @@ class MatureMiRNAUpdater:
     def update(self, mirna):
         return self.mapping_table.get(mirna, mirna)
 
-    def update_row(self, row_data, col_key=0, inplace=False):
+    def update_row(self, row_data, col_key=0, inplace=False, remove_deleted=False):
         updated_row = list(row_data)
+        updated_value = self.update(updated_row[col_key])
+
+        if remove_deleted:
+            if updated_value == '':
+                return []
 
         if inplace:
-            updated_row[col_key] = self.update(updated_row[col_key])
+            updated_row[col_key] = updated_value
         else:
-            updated_row.append(self.update(row_data[col_key]))
+            updated_row.append(updated_value)
 
         return updated_row
 
-    def update_file(self, in_file, out_file, col_key=0, inplace=False):
+    def update_file(self, in_file, out_file, col_key=0, inplace=False, remove_deleted=False):
         with open(in_file) as f_in, open(out_file, 'w') as f_out:
             for line in f_in:
                 data = line.rstrip('\n').split('\t')
-                updated_data = self.update_row(data, col_key, inplace)
+                updated_data = self.update_row(data, col_key, inplace, remove_deleted)
                 print(*updated_data, sep='\t', file=f_out)

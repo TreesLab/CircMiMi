@@ -243,13 +243,14 @@ def genmaps(from_, to_, species, out_prefix):
 @click.option('-k', '--col-key', 'column_key', type=click.INT, default=1,
               help="The column number of miRNA IDs.")
 @click.option('-i', '--inplace', is_flag=True)
-def update(in_file, out_file, mapping_file, column_key, inplace):
+@click.option('-R', '--remove-deleted', is_flag=True)
+def update(in_file, out_file, mapping_file, column_key, inplace, remove_deleted):
     column_key = column_key - 1
 
     from circmimi.reference.mirbase import MatureMiRNAUpdater
     updater = MatureMiRNAUpdater(None, None, None)
     updater.load_maps(mapping_file)
-    updater.update_file(in_file, out_file, column_key, inplace)
+    updater.update_file(in_file, out_file, column_key, inplace, remove_deleted)
 
 
 if __name__ == "__main__":
