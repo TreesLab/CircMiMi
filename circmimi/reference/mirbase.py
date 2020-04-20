@@ -11,7 +11,7 @@ class MatureMiRNAUpdater:
         self.species = species
         self.mapping_table = {}
 
-    def create(self, ref_dir):
+    def create(self, ref_dir='.'):
         dat_file_from_ = rs.MiRBaseDat(self.species, self.from_)
         dat_file_to_ = rs.MiRBaseDat(self.species, self.to_)
         diff_file = rs.MiRBaseDiff(self.species, self.to_)
@@ -92,7 +92,7 @@ class MatureMiRNAUpdater:
     def update(self, mirna):
         return self.mapping_table.get(mirna, mirna)
 
-    def update_row(self, row_data, col_key, inplace=False):
+    def update_row(self, row_data, col_key=0, inplace=False):
         updated_row = list(row_data)
 
         if inplace:
@@ -101,3 +101,10 @@ class MatureMiRNAUpdater:
             updated_row.append(self.update(row_data[col_key]))
 
         return updated_row
+
+    def update_file(self, in_file, out_file, col_key=0, inplace=False):
+        with open(in_file) as f_in, open(out_file, 'w') as f_out:
+            for line in f_in:
+                data = line.rstrip('\n').split('\t')
+                updated_data = self.update_row(data, col_key, inplace)
+                print(*updated_data, sep='\t', file=f_out)

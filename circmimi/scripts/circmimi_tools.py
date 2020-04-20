@@ -249,12 +249,7 @@ def update(in_file, out_file, mapping_file, column_key, inplace):
     from circmimi.reference.mirbase import MatureMiRNAUpdater
     updater = MatureMiRNAUpdater(None, None, None)
     updater.load_maps(mapping_file)
-
-    with open(in_file) as f_in, open(out_file, 'w') as out:
-        for line in f_in:
-            data = line.rstrip('\n').split('\t')
-            updated_data = updater.update_row(data, column_key, inplace)
-            print(*updated_data, sep='\t', file=out)
+    updater.update_file(in_file, out_file, column_key, inplace)
 
 
 if __name__ == "__main__":
