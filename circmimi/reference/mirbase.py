@@ -11,16 +11,16 @@ class MatureMiRNAUpdater:
         self.species = species
         self.mapping_table = {}
 
-    def create(self):
+    def create(self, ref_dir):
         dat_file_from_ = rs.MiRBaseDat(self.species, self.from_)
         dat_file_to_ = rs.MiRBaseDat(self.species, self.to_)
         diff_file = rs.MiRBaseDiff(self.species, self.to_)
 
-        dat_file_from_.download()
+        dat_file_from_.download(ref_dir)
         dat_file_from_.rename_with_version()
-        dat_file_to_.download()
+        dat_file_to_.download(ref_dir)
         dat_file_to_.rename_with_version()
-        diff_file.download()
+        diff_file.download(ref_dir)
 
         dat_text_from_ = self._load_data(dat_file_from_.filename)
         dat_text_to_ = self._load_data(dat_file_to_.filename)
@@ -78,10 +78,7 @@ class MatureMiRNAUpdater:
 
         return data_text
 
-    def save(self, mapping_file=None):
-        if mapping_file is None:
-            mapping_file = 'miRNA.maps.{}_to_{}.tsv'.format(self.from_, self.to_)
-
+    def save(self, mapping_file):
         with open(mapping_file, 'w') as out:
             for k, v in self.mapping_table.items():
                 print(k, v, sep='\t', file=out)

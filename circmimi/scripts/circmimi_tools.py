@@ -35,7 +35,7 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
     output_dir, prefix_name = os.path.split(out_prefix)
     if output_dir == '':
         output_dir = '.'
-    
+
     if output_dir != '.':
         os.makedirs(output_dir, exist_ok=True)
 
@@ -213,11 +213,26 @@ def update_mirna():
 @click.option('--from', 'from_', required=True)
 @click.option('--to', 'to_', required=True)
 @click.option('--species')
-@click.option('--out', 'out_file')
-def genmaps(from_, to_, species, out_file):
+@click.option('-o', '--out-prefix', 'out_prefix', default='./', metavar="OUT_PREFIX")
+def genmaps(from_, to_, species, out_prefix):
     from circmimi.reference.mirbase import MatureMiRNAUpdater
+    from circmimi.utils import add_prefix
+
+    output_dir, prefix_name = os.path.split(out_prefix)
+
+    if output_dir == '':
+        output_dir = '.'
+
+    if output_dir != '.':
+        os.makedirs(output_dir, exist_ok=True)
+
     updater = MatureMiRNAUpdater(from_, to_, species)
-    updater.create()
+    updater.create(output_dir)
+
+    out_file = 'miRNA.maps_{}_to_{}.tsv'.format(from_, to_)
+    out_file = add_prefix(out_file, prefix_name)
+    out_file = os.path.join(output_dir, out_file)
+
     updater.save(out_file)
 
 
