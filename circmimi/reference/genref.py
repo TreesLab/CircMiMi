@@ -8,6 +8,7 @@ from circmimi.reference.species import species_list
 from circmimi.seq import parse_fasta
 from circmimi.reference import resource as rs
 from circmimi.reference.utils import cwd
+from circmimi.reference.mirbase import MatureMiRNAUpdater
 
 
 class RefFile:
@@ -286,12 +287,36 @@ def generate(species, source, version, ref_dir):
         mir_ref = MirRef(mir_seq_file.filename)
         mir_ref.generate(species.key)
 
+        # miRTarBase
+        miRTarBase_ref = MiRTarBaseRef(mir_target_files[0].filename)
+        miRTarBase_ref.generate(species)
+
+        # miRNAs updater
+        updater = MatureMiRNAUpdater("21", "22", species.key)
+        updater.create()
+
+        updated_file = "miRTarBase.{}.miRBase_v22.tsv".format(species.key)
+        updater.update_file(
+            miRTarBase_ref.filename,
+            updated_file,
+            col_key=0,
+            inplace=True,
+            remove_deleted=True
+        )
+        miRTarBase_ref.filename = updated_file
+
         mir_target_refs = [
-            MiRTarBaseRef(mir_target_files[0].filename),
+            miRTarBase_ref,
             mir_target_files[1]
         ]
-        mir_target_refs[0].generate(species)
-        mir_target_ref = MirTargetRef(mir_target_refs, ["miRTarBase", "miRDB"], species)
+        mir_target_ref = MirTargetRef(
+            mir_target_refs,
+            [
+                "miRTarBase",
+                "miRDB"
+            ],
+            species
+        )
         mir_target_ref.generate()
 
         others_ref = OtherTranscripts(
