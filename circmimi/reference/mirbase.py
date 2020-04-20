@@ -78,8 +78,10 @@ class MatureMiRNAUpdater:
 
         return data_text
 
-    def save(self):
-        mapping_file = 'miRNA.maps.{}_to_{}.tsv'.format(self.from_, self.to_)
+    def save(self, mapping_file=None):
+        if mapping_file is None:
+            mapping_file = 'miRNA.maps.{}_to_{}.tsv'.format(self.from_, self.to_)
+
         with open(mapping_file, 'w') as out:
             for k, v in self.mapping_table.items():
                 print(k, v, sep='\t', file=out)
@@ -92,3 +94,13 @@ class MatureMiRNAUpdater:
 
     def update(self, mirna):
         return self.mapping_table.get(mirna, mirna)
+
+    def update_row(self, row_data, col_key, inplace=False):
+        updated_row = list(row_data)
+
+        if inplace:
+            updated_row[col_key] = self.update(updated_row[col_key])
+        else:
+            updated_row.append(self.update(row_data[col_key]))
+
+        return updated_row

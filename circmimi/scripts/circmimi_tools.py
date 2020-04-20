@@ -204,5 +204,43 @@ def create(in_file, out_file, format_):
         network.to_xgmml(out_file)
 
 
+@cli.group()
+def update_mirna():
+    pass
+
+
+@update_mirna.command()
+@click.option('--from', 'from_', required=True)
+@click.option('--to', 'to_', required=True)
+@click.option('--species')
+@click.option('--out', 'out_file')
+def genmaps(from_, to_, species, out_file):
+    from circmimi.reference.mirbase import MatureMiRNAUpdater
+    updater = MatureMiRNAUpdater(from_, to_, species)
+    updater.create()
+    updater.save(out_file)
+
+
+@update_mirna.command()
+@click.argument('in_file')
+@click.argument('out_file')
+@click.option('-m', '--maps', 'mapping_file', metavar="MAPPING_FILE", required=True)
+@click.option('-k', '--col-key', 'column_key', type=click.INT, default=1,
+              help="The column number of miRNA IDs.")
+@click.option('-i', '--inplace', is_flag=True)
+def update(in_file, out_file, mapping_file, column_key, inplace):
+    column_key = column_key - 1
+
+    from circmimi.reference.mirbase import MatureMiRNAUpdater
+    updater = MatureMiRNAUpdater(None, None, None)
+    updater.load_maps(mapping_file)
+
+    with open(in_file) as f_in, open(out_file, 'w') as out:
+        for line in f_in:
+            data = line.rstrip('\n').split('\t')
+            updated_data = updater.update_row(data, column_key, inplace)
+            print(*updated_data, sep='\t', file=out)
+
+
 if __name__ == "__main__":
     cli()
