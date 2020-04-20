@@ -98,7 +98,7 @@ class MatureMiRNAUpdater:
 
         if remove_deleted:
             if updated_value == '':
-                return []
+                return
 
         if inplace:
             updated_row[col_key] = updated_value
@@ -112,4 +112,5 @@ class MatureMiRNAUpdater:
             for line in f_in:
                 data = line.rstrip('\n').split('\t')
                 updated_data = self.update_row(data, col_key, inplace, remove_deleted)
-                print(*updated_data, sep='\t', file=f_out)
+                if updated_data is not None:
+                    print(*updated_data, sep='\t', file=f_out)
