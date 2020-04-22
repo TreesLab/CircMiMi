@@ -194,9 +194,9 @@ class MirTargetRef:
         merged_df.to_csv(self.filename, sep='\t', index=False)
 
     @staticmethod
-    def add_ref_name(ref_df, ref_name):
+    def add_ref_name(ref_df, ref_name, sep='__'):
         data_cols = ref_df.columns[2:]
-        new_col_names = dict(map(lambda col: (col, "{}:{}".format(ref_name, col)), data_cols))
+        new_col_names = dict(map(lambda col: (col, "{}{}{}".format(ref_name, sep, col)), data_cols))
         return ref_df.rename(new_col_names, axis=1)
 
     @staticmethod
