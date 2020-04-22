@@ -184,19 +184,19 @@ class MirandaUtils:
         ref_end = s['ref_end']
 
         if (ref_start <= exons_len) and (exons_len < ref_end):
-            return 1
+            return '1'
         else:
-            return 0
+            return '0'
 
     @classmethod
     def append_cross_boundary(cls, miranda_df_with_len):
         if miranda_df_with_len.empty:
-            cross_boundary_res = pd.Series(dtype='Int64')
+            cross_boundary_res = pd.Series()
         else:
             cross_boundary_res = miranda_df_with_len.apply(
                 cls._is_cross_boundary,
                 axis=1
-            ).astype("Int64")
+            )
 
         appended_res_df = miranda_df_with_len.assign(
             cross_boundary=cross_boundary_res
