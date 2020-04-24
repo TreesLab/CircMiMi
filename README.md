@@ -105,27 +105,27 @@ Option                | Description
 
 ### Available species and sources
 
-Code | Name                    |  E  |  G  |  EP |  EM | MTB | MDB |
-:--  | :---------------------- | :-: | :-: | :-: | :-: | :-: | :-: |
-ath  | Arabidopsis thaliana    |     |     |  V  |     |  V  |     |
-bmo  | Bombyx mori             |     |     |     |  V  |  V  |     |
-bta  | Bos taurus              |  V  |     |     |     |  V  |     |
-cel  | Caenorhabditis elegans  |  V  |     |     |  V  |  V  |     |
-cfa  | Canis familiaris        |  V  |     |     |     |  V  |  V  |
-dre  | Danio rerio             |  V  |     |     |     |  V  |     |
-dme  | Drosophila melanogaster |  V  |     |     |     |  V  |     |
-gga  | Gallus gallus           |  V  |     |     |     |  V  |  V  |
-hsa  | Homo sapiens            |  V  |  V  |     |     |  V  |  V  |
-mmu  | Mus musculus            |  V  |  V  |     |     |  V  |  V  |
-osa  | Oryza sativa            |     |     |  V  |     |  V  |     |
-ola  | Oryzias latipes         |  V  |     |     |     |  V  |     |
-oar  | Ovis aries              |  V  |     |     |     |  V  |     |
-rno  | Rattus norvegicus       |  V  |     |     |     |  V  |  V  |
-ssc  | Sus scrofa              |  V  |     |     |     |  V  |     |
-tgu  | Taeniopygia guttata     |  V  |     |     |     |  V  |     |
-xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |     |
+Code | Name                    |  E  |  G  |  EP |  EM |  MB | MTB | MDB |
+:--  | :---------------------- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+ath  | Arabidopsis thaliana    |     |     |  V  |     |  V  |  V  |     |
+bmo  | Bombyx mori             |     |     |     |  V  |  V  |  V  |     |
+bta  | Bos taurus              |  V  |     |     |     |  V  |  V  |     |
+cel  | Caenorhabditis elegans  |  V  |     |     |  V  |  V  |  V  |     |
+cfa  | Canis familiaris        |  V  |     |     |     |  V  |  V  |  V  |
+dre  | Danio rerio             |  V  |     |     |     |  V  |  V  |     |
+dme  | Drosophila melanogaster |  V  |     |     |     |  V  |  V  |     |
+gga  | Gallus gallus           |  V  |     |     |     |  V  |  V  |  V  |
+hsa  | Homo sapiens            |  V  |  V  |     |     |  V  |  V  |  V  |
+mmu  | Mus musculus            |  V  |  V  |     |     |  V  |  V  |  V  |
+osa  | Oryza sativa            |     |     |  V  |     |  V  |  V  |     |
+ola  | Oryzias latipes         |  V  |     |     |     |  V  |  V  |     |
+oar  | Ovis aries              |  V  |     |     |     |  V  |  V  |     |
+rno  | Rattus norvegicus       |  V  |     |     |     |  V  |  V  |  V  |
+ssc  | Sus scrofa              |  V  |     |     |     |  V  |  V  |     |
+tgu  | Taeniopygia guttata     |  V  |     |     |     |  V  |  V  |     |
+xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |
 
-**E**: Ensembl, **G**: Gencode, **EP**: Ensembl Plants, **EM**: Ensembl Metazoa, **MTB**: miRTarBase, **MDB**: miRDB
+**E**: Ensembl, **G**: Gencode, **EP**: Ensembl Plants, **EM**: Ensembl Metazoa, **MB**: miRBase, **MTB**: miRTarBase, **MDB**: miRDB
 
 
 
@@ -174,7 +174,7 @@ CircMiMi appends the following columns to the original input.
  10  |  target_gene    | The miRNA-targeted gene
 
 
-And additional columns from the miRNA-target interactions database.
+And additional columns from the miRNA-target interactions database,
 
  \#   | Column          | Description
 :--: | :-------------: | :----------
