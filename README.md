@@ -104,27 +104,27 @@ Option                | Description
 
 ### Available species and sources
 
-Key | Name                    | Ensembl | Gencode | Alternative Source
-:-- | :---------------------- | :-----: | :-----: | :------------------
-ath | Arabidopsis thaliana    |    △    |         | Ensembl Plants
-bmo | Bombyx mori             |    △    |         | Ensembl Metazoa
-bta | Bos taurus              |    ✔️   |         |
-cel | Caenorhabditis elegans  |    ✔️   |         | Ensembl Metazoa
-cfa | Canis familiaris        |    ✔️   |         |
-dre | Danio rerio             |    ✔️   |         |
-dme | Drosophila melanogaster |    ✔️   |         |
-gga | Gallus gallus           |    ✔️   |         |
-hsa | Homo sapiens            |    ✔️   |   ✔️    |
-mmu | Mus musculus            |    ✔️   |   ✔️    |
-osa | Oryza sativa            |    △    |         | Ensembl Plants
-ola | Oryzias latipes         |    ✔️   |         |
-oar | Ovis aries              |    ✔️   |         |
-rno | Rattus norvegicus       |    ✔️   |         |
-ssc | Sus scrofa              |    ✔️   |         |
-tgu | Taeniopygia guttata     |    ✔️   |         |
-xtr | Xenopus tropicalis      |    ✔️   |         |
+Code | Name                    |  E  |  G  |  EP |  EM | MTB | MDB |
+:--  | :---------------------- | :-: | :-: | :-: | :-: | :-: | :-: |
+ath  | Arabidopsis thaliana    |     |     |  V  |     |  V  |     |
+bmo  | Bombyx mori             |     |     |     |  V  |  V  |     |
+bta  | Bos taurus              |  V  |     |     |     |  V  |     |
+cel  | Caenorhabditis elegans  |  V  |     |     |  V  |  V  |     |
+cfa  | Canis familiaris        |  V  |     |     |     |  V  |  V  |
+dre  | Danio rerio             |  V  |     |     |     |  V  |     |
+dme  | Drosophila melanogaster |  V  |     |     |     |  V  |     |
+gga  | Gallus gallus           |  V  |     |     |     |  V  |  V  |
+hsa  | Homo sapiens            |  V  |  V  |     |     |  V  |  V  |
+mmu  | Mus musculus            |  V  |  V  |     |     |  V  |  V  |
+osa  | Oryza sativa            |     |     |  V  |     |  V  |     |
+ola  | Oryzias latipes         |  V  |     |     |     |  V  |     |
+oar  | Ovis aries              |  V  |     |     |     |  V  |     |
+rno  | Rattus norvegicus       |  V  |     |     |     |  V  |  V  |
+ssc  | Sus scrofa              |  V  |     |     |     |  V  |     |
+tgu  | Taeniopygia guttata     |  V  |     |     |     |  V  |     |
+xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |     |
 
-△ : Only in the alternative source
+**E**: Ensembl, **G**: Gencode, **EP**: Ensembl Plants, **EM**: Ensembl Metazoa, **MTB**: miRTarBase, **MDB**: miRDB
 
 
 
