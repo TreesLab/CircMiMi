@@ -24,43 +24,39 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
 - python3
 - click
 - sqlalchemy
+- numpy
 - pandas
 - xlrd
+- networkx
+- lxml
 
 ### External tools
 
 - bedtools (https://github.com/arq5x/bedtools2)
 - miranda (http://www.microrna.org/microrna/getDownloads.do)
+- blat (https://genome.ucsc.edu/FAQ/FAQblat.html)
 
 
 # Installation
 
-The recommended way is through `conda`, a package and environment management system. (https://docs.conda.io/en/latest/)
+The recommended way is via `conda`, a package and environment management system. (https://docs.conda.io/en/latest/)
 
 
 You may install `circmimi` by the following steps:
-
-1. Create a new environment for `circmimi` (optional, but recommended!),
 ```
 $ conda create -n circmimi python3
-```
-and activate this new environment by:
-```
 $ conda activate circmimi
-```
-
-2. We may install the external tools with `conda` through the `bioconda`(https://bioconda.github.io/) channel:
-```
-$ conda install -c bioconda bedtools miranda
-```
-
-3. Finally, install the `circmimi` package with `pip`:
-```
 $ pip install circmimi
 ```
 
+For the external tools, they can also be installed via `conda` with the `bioconda`(https://bioconda.github.io/) channel:
+```
+$ conda install -c bioconda bedtools miranda blat
+```
 
-Now, you can try the following command,
+
+
+Now, you can try the following command to test the installation,
 ```
 $ circmimi_tools --help
 ```
@@ -70,7 +66,7 @@ it should print out with the help messages.
 
 # Quick Start
 
-1. Generate the index and references
+1. Generate the references
 ```
 $ circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
 ```
@@ -79,94 +75,90 @@ $ circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
 2. Run the main pipeline of CircMiMi
 
 ```
-$ circmimi_tools run -r ./refs circ_events.tsv > out.tsv
+$ circmimi_tools run -r ./refs -c circRNAs.tsv -o ./out/ -p 5
 ```
 
+
+3. Create the network file for Cytoscape
+```
+$ circmimi_tools network create ./out/out.tsv ./out/out.xgmml
+```
 
 
 # Usage
-## Generate the index and references
-```
-Usage: circmimi_tools genref [OPTIONS] REF_DIR
+## Generate the references
 
-Options:
-  --species TEXT
-  --source TEXT
-  --gencode
-  --ensembl
-  --version TEXT
-  --init          Create an init template ref_dir.
-  --help          Show this message and exit.
+```
+circmimi_tools genref --species SPECIES --source SOURCE [--version RELEASE_VER] REF_DIR
 ```
 
-##### Example.
-```
-$ circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
-```
-or just
-```
-$ circmimi_tools genref --species hsa --ensembl --version 98 ./refs
-```
+### Options
+Option                | Description
+:-------------------- | :------------------------------
+--species SPECIES     | Assign the species for references. Use the species code for SPECIES. ***[required]***
+--source SOURCE       | Available values for SOURCE: "ensembl", "ensembl_plants", "ensembl_metazoa", "gencode". ***[required]***
+--version RELEASE_VER | The release version of the SOURCE. For examples,  "98" for ("hsa", "ensembl"), "M24" for ("mouse", "gencode"). If the version is not assigned, the latest will be used.
 
-### Available species
 
-Key | Name                    | Ensembl | Gencode | Alternative Source
-:-- | :---------------------- | :-----: | :-----: | :------------------
-ath | Arabidopsis thaliana    |    △    |         | Ensembl Plants
-bmo | Bombyx mori             |    △    |         | Ensembl Metazoa
-bta | Bos taurus              |    ✔️   |         |
-cel | Caenorhabditis elegans  |    ✔️   |         | Ensembl Metazoa
-cfa | Canis familiaris        |    ✔️   |         |
-dre | Danio rerio             |    ✔️   |         |
-dme | Drosophila melanogaster |    ✔️   |         |
-gga | Gallus gallus           |    ✔️   |         |
-hsa | Homo sapiens            |    ✔️   |   ✔️    |
-mmu | Mus musculus            |    ✔️   |   ✔️    |
-osa | Oryza sativa            |    △    |         | Ensembl Plants
-ola | Oryzias latipes         |    ✔️   |         |
-oar | Ovis aries              |    ✔️   |         |
-rno | Rattus norvegicus       |    ✔️   |         |
-ssc | Sus scrofa              |    ✔️   |         |
-tgu | Taeniopygia guttata     |    ✔️   |         |
-xtr | Xenopus tropicalis      |    ✔️   |         |
 
-△ : Only in the alternative source
 
-##### Note:
-To access the alternative source, just assign the source name to the "source" option:
-```
-$ circmimi_tools genref --species ath --source ensembl_plants --version 45 ./refs
-```
+### Available species and sources
+
+Code | Name                    |  E  |  G  |  EP |  EM | MTB | MDB |
+:--  | :---------------------- | :-: | :-: | :-: | :-: | :-: | :-: |
+ath  | Arabidopsis thaliana    |     |     |  V  |     |  V  |     |
+bmo  | Bombyx mori             |     |     |     |  V  |  V  |     |
+bta  | Bos taurus              |  V  |     |     |     |  V  |     |
+cel  | Caenorhabditis elegans  |  V  |     |     |  V  |  V  |     |
+cfa  | Canis familiaris        |  V  |     |     |     |  V  |  V  |
+dre  | Danio rerio             |  V  |     |     |     |  V  |     |
+dme  | Drosophila melanogaster |  V  |     |     |     |  V  |     |
+gga  | Gallus gallus           |  V  |     |     |     |  V  |  V  |
+hsa  | Homo sapiens            |  V  |  V  |     |     |  V  |  V  |
+mmu  | Mus musculus            |  V  |  V  |     |     |  V  |  V  |
+osa  | Oryza sativa            |     |     |  V  |     |  V  |     |
+ola  | Oryzias latipes         |  V  |     |     |     |  V  |     |
+oar  | Ovis aries              |  V  |     |     |     |  V  |     |
+rno  | Rattus norvegicus       |  V  |     |     |     |  V  |  V  |
+ssc  | Sus scrofa              |  V  |     |     |     |  V  |     |
+tgu  | Taeniopygia guttata     |  V  |     |     |     |  V  |     |
+xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |     |
+
+**E**: Ensembl, **G**: Gencode, **EP**: Ensembl Plants, **EM**: Ensembl Metazoa, **MTB**: miRTarBase, **MDB**: miRDB
+
 
 
 ## Run the main pipeline
+
 ```
-Usage: circmimi_tools run [OPTIONS] CIRC_FILE
-
-  Main pipeline.
-
-Options:
-  -r, --ref PATH          Assign the path of ref_dir.  [required]
-  -p, --num_proc INTEGER  The number of processes.
-  --no-header
-  --help                  Show this message and exit.
+circmimi_tools run --ref REF_DIR --circ CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC] [--checkAA]
 ```
 
-##### Example.
-```
-$ circmimi_tools run -r ./refs -p 10 circ_events.tsv > output.tsv
-```
+### Options
+Option                      | Description
+:-------------------------- | :------------------------------
+-c, --circ CIRC_FILE        | The file of circRNAs. ***[required]***
+-r, --ref REF_DIR           | The directory of the pre-genereated reference files. ***[required]***
+-o, --out-prefix OUT_PREFIX | Assign the prefix for the output filenames. (default: "./out/")
+-p, --num_proc NUM_PROC     | Assign the number of processes.
+--checkAA                   | Check the circRNAs if there are ambiguous alignments.
+
 
 ### Input format
 
-eg. circ_events.tsv
+The input format for the CIRC_FILE.
 
 \#   | Column  | Description
 :--: | :-----: | :----------
   1  |  chr    | Chromosome name
-  2  |  pos1   | The 1st position of circRNA junction
-  3  |  pos2   | The 2nd position of circRNA junction
+  2  |  pos1   | One of the position of the circRNA junction site
+  3  |  pos2   | Another position of the circRNA junction site
   4  |  strand | + / -
+
+#### Note.
+- The chromosome name must be the same as the name in the SOURCE.
+  - For example, "1" for "ensembl", and "chr1" for "gencode".
+
 
 ### Output format
 CircMiMi appends the following columns to the original input.
@@ -175,9 +167,26 @@ CircMiMi appends the following columns to the original input.
 :--: | :-------------: | :----------
   5  |  host_gene      | Host gene of the circRNA
   6  |  mirna          | The miRNA which may bind on the circRNA
-  7  |  max_score      | The max binding score
-  8  |  count          | The number of binding sites of the miRNA on the circRNA
-  9  |  cross_boundary | Is there a binding site cross the junction of circRNA
+  7  |  max_score      | The maximum binding score reported by miRanda
+  8  |  count          | The number of the miRNA-binding sites on the circRNA
+  9  |  cross_boundary | If there is a binding site across the junction of the circRNA
  10  |  target_gene    | The miRNA-targeted gene
- 11  |  ref_count      | The references count from the miRTarBase
 
+
+And additional columns from the miRNA-target interactions database.
+
+ \#   | Column          | Description
+:--: | :-------------: | :----------
+ 11  |  miRTarBase      | If the miRNA-mRNA interaction is from miRTarBase
+ 12  |  miRDB      | If the miRNA-mRNA interaction is from miRDB
+ 13  |  miRTarBase__ref_count | The number of references which support the interaction
+ 14  |  miRDB__targeting_score | The predicted target score from miRDB
+
+
+## Create the network file for Cytoscape
+
+```
+circmimi_tools network create IN_FILE OUT_FILE
+```
+
+We may use the subcommand to create the network file (in XGMML format), which can be load into the Cytoscape to visualize the network.
