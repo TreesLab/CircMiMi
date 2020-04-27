@@ -417,9 +417,15 @@ class Gene2AccessionResource(Resource):
 
 class MiRDBData(Resource):
     url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/miRDB_data/v{version}/miRDB_v{version}_{species}.tsv.gz"
+    available_species = ('hsa', 'mmu', 'rno', 'cfa', 'gga')
 
     def __init__(self, species, version):
-        self.species = species
+
+        if species in self.available_species:
+            self.species = species
+        else:
+            self.species = "others"
+
         self.version = version
         url = self.get_url()
         super().__init__(url)
