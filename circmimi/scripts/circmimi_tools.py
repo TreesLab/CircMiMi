@@ -10,6 +10,7 @@ import os
     circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
     circmimi_tools run -r ./refs -p 10 circ_events.tsv > out.tsv
     """)
+@click.version_option()
 def cli():
     pass
 
