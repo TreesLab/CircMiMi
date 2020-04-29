@@ -76,7 +76,7 @@ $ circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
 2. Run the main pipeline of CircMiMi
 
 ```
-$ circmimi_tools run -r ./refs -c circRNAs.tsv -o ./out/ -p 5
+$ circmimi_tools run -r ./refs -i circRNAs.tsv -o ./out/ -p 5
 ```
 
 
@@ -138,8 +138,8 @@ circmimi_tools run --ref REF_DIR --circ CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC] 
 ### Options
 Option                      | Description
 :-------------------------- | :------------------------------
--c, --circ CIRC_FILE        | The file of circRNAs. ***[required]***
 -r, --ref REF_DIR           | The directory of the pre-genereated reference files. ***[required]***
+-i, --circ CIRC_FILE        | The file of circRNAs. ***[required]***
 -o, --out-prefix OUT_PREFIX | Assign the prefix for the output filenames. (default: "./out/")
 -p, --num_proc NUM_PROC     | Assign the number of processes.
 --checkAA                   | Check the circRNAs if there are ambiguous alignments.

@@ -20,8 +20,8 @@ def cli():
     Example.                                                    
     circmimi_tools run -r ./refs -p 10 circ_events.tsv > out.tsv
     """)
-@click.option('-c', '--circ', 'circ_file', metavar="CIRC_FILE", required=True)
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
+@click.option('-i', '--circ', 'circ_file', metavar="CIRC_FILE", required=True)
 @click.option('-o', '--out-prefix', 'out_prefix', default='./out/', metavar="OUT_PREFIX")
 @click.option('-p', '--num_proc', default=1, type=click.INT, metavar="NUM_PROC",
     help="Number of processes")
