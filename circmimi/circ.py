@@ -6,7 +6,7 @@ class CircEvents:
     def __init__(self, filename):
         self._filename = filename
         self.original_df = self._read_file(self._filename)
-        self.df = self.get_donor_acceptor_df(self.original_df)
+        self.df = self._get_donor_acceptor_df(self.original_df)
 
     @staticmethod
     def _read_file(filename):
@@ -41,7 +41,7 @@ class CircEvents:
         return res
 
     @classmethod
-    def get_donor_acceptor_df(cls, original_df):
+    def _get_donor_acceptor_df(cls, original_df):
         if original_df.empty:
             df = pd.DataFrame([], columns=['chr', 'donor', 'acceptor', 'strand'])
         else:
@@ -52,3 +52,37 @@ class CircEvents:
     def check_annotation(self, anno_db):
         self._anno_utils = AnnotationUtils(anno_db)
         self.anno_df = self.df.pipe(self._anno_utils.get_annotation)
+
+    @staticmethod
+    def _append_status_column(df, status_df):
+        status_df = df.reset_index().loc[:, ['index']].rename(
+            {
+                'index': 'ev_id'
+            },
+            axis=1
+        ).merge(
+            status_df,
+            on='ev_id',
+            how='left'
+        ).drop(
+            columns=['ev_id']
+        ).fillna('1')
+
+        df_with_status = pd.concat([df, status_df], axis=1)
+
+        return df_with_status
+
+    def status(self):
+        no_common_transcript_df = self.anno_df.assign(
+            no_common_transcript='0'
+        )[[
+            'ev_id',
+            'no_common_transcript'
+        ]].drop_duplicates()
+
+        status_summary_df = self.original_df.pipe(
+            self._append_status_column,
+            status_df=no_common_transcript_df
+        )
+
+        return status_summary_df
