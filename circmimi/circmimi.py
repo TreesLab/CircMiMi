@@ -62,7 +62,7 @@ class Circmimi:
         self.mir_target_db = get_mir_target_db(mir_target_file)
 
     def get_result_table(self):
-        gene_symbol_df = self.anno_df.assign(
+        gene_symbol_df = self.circ_events.anno_df.assign(
             host_gene=lambda df: df['transcript'].apply(lambda t: t.gene.gene_symbol)
         ).loc[:, ['ev_id', 'host_gene']].drop_duplicates().reset_index(drop=True)
 
