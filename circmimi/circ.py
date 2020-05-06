@@ -1,11 +1,12 @@
 import pandas as pd
+from circmimi.annotation import AnnotationUtils
 
 
 class CircEvents:
     def __init__(self, filename):
         self._filename = filename
         self.original_df = self._read_file(self._filename)
-        self.df = self.get_donor_acceptor_df()
+        self.df = self.get_donor_acceptor_df(self.original_df)
 
     @staticmethod
     def _read_file(filename):
@@ -39,10 +40,15 @@ class CircEvents:
 
         return res
 
-    def get_donor_acceptor_df(self):
-        if self.original_df.empty:
+    @classmethod
+    def get_donor_acceptor_df(cls, original_df):
+        if original_df.empty:
             df = pd.DataFrame([], columns=['chr', 'donor', 'acceptor', 'strand'])
         else:
-            df = self.original_df.apply(self._get_donor_acceptor, axis=1)
+            df = original_df.apply(cls._get_donor_acceptor, axis=1)
 
         return df
+
+    def check_annotation(self, anno_db):
+        self._anno_utils = AnnotationUtils(anno_db)
+        self.anno_df = self.df.pipe(self._anno_utils.get_annotation)
