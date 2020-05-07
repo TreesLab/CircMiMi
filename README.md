@@ -22,14 +22,14 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
 
 ### Packages
 
-- python3
-- click
-- sqlalchemy
-- numpy
-- pandas
-- xlrd
-- networkx
-- lxml
+- python (>= 3.6)
+- click (>= 7.1.1)
+- sqlalchemy (>= 1.3.16)
+- numpy (>= 1.18.2)
+- pandas (>= 1.0.3)
+- xlrd (>= 1.2.0)
+- networkx (>= 2.4)
+- lxml (>= 4.5.0)
 
 ### External tools
 
@@ -76,7 +76,7 @@ $ circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
 2. Run the main pipeline of CircMiMi
 
 ```
-$ circmimi_tools run -r ./refs -i circRNAs.tsv -o ./out/ -p 5
+$ circmimi_tools run -r ./refs -i circRNAs.tsv -o ./out/ -p 5 --checkAA
 ```
 
 
@@ -98,7 +98,7 @@ Option                | Description
 :-------------------- | :------------------------------
 --species SPECIES     | Assign the species for references. Use the species code for SPECIES. ***[required]***
 --source SOURCE       | Available values for SOURCE: "ensembl", "ensembl_plants", "ensembl_metazoa", "gencode". ***[required]***
---version RELEASE_VER | The release version of the SOURCE. For examples,  "98" for ("hsa", "ensembl"), "M24" for ("mouse", "gencode"). If the version is not assigned, the latest will be used.
+--version RELEASE_VER | The release version of the SOURCE. For examples,  "98" for ("hsa", "ensembl"), "M24" for ("mmu", "gencode"). If the version is not assigned, the latest one will be used.
 
 
 
@@ -125,14 +125,20 @@ ssc  | Sus scrofa              |  V  |     |     |     |  V  |  V  |     |
 tgu  | Taeniopygia guttata     |  V  |     |     |     |  V  |  V  |     |
 xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |
 
-**E**: Ensembl, **G**: Gencode, **EP**: Ensembl Plants, **EM**: Ensembl Metazoa, **MB**: miRBase, **MTB**: miRTarBase, **MDB**: miRDB
+ - **E**: Ensembl (https://www.ensembl.org/index.html)
+ - **G**: Gencode (https://www.gencodegenes.org/)
+ - **EP**: Ensembl Plants (https://plants.ensembl.org/index.html)
+ - **EM**: Ensembl Metazoa (https://metazoa.ensembl.org/index.html)
+ - **MB**: miRBase (http://www.mirbase.org/)
+ - **MTB**: miRTarBase (http://mirtarbase.mbc.nctu.edu.tw/php/index.php)
+ - **MDB**: miRDB (http://mirdb.org/)
 
 
 
 ## Run the main pipeline
 
 ```
-circmimi_tools run --ref REF_DIR --circ CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC] [--checkAA]
+circmimi_tools run -r REF_DIR -i CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC] [--checkAA]
 ```
 
 ### Options
@@ -172,15 +178,9 @@ CircMiMi appends the following columns to the original input.
   8  |  count          | The number of the miRNA-binding sites on the circRNA
   9  |  cross_boundary | If there is a binding site across the junction of the circRNA
  10  |  target_gene    | The miRNA-targeted gene
-
-
-And additional columns from the miRNA-target interactions database,
-
- \#   | Column          | Description
-:--: | :-------------: | :----------
- 11  |  miRTarBase      | If the miRNA-mRNA interaction is from miRTarBase
- 12  |  miRDB      | If the miRNA-mRNA interaction is from miRDB
- 13  |  miRTarBase__ref_count | The number of references which support the interaction
+ 11  |  miRTarBase      | Is the miRNA-mRNA interaction reported from miRTarBase
+ 12  |  miRDB      | Is the miRNA-mRNA interaction reported from miRDB
+ 13  |  miRTarBase__ref_count | The number of references reporting the interaction
  14  |  miRDB__targeting_score | The predicted target score from miRDB
 
 
