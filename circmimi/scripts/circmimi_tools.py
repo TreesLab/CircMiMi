@@ -53,8 +53,8 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
             num_proc=num_proc
         )
         checker.check(circ_file)
-        checker.save_result()
-        circ_file = checker.clear_circ_file
+        result_file = checker.save_result()
+        circ_file = checker.save_clear_circRNAs()
 
     from circmimi.circmimi import Circmimi
     circmimi_result = Circmimi(work_dir=output_dir)

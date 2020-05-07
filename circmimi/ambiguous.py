@@ -127,7 +127,7 @@ class AmbiguousChecker:
             all_colinear_ids
         )
 
-        self.result = self.circ_events.df.reset_index().assign(
+        self.result = self.circ_events.original_df.reset_index().assign(
             colinear=lambda df: np.isin(df.index, all_colinear_ids),
             multiple_hits=lambda df: np.isin(df.index, all_multiple_hits_ids)
         ).astype(
@@ -137,24 +137,29 @@ class AmbiguousChecker:
             }
         ).drop('index', axis=1)
 
-        self.nonAA_circ_events = self.result[self._is_nonAA].drop(
+    def get_clear_circRNAs(self):
+        clear_circ_events = self.result[self._is_nonAA].drop(
             columns=[
                 'colinear',
                 'multiple_hits'
             ]
         )
+        return clear_circ_events
 
     def save_result(self):
-        self.result_file = '{}.checkAA.tsv'.format(self.prefix)
-        self.clear_circ_file = '{}.clear.tsv'.format(self.prefix)
-
+        self.result_file = '{}.status.tsv'.format(self.prefix)
         self.result.to_csv(self.result_file, sep='\t', index=False)
-        self.nonAA_circ_events.to_csv(
+        return self.result_file
+
+    def save_clear_circRNAs(self):
+        self.clear_circ_file = '{}.clear.tsv'.format(self.prefix)
+        self.get_clear_circRNAs().to_csv(
             self.clear_circ_file,
             sep='\t',
             index=False,
             header=False
         )
+        return self.clear_circ_file
 
     @staticmethod
     def _get_flanking_region(circ_data):
