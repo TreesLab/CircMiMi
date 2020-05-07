@@ -67,7 +67,7 @@ class Circmimi:
             host_gene=lambda df: df['transcript'].apply(lambda t: t.gene.gene_symbol)
         ).loc[:, ['ev_id', 'host_gene']].drop_duplicates().reset_index(drop=True)
 
-        res_df = self.circ_events.original_df.reset_index().merge(
+        res_df = self.circ_events.clear_df.reset_index().merge(
             gene_symbol_df,
             left_on='index',
             right_on='ev_id',
@@ -90,9 +90,9 @@ class Circmimi:
     def save_circRNAs_status(self, out_file):
         if os.path.exists(out_file):
             status_df = pd.read_csv(out_file, sep='\t')
-            status_df = status_df.merge(self.circ_events.status(), on=['chr', 'pos1', 'pos2', 'strand'])
+            status_df = status_df.merge(self.circ_events.status, on=['chr', 'pos1', 'pos2', 'strand'])
         else:
-            status_df = self.circ_events.status()
+            status_df = self.circ_events.status
 
         status_df.to_csv(out_file, sep='\t', index=False)
 

@@ -72,6 +72,7 @@ class CircEvents:
 
         return df_with_status
 
+    @property
     def status(self):
         no_common_transcript_df = self.anno_df.assign(
             no_common_transcript='0'
@@ -86,3 +87,7 @@ class CircEvents:
         )
 
         return status_summary_df
+
+    @property
+    def clear_df(self):
+        return self.status[lambda df: df.iloc[:, 4:].agg('sum', axis=1)==0]
