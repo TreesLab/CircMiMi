@@ -60,15 +60,16 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
         circ_file = checker.save_clear_circRNAs()
 
     from circmimi.circmimi import Circmimi
-    circmimi_result = Circmimi(work_dir=output_dir)
-    circmimi_result.run(
-        circ_file,
+    circmimi_result = Circmimi(
         anno_db,
         ref_file,
         mir_ref,
         mir_target,
+        work_dir=output_dir,
         num_proc=num_proc
     )
+
+    circmimi_result.run(circ_file)
 
     result_table = circmimi_result.get_result_table()
     res_file = os.path.join(output_dir, add_prefix('out.tsv', prefix_name))

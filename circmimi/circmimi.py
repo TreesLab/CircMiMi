@@ -7,8 +7,20 @@ from circmimi.miranda import get_binding_sites, MirandaUtils
 
 
 class Circmimi:
-    def __init__(self, work_dir='.'):
+    def __init__(self,
+                 anno_db_file,
+                 ref_file,
+                 mir_ref_file,
+                 mir_target_file,
+                 work_dir='.',
+                 num_proc=1):
+
+        self.anno_db_file = anno_db_file
+        self.ref_file = ref_file
+        self.mir_ref_file = mir_ref_file
+        self.mir_target_file = mir_target_file
         self.work_dir = work_dir
+        self.num_proc = num_proc
 
         self.circ_events = None
         self.uniq_exons_df = None
@@ -17,16 +29,10 @@ class Circmimi:
         self.miranda_df = None
         self.grouped_res_df = None
 
-    def run(self,
-            circ_file,
-            anno_db_file,
-            ref_file,
-            mir_ref_file,
-            mir_target_file,
-            num_proc=1):
+    def run(self, circ_file):
 
         self.circ_events = CircEvents(circ_file)
-        self.circ_events.check_annotation(anno_db_file)
+        self.circ_events.check_annotation(self.anno_db_file)
 
         self.uniq_exons_df = self.circ_events.anno_df.pipe(self._get_uniq_exons)
         self.bed_df = self.uniq_exons_df.pipe(
@@ -35,13 +41,13 @@ class Circmimi:
             BedUtils.to_bed_df
         )
 
-        self.seq_df = self.bed_df.pipe(Seq.get_extended_seq, ref_file=ref_file)
+        self.seq_df = self.bed_df.pipe(Seq.get_extended_seq, ref_file=self.ref_file)
 
         self.miranda_df = self.seq_df.pipe(
             get_binding_sites,
-            mir_ref_file=mir_ref_file,
+            mir_ref_file=self.mir_ref_file,
             work_dir=self.work_dir,
-            num_proc=num_proc
+            num_proc=self.num_proc
         ).pipe(
             MirandaUtils.append_exons_len,
             exons_len_df=self.uniq_exons_df[['exons_id', 'total_len']]
@@ -60,7 +66,7 @@ class Circmimi:
 
         self.grouped_res_df = MirandaUtils.get_grouped_results(self.miranda_df)
 
-        self.mir_target_db = get_mir_target_db(mir_target_file)
+        self.mir_target_db = get_mir_target_db(self.mir_target_file)
 
     def get_result_table(self):
         gene_symbol_df = self.circ_events.anno_df.assign(
