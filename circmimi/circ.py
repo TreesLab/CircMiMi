@@ -90,4 +90,4 @@ class CircEvents:
 
     @property
     def clear_df(self):
-        return self.status[lambda df: df.iloc[:, 4:].agg('sum', axis=1)==0]
+        return self.status[lambda df: df.iloc[:, 4:].agg('sum', axis=1)==0].iloc[:,:4]
