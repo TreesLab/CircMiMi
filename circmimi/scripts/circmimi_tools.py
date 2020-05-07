@@ -70,6 +70,7 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
     result_table = circmimi_result.get_result_table()
     res_file = os.path.join(output_dir, add_prefix('out.tsv', prefix_name))
     result_table.to_csv(res_file, sep='\t', index=False, header=header)
+    circmimi_result.save_circRNAs_status(result_file)
 
 
 @cli.command(help="""
