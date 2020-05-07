@@ -96,6 +96,9 @@ class Circmimi:
 
         status_df.to_csv(out_file, sep='\t', index=False)
 
+    def save_clear_circRNAs(self, out_file):
+        self.circ_events.clear_df.to_csv(out_file, sep='\t', index=False)
+
     @staticmethod
     def _get_total_length(list_of_obj):
         return sum(map(len, list_of_obj))
