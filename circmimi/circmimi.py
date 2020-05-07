@@ -68,13 +68,13 @@ class Circmimi:
 
         self.mir_target_db = get_mir_target_db(self.mir_target_file)
 
-    def get_result_table(self):
-        gene_symbol_df = self.circ_events.anno_df.assign(
+        self.gene_symbol_df = self.circ_events.anno_df.assign(
             host_gene=lambda df: df['transcript'].apply(lambda t: t.gene.gene_symbol)
         ).loc[:, ['ev_id', 'host_gene']].drop_duplicates().reset_index(drop=True)
 
+    def get_result_table(self):
         res_df = self.circ_events.clear_df.reset_index().merge(
-            gene_symbol_df,
+            self.gene_symbol_df,
             left_on='index',
             right_on='ev_id',
             how='left'
