@@ -43,6 +43,9 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
     from circmimi.config import get_refs
     anno_db, ref_file, mir_ref, mir_target, other_transcripts = get_refs(ref_dir)
 
+    status_file = os.path.join(output_dir, add_prefix('circ.status.tsv', prefix_name))
+    clear_file = os.path.join(output_dir, add_prefix('circ.clear.tsv', prefix_name))
+
     if checkAA:
         from circmimi.ambiguous import AmbiguousChecker
         checker = AmbiguousChecker(
@@ -53,8 +56,8 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
             num_proc=num_proc
         )
         checker.check(circ_file)
-        checker.save_result()
-        circ_file = checker.clear_circ_file
+        status_file = checker.save_result()
+        circ_file = checker.save_clear_circRNAs()
 
     from circmimi.circmimi import Circmimi
     circmimi_result = Circmimi(work_dir=output_dir)
@@ -70,6 +73,8 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
     result_table = circmimi_result.get_result_table()
     res_file = os.path.join(output_dir, add_prefix('out.tsv', prefix_name))
     result_table.to_csv(res_file, sep='\t', index=False, header=header)
+    circmimi_result.save_circRNAs_status(status_file)
+    circmimi_result.save_clear_circRNAs(clear_file)
 
 
 @cli.command(help="""

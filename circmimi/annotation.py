@@ -145,30 +145,3 @@ class AnnotationUtils:
             anno_df = pd.concat(list(raw_anno_dfs)).reset_index(drop=True)
 
         return anno_df
-
-    @staticmethod
-    def _get_total_length(list_of_obj):
-        return sum(map(len, list_of_obj))
-
-    def get_uniq_exons(self, anno_df):
-        if anno_df.empty:
-            uniq_exons_df = pd.DataFrame(
-                [],
-                columns=['exons', 'ev_id', 'total_len', 'exons_id']
-            )
-        else:
-            uniq_exons_df = anno_df[['exons', 'ev_id']]\
-                .drop_duplicates()\
-                .reset_index(drop=True)
-
-            uniq_exons_df['total_len'] = uniq_exons_df.apply(
-                lambda s: self._get_total_length(s['exons']),
-                axis=1
-            )
-
-            uniq_exons_df['exons_id'] = uniq_exons_df.apply(
-                lambda s: "exons_{}".format(s.name),
-                axis=1
-            )
-
-        return uniq_exons_df

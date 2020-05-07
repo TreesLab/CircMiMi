@@ -1,5 +1,5 @@
+import os.path
 import pandas as pd
-from circmimi.annotation import AnnotationUtils
 from circmimi.circ import CircEvents
 from circmimi.bed import BedUtils
 from circmimi.seq import Seq
@@ -11,7 +11,6 @@ class Circmimi:
         self.work_dir = work_dir
 
         self.circ_events = None
-        self.anno_df = None
         self.uniq_exons_df = None
         self.bed_df = None
         self.seq_df = None
@@ -26,11 +25,10 @@ class Circmimi:
             mir_target_file,
             num_proc=1):
 
-        self.anno_utils = AnnotationUtils(anno_db_file)
-
         self.circ_events = CircEvents(circ_file)
-        self.anno_df = self.circ_events.df.pipe(self.anno_utils.get_annotation)
-        self.uniq_exons_df = self.anno_df.pipe(self.anno_utils.get_uniq_exons)
+        self.circ_events.check_annotation(anno_db_file)
+
+        self.uniq_exons_df = self.circ_events.anno_df.pipe(self._get_uniq_exons)
         self.bed_df = self.uniq_exons_df.pipe(
             BedUtils.to_regions_df
         ).pipe(
@@ -65,11 +63,11 @@ class Circmimi:
         self.mir_target_db = get_mir_target_db(mir_target_file)
 
     def get_result_table(self):
-        gene_symbol_df = self.anno_df.assign(
+        gene_symbol_df = self.circ_events.anno_df.assign(
             host_gene=lambda df: df['transcript'].apply(lambda t: t.gene.gene_symbol)
         ).loc[:, ['ev_id', 'host_gene']].drop_duplicates().reset_index(drop=True)
 
-        res_df = self.circ_events.original_df.reset_index().merge(
+        res_df = self.circ_events.clear_df.reset_index().merge(
             gene_symbol_df,
             left_on='index',
             right_on='ev_id',
@@ -88,6 +86,46 @@ class Circmimi:
         )
 
         return res_df
+
+    def save_circRNAs_status(self, out_file):
+        if os.path.exists(out_file):
+            status_df = pd.read_csv(out_file, sep='\t')
+            status_df = status_df.merge(self.circ_events.status, on=['chr', 'pos1', 'pos2', 'strand'])
+        else:
+            status_df = self.circ_events.status
+
+        status_df.to_csv(out_file, sep='\t', index=False)
+
+    def save_clear_circRNAs(self, out_file):
+        self.circ_events.clear_df.to_csv(out_file, sep='\t', index=False)
+
+    @staticmethod
+    def _get_total_length(list_of_obj):
+        return sum(map(len, list_of_obj))
+
+    @classmethod
+    def _get_uniq_exons(cls, anno_df):
+        if anno_df.empty:
+            uniq_exons_df = pd.DataFrame(
+                [],
+                columns=['exons', 'ev_id', 'total_len', 'exons_id']
+            )
+        else:
+            uniq_exons_df = anno_df[['exons', 'ev_id']]\
+                .drop_duplicates()\
+                .reset_index(drop=True)
+
+            uniq_exons_df['total_len'] = uniq_exons_df.apply(
+                lambda s: cls._get_total_length(s['exons']),
+                axis=1
+            )
+
+            uniq_exons_df['exons_id'] = uniq_exons_df.apply(
+                lambda s: "exons_{}".format(s.name),
+                axis=1
+            )
+
+        return uniq_exons_df
 
 
 def get_mir_target_db(mir_tar_db_path):
