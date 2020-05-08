@@ -125,13 +125,18 @@ ssc  | Sus scrofa              |  V  |     |     |     |  V  |  V  |     |
 tgu  | Taeniopygia guttata     |  V  |     |     |     |  V  |  V  |     |
 xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |
 
- - **E**: Ensembl (https://www.ensembl.org/index.html)
- - **G**: Gencode (https://www.gencodegenes.org/)
- - **EP**: Ensembl Plants (https://plants.ensembl.org/index.html)
- - **EM**: Ensembl Metazoa (https://metazoa.ensembl.org/index.html)
- - **MB**: miRBase (http://www.mirbase.org/)
- - **MTB**: miRTarBase (http://mirtarbase.mbc.nctu.edu.tw/php/index.php)
- - **MDB**: miRDB (http://mirdb.org/)
+###### Gene annotation
+   - **E**: Ensembl (https://www.ensembl.org/index.html)
+   - **G**: Gencode (https://www.gencodegenes.org/)
+   - **EP**: Ensembl Plants (https://plants.ensembl.org/index.html)
+   - **EM**: Ensembl Metazoa (https://metazoa.ensembl.org/index.html)
+
+###### Database for miRNAs
+   - **MB**: miRBase (v22) (http://www.mirbase.org/)
+
+###### Databases for miRNA-mRNA interactions
+   - **MTB**: miRTarBase (v7.0) (http://mirtarbase.mbc.nctu.edu.tw/php/index.php)
+   - **MDB**: miRDB (v6.0) (http://mirdb.org/)
 
 
 
