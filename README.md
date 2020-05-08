@@ -4,9 +4,7 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
 
 
 # Table of Contents
-- [Dependency](#dependency)
-    - [Packages](#packages)
-    - [External tools](#external-tools)
+- [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
@@ -18,24 +16,13 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
     - [Create the network file for Cytoscape](#create-the-network-file-for-cytoscape)
 
 
-# Dependency
+# Requirements
 
-### Packages
-
-- python (>= 3.6)
-- click (>= 7.1.1)
-- sqlalchemy (>= 1.3.16)
-- numpy (>= 1.18.2)
-- pandas (>= 1.0.3)
-- xlrd (>= 1.2.0)
-- networkx (>= 2.4)
-- lxml (>= 4.5.0)
-
-### External tools
-
-- bedtools (https://github.com/arq5x/bedtools2)
-- miranda (http://www.microrna.org/microrna/getDownloads.do)
-- blat (https://genome.ucsc.edu/FAQ/FAQblat.html)
+- Python (3.6 or above)
+- External tools
+  - bedtools (2.29.0) (https://github.com/arq5x/bedtools2)
+  - miranda (aug2010, 3.3a) (http://www.microrna.org/microrna/getDownloads.do)
+  - blat (https://genome.ucsc.edu/FAQ/FAQblat.html)
 
 
 # Installation
