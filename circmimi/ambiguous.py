@@ -64,26 +64,26 @@ class AmbiguousChecker:
             mp_blat_bin=self.mp_blat_bin
         )
 
-        psl_rG_1 = blat(self.ref_file, fa_file.name)
-        psl_rG_2 = web_blat(self.ref_file, fa_file.name)
-        psl_rO_1 = blat(self.other_ref_file, fa_file.name)
-        psl_rO_2 = web_blat(self.other_ref_file, fa_file.name)
+        self.psl_rG_1 = blat(self.ref_file, fa_file.name)
+        self.psl_rG_2 = web_blat(self.ref_file, fa_file.name)
+        self.psl_rO_1 = blat(self.other_ref_file, fa_file.name)
+        self.psl_rO_2 = web_blat(self.other_ref_file, fa_file.name)
 
         fa_file.close()
 
         # 3. evaluate
         # 3.1 colinear part
-        psl_rG_1_colinear_df = psl_rG_1.df.pipe(PslFilters.colinear_filter)
-        psl_rG_2_colinear_df = psl_rG_2.df.pipe(PslFilters.colinear_filter)
-        psl_rO_1_colinear_df = psl_rO_1.df.pipe(PslFilters.colinear_filter)
-        psl_rO_2_colinear_df = psl_rO_2.df.pipe(PslFilters.colinear_filter)
+        psl_rG_1_colinear_df = self.psl_rG_1.df.pipe(PslFilters.colinear_filter)
+        psl_rG_2_colinear_df = self.psl_rG_2.df.pipe(PslFilters.colinear_filter)
+        psl_rO_1_colinear_df = self.psl_rO_1.df.pipe(PslFilters.colinear_filter)
+        psl_rO_2_colinear_df = self.psl_rO_2.df.pipe(PslFilters.colinear_filter)
 
         psl_rG_1_colinear_ids = PslUtils.get_uniq_qname(psl_rG_1_colinear_df)
         psl_rG_2_colinear_ids = PslUtils.get_uniq_qname(psl_rG_2_colinear_df)
         psl_rO_1_colinear_ids = PslUtils.get_uniq_qname(psl_rO_1_colinear_df)
         psl_rO_2_colinear_ids = PslUtils.get_uniq_qname(psl_rO_2_colinear_df)
 
-        all_colinear_ids = reduce(
+        self.all_colinear_ids = reduce(
             np.union1d,
             [
                 psl_rG_1_colinear_ids,
@@ -94,42 +94,42 @@ class AmbiguousChecker:
         )
 
         # 3.2 multiple hits
-        psl_rG_1_chimera_df = psl_rG_1.df.pipe(PslFilters.chimera_filter)
-        psl_rG_2_chimera_df = psl_rG_2.df.pipe(PslFilters.chimera_filter)
+        psl_rG_1_chimera_df = self.psl_rG_1.df.pipe(PslFilters.chimera_filter)
+        psl_rG_2_chimera_df = self.psl_rG_2.df.pipe(PslFilters.chimera_filter)
 
-        psl_rG_1_chimera_ids = PslUtils.get_uniq_qname(psl_rG_1_chimera_df)
-        psl_rG_2_chimera_ids = PslUtils.get_uniq_qname(psl_rG_2_chimera_df)
+        self.psl_rG_1_chimera_ids = PslUtils.get_uniq_qname(psl_rG_1_chimera_df)
+        self.psl_rG_2_chimera_ids = PslUtils.get_uniq_qname(psl_rG_2_chimera_df)
 
-        psl_rG_1_multiple_hits_df = psl_rG_1.df.pipe(
+        psl_rG_1_multiple_hits_df = self.psl_rG_1.df.pipe(
             PslUtils.remove_in_list,
             qnames=np.union1d(
                 psl_rG_1_colinear_ids,
-                psl_rG_1_chimera_ids
+                self.psl_rG_1_chimera_ids
             )
         )
 
-        psl_rG_2_multiple_hits_df = psl_rG_2.df.pipe(
+        psl_rG_2_multiple_hits_df = self.psl_rG_2.df.pipe(
             PslUtils.remove_in_list,
             qnames=np.union1d(
                 psl_rG_2_colinear_ids,
-                psl_rG_2_chimera_ids
+                self.psl_rG_2_chimera_ids
             )
         )
 
         psl_rG_1_multiple_hits_ids = PslUtils.get_uniq_qname(psl_rG_1_multiple_hits_df)
         psl_rG_2_multiple_hits_ids = PslUtils.get_uniq_qname(psl_rG_2_multiple_hits_df)
 
-        all_multiple_hits_ids = np.setdiff1d(
+        self.all_multiple_hits_ids = np.setdiff1d(
             np.union1d(
                 psl_rG_1_multiple_hits_ids,
                 psl_rG_2_multiple_hits_ids
             ),
-            all_colinear_ids
+            self.all_colinear_ids
         )
 
         self.result = self.circ_events.original_df.reset_index().assign(
-            colinear=lambda df: np.isin(df.index, all_colinear_ids),
-            multiple_hits=lambda df: np.isin(df.index, all_multiple_hits_ids)
+            colinear=lambda df: np.isin(df.index, self.all_colinear_ids),
+            multiple_hits=lambda df: np.isin(df.index, self.all_multiple_hits_ids)
         ).astype(
             {
                 'colinear': int,
