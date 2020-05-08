@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import tempfile as tp
-import os.path
 from functools import reduce
 from circmimi.circ import CircEvents
 from circmimi.bed import BedUtils
@@ -14,7 +13,6 @@ class AmbiguousChecker:
                  ref_file,
                  other_ref_file,
                  work_dir='.',
-                 out_prefix='circ',
                  num_proc=1,
                  blat_bin='blat',
                  mp_blat_bin='mp_blat.py'):
@@ -26,8 +24,6 @@ class AmbiguousChecker:
 
         self.ref_file = ref_file
         self.other_ref_file = other_ref_file
-
-        self.prefix = os.path.join(work_dir, out_prefix)
 
     def check(self, circ_file):
         self.circ_events = CircEvents(circ_file)
@@ -146,20 +142,16 @@ class AmbiguousChecker:
         )
         return clear_circ_events
 
-    def save_result(self):
-        self.result_file = '{}.status.tsv'.format(self.prefix)
-        self.result.to_csv(self.result_file, sep='\t', index=False)
-        return self.result_file
+    def save_result(self, out_file):
+        self.result.to_csv(out_file, sep='\t', index=False)
 
-    def save_clear_circRNAs(self):
-        self.clear_circ_file = '{}.clear.tsv'.format(self.prefix)
+    def save_clear_circRNAs(self, out_file):
         self.get_clear_circRNAs().to_csv(
-            self.clear_circ_file,
+            out_file,
             sep='\t',
             index=False,
             header=False
         )
-        return self.clear_circ_file
 
     @staticmethod
     def _get_flanking_region(circ_data):

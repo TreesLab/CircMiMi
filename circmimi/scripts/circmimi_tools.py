@@ -33,7 +33,7 @@ def cli():
 def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
     from circmimi.utils import add_prefix
 
-    output_dir, prefix_name = os.path.split(out_prefix)
+    output_dir = os.path.dirname(out_prefix)
     if output_dir == '':
         output_dir = '.'
 
@@ -43,8 +43,8 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
     from circmimi.config import get_refs
     anno_db, ref_file, mir_ref, mir_target, other_transcripts = get_refs(ref_dir)
 
-    status_file = os.path.join(output_dir, add_prefix('circ.status.tsv', prefix_name))
-    clear_file = os.path.join(output_dir, add_prefix('circ.clear.tsv', prefix_name))
+    status_file = add_prefix('circ.status.tsv', out_prefix)
+    clear_file = add_prefix('circ.clear.tsv', out_prefix)
 
     if checkAA:
         from circmimi.ambiguous import AmbiguousChecker
@@ -52,12 +52,12 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
             ref_file=ref_file,
             other_ref_file=other_transcripts,
             work_dir=output_dir,
-            out_prefix=add_prefix('circ', prefix_name),
             num_proc=num_proc
         )
         checker.check(circ_file)
-        status_file = checker.save_result()
-        circ_file = checker.save_clear_circRNAs()
+        checker.save_result(status_file)
+        checker.save_clear_circRNAs(clear_file)
+        circ_file = clear_file
 
     from circmimi.circmimi import Circmimi
     circmimi_result = Circmimi(
@@ -72,7 +72,7 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
     circmimi_result.run(circ_file)
 
     result_table = circmimi_result.get_result_table()
-    res_file = os.path.join(output_dir, add_prefix('out.tsv', prefix_name))
+    res_file = add_prefix('out.tsv', out_prefix)
     result_table.to_csv(res_file, sep='\t', index=False, header=header)
     circmimi_result.save_circRNAs_status(status_file)
     circmimi_result.save_clear_circRNAs(clear_file)
@@ -182,7 +182,8 @@ def checkaa(circ_file, ref_dir, output_dir, num_proc):
         num_proc=num_proc
     )
     checker.check(circ_file)
-    checker.save_result()
+    result_file = os.path.join(output_dir, 'circ.checkAA.tsv')
+    checker.save_result(result_file)
 
 
 @cli.group(hidden=True)
