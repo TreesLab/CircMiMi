@@ -44,7 +44,7 @@ class Circmimi:
                 num_proc=self.num_proc
             )
 
-        self.uniq_exons_df = self.circ_events.anno_df.pipe(self._get_uniq_exons)
+        self.uniq_exons_df = self.circ_events.clear_anno_df.pipe(self._get_uniq_exons)
         self.bed_df = self.uniq_exons_df.pipe(
             BedUtils.to_regions_df
         ).pipe(
@@ -78,7 +78,7 @@ class Circmimi:
 
         self.mir_target_db = get_mir_target_db(self.mir_target_file)
 
-        self.gene_symbol_df = self.circ_events.anno_df.assign(
+        self.gene_symbol_df = self.circ_events.clear_anno_df.assign(
             host_gene=lambda df: df['transcript'].apply(lambda t: t.gene.gene_symbol)
         ).loc[:, ['ev_id', 'host_gene']].drop_duplicates().reset_index(drop=True)
 

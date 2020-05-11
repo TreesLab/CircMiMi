@@ -141,3 +141,12 @@ class CircEvents:
     @property
     def clear_df(self):
         return self.get_summary()[lambda df: df.iloc[:, 4:].agg('sum', axis=1) == 0].iloc[:, :4]
+
+    @property
+    def clear_anno_df(self):
+        return self.anno_df.merge(
+            self.clear_df.reset_index(),
+            left_on='ev_id',
+            right_on='index',
+            how='inner'
+        )
