@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import tempfile as tp
 from functools import reduce
-from circmimi.circ import CircEvents
 from circmimi.bed import BedUtils
 from circmimi.seq import Seq
 from circmimi.blat import Blat, PslFilters, PslUtils
@@ -25,11 +24,10 @@ class AmbiguousChecker:
         self.ref_file = ref_file
         self.other_ref_file = other_ref_file
 
-    def check(self, circ_file):
-        self.circ_events = CircEvents(circ_file)
+    def check(self, circ_df):
 
         # 1. get flanking sequences
-        flanking_regions = self.circ_events.df.apply(
+        flanking_regions = circ_df.apply(
             self._get_flanking_region,
             axis=1
         )
@@ -60,26 +58,26 @@ class AmbiguousChecker:
             mp_blat_bin=self.mp_blat_bin
         )
 
-        self.psl_rG_1 = blat(self.ref_file, fa_file.name)
-        self.psl_rG_2 = web_blat(self.ref_file, fa_file.name)
-        self.psl_rO_1 = blat(self.other_ref_file, fa_file.name)
-        self.psl_rO_2 = web_blat(self.other_ref_file, fa_file.name)
+        self._psl_rG_1 = blat(self.ref_file, fa_file.name)
+        self._psl_rG_2 = web_blat(self.ref_file, fa_file.name)
+        self._psl_rO_1 = blat(self.other_ref_file, fa_file.name)
+        self._psl_rO_2 = web_blat(self.other_ref_file, fa_file.name)
 
         fa_file.close()
 
         # 3. evaluate
         # 3.1 colinear part
-        psl_rG_1_colinear_df = self.psl_rG_1.df.pipe(PslFilters.colinear_filter)
-        psl_rG_2_colinear_df = self.psl_rG_2.df.pipe(PslFilters.colinear_filter)
-        psl_rO_1_colinear_df = self.psl_rO_1.df.pipe(PslFilters.colinear_filter)
-        psl_rO_2_colinear_df = self.psl_rO_2.df.pipe(PslFilters.colinear_filter)
+        psl_rG_1_colinear_df = self._psl_rG_1.df.pipe(PslFilters.colinear_filter)
+        psl_rG_2_colinear_df = self._psl_rG_2.df.pipe(PslFilters.colinear_filter)
+        psl_rO_1_colinear_df = self._psl_rO_1.df.pipe(PslFilters.colinear_filter)
+        psl_rO_2_colinear_df = self._psl_rO_2.df.pipe(PslFilters.colinear_filter)
 
         psl_rG_1_colinear_ids = PslUtils.get_uniq_qname(psl_rG_1_colinear_df)
         psl_rG_2_colinear_ids = PslUtils.get_uniq_qname(psl_rG_2_colinear_df)
         psl_rO_1_colinear_ids = PslUtils.get_uniq_qname(psl_rO_1_colinear_df)
         psl_rO_2_colinear_ids = PslUtils.get_uniq_qname(psl_rO_2_colinear_df)
 
-        self.all_colinear_ids = reduce(
+        self._all_colinear_ids = reduce(
             np.union1d,
             [
                 psl_rG_1_colinear_ids,
@@ -90,68 +88,41 @@ class AmbiguousChecker:
         )
 
         # 3.2 multiple hits
-        psl_rG_1_chimera_df = self.psl_rG_1.df.pipe(PslFilters.chimera_filter)
-        psl_rG_2_chimera_df = self.psl_rG_2.df.pipe(PslFilters.chimera_filter)
+        psl_rG_1_chimera_df = self._psl_rG_1.df.pipe(PslFilters.chimera_filter)
+        psl_rG_2_chimera_df = self._psl_rG_2.df.pipe(PslFilters.chimera_filter)
 
-        self.psl_rG_1_chimera_ids = PslUtils.get_uniq_qname(psl_rG_1_chimera_df)
-        self.psl_rG_2_chimera_ids = PslUtils.get_uniq_qname(psl_rG_2_chimera_df)
+        self._psl_rG_1_chimera_ids = PslUtils.get_uniq_qname(psl_rG_1_chimera_df)
+        self._psl_rG_2_chimera_ids = PslUtils.get_uniq_qname(psl_rG_2_chimera_df)
 
-        psl_rG_1_multiple_hits_df = self.psl_rG_1.df.pipe(
+        psl_rG_1_multiple_hits_df = self._psl_rG_1.df.pipe(
             PslUtils.remove_in_list,
             qnames=np.union1d(
                 psl_rG_1_colinear_ids,
-                self.psl_rG_1_chimera_ids
+                self._psl_rG_1_chimera_ids
             )
         )
 
-        psl_rG_2_multiple_hits_df = self.psl_rG_2.df.pipe(
+        psl_rG_2_multiple_hits_df = self._psl_rG_2.df.pipe(
             PslUtils.remove_in_list,
             qnames=np.union1d(
                 psl_rG_2_colinear_ids,
-                self.psl_rG_2_chimera_ids
+                self._psl_rG_2_chimera_ids
             )
         )
 
         psl_rG_1_multiple_hits_ids = PslUtils.get_uniq_qname(psl_rG_1_multiple_hits_df)
         psl_rG_2_multiple_hits_ids = PslUtils.get_uniq_qname(psl_rG_2_multiple_hits_df)
 
-        self.all_multiple_hits_ids = np.setdiff1d(
+        self._all_multiple_hits_ids = np.setdiff1d(
             np.union1d(
                 psl_rG_1_multiple_hits_ids,
                 psl_rG_2_multiple_hits_ids
             ),
-            self.all_colinear_ids
+            self._all_colinear_ids
         )
 
-        self.result = self.circ_events.original_df.reset_index().assign(
-            colinear=lambda df: np.isin(df.index, self.all_colinear_ids),
-            multiple_hits=lambda df: np.isin(df.index, self.all_multiple_hits_ids)
-        ).astype(
-            {
-                'colinear': int,
-                'multiple_hits': int
-            }
-        ).drop('index', axis=1)
-
-    def get_clear_circRNAs(self):
-        clear_circ_events = self.result[self._is_nonAA].drop(
-            columns=[
-                'colinear',
-                'multiple_hits'
-            ]
-        )
-        return clear_circ_events
-
-    def save_result(self, out_file):
-        self.result.to_csv(out_file, sep='\t', index=False)
-
-    def save_clear_circRNAs(self, out_file):
-        self.get_clear_circRNAs().to_csv(
-            out_file,
-            sep='\t',
-            index=False,
-            header=False
-        )
+        self.colinear_result = pd.DataFrame(self._all_colinear_ids, columns=['ev_id'])
+        self.multiple_hits_result = pd.DataFrame(self._all_multiple_hits_ids, columns=['ev_id'])
 
     @staticmethod
     def _get_flanking_region(circ_data):
@@ -183,7 +154,3 @@ class AmbiguousChecker:
         )
 
         return df
-
-    @staticmethod
-    def _is_nonAA(df):
-        return (df.colinear == 0) & (df.multiple_hits == 0)

@@ -1,5 +1,6 @@
 import pandas as pd
 from circmimi.annotation import AnnotationUtils
+from circmimi.ambiguous import AmbiguousChecker
 
 
 class CircEvents:
@@ -53,37 +54,84 @@ class CircEvents:
         self._anno_utils = AnnotationUtils(anno_db)
         self.anno_df = self.df.pipe(self._anno_utils.get_annotation)
 
-    @staticmethod
-    def _append_status_column(df, status_df):
-        status_df = df.reset_index().loc[:, ['index']].rename(
+    def check_ambiguous(self,
+                        ref_file,
+                        other_ref_file,
+                        work_dir='.',
+                        num_proc=1):
+
+        self.checker = AmbiguousChecker(
+            ref_file,
+            other_ref_file,
+            work_dir=work_dir,
+            num_proc=num_proc
+        )
+        self.checker.check(self.df)
+
+    def _expand_to_all_events(self, ev_df, fillna_value):
+        expanded_df = self.original_df.reset_index().rename(
             {
                 'index': 'ev_id'
             },
             axis=1
-        ).merge(
-            status_df,
+        ).loc[:, ['ev_id']].merge(
+            ev_df,
             on='ev_id',
             how='left'
-        ).drop(
-            columns=['ev_id']
-        ).fillna('1')
+        ).fillna(fillna_value)
 
-        df_with_status = pd.concat([df, status_df], axis=1)
+        return expanded_df
 
-        return df_with_status
+    @staticmethod
+    def _merge_columns(df, column_dfs):
+        merged_df = df.reset_index().rename(
+            {
+                'index': 'ev_id'
+            },
+            axis=1
+        )
+
+        for col_df in column_dfs:
+            merged_df = merged_df.merge(col_df, on='ev_id', how='left')
+
+        merged_df = merged_df.drop('ev_id', axis=1)
+
+        return merged_df
 
     @property
     def status(self):
+        # no common transcript
         no_common_transcript_df = self.anno_df.assign(
             no_common_transcript='0'
         )[[
             'ev_id',
             'no_common_transcript'
-        ]].drop_duplicates()
+        ]].drop_duplicates(
+        ).pipe(self._expand_to_all_events, fillna_value='1')
+
+        # colinear
+        colinear_df = self.checker.colinear_result.assign(
+            colinear='1'
+        ).pipe(
+            self._expand_to_all_events,
+            fillna_value='0'
+        )
+
+        # multiple hits
+        multiple_hits_df = self.checker.multiple_hits_result.assign(
+            multiple_hits='1'
+        ).pipe(
+            self._expand_to_all_events,
+            fillna_value='0'
+        )
 
         status_summary_df = self.original_df.pipe(
-            self._append_status_column,
-            status_df=no_common_transcript_df
+            self._merge_columns,
+            [
+                no_common_transcript_df,
+                colinear_df,
+                multiple_hits_df
+            ]
         )
 
         return status_summary_df

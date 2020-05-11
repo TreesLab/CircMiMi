@@ -12,6 +12,7 @@ class Circmimi:
                  ref_file,
                  mir_ref_file,
                  mir_target_file,
+                 other_ref_file=None,
                  work_dir='.',
                  num_proc=1):
 
@@ -19,6 +20,7 @@ class Circmimi:
         self.ref_file = ref_file
         self.mir_ref_file = mir_ref_file
         self.mir_target_file = mir_target_file
+        self.other_ref_file = other_ref_file
         self.work_dir = work_dir
         self.num_proc = num_proc
 
@@ -33,6 +35,14 @@ class Circmimi:
 
         self.circ_events = CircEvents(circ_file)
         self.circ_events.check_annotation(self.anno_db_file)
+
+        if self.other_ref_file is not None:
+            self.circ_events.check_ambiguous(
+                self.ref_file,
+                self.other_ref_file,
+                work_dir=self.work_dir,
+                num_proc=self.num_proc
+            )
 
         self.uniq_exons_df = self.circ_events.anno_df.pipe(self._get_uniq_exons)
         self.bed_df = self.uniq_exons_df.pipe(

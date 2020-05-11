@@ -47,17 +47,9 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
     clear_file = add_prefix('circ.clear.tsv', out_prefix)
 
     if checkAA:
-        from circmimi.ambiguous import AmbiguousChecker
-        checker = AmbiguousChecker(
-            ref_file=ref_file,
-            other_ref_file=other_transcripts,
-            work_dir=output_dir,
-            num_proc=num_proc
-        )
-        checker.check(circ_file)
-        checker.save_result(status_file)
-        checker.save_clear_circRNAs(clear_file)
-        circ_file = clear_file
+        other_ref_file = other_transcripts
+    else:
+        other_ref_file = None
 
     from circmimi.circmimi import Circmimi
     circmimi_result = Circmimi(
@@ -65,6 +57,7 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
         ref_file,
         mir_ref,
         mir_target,
+        other_ref_file,
         work_dir=output_dir,
         num_proc=num_proc
     )
@@ -174,16 +167,17 @@ def checkaa(circ_file, ref_dir, output_dir, num_proc):
     from circmimi.config import get_refs
     _, ref_file, _, _, other_transcripts = get_refs(ref_dir)
 
-    from circmimi.ambiguous import AmbiguousChecker
-    checker = AmbiguousChecker(
-        ref_file=ref_file,
-        other_ref_file=other_transcripts,
+    from circmimi.circ import CircEvents
+    circ_events = CircEvents(circ_file)
+    circ_events.check_ambiguous(
+        ref_file,
+        other_transcripts,
         work_dir=output_dir,
         num_proc=num_proc
     )
-    checker.check(circ_file)
+
     result_file = os.path.join(output_dir, 'circ.checkAA.tsv')
-    checker.save_result(result_file)
+    circ_events.checker.save_result(result_file)
 
 
 @cli.group(hidden=True)
