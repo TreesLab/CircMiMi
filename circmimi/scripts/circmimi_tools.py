@@ -43,7 +43,7 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
     from circmimi.config import get_refs
     anno_db, ref_file, mir_ref, mir_target, other_transcripts = get_refs(ref_dir)
 
-    status_file = add_prefix('circ.status.tsv', out_prefix)
+    summary_file = add_prefix('circ.summary.tsv', out_prefix)
     clear_file = add_prefix('circ.clear.tsv', out_prefix)
 
     if checkAA:
@@ -67,7 +67,7 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
     result_table = circmimi_result.get_result_table()
     res_file = add_prefix('out.tsv', out_prefix)
     result_table.to_csv(res_file, sep='\t', index=False, header=header)
-    circmimi_result.save_circRNAs_status(status_file)
+    circmimi_result.save_circRNAs_status(summary_file)
     circmimi_result.save_clear_circRNAs(clear_file)
 
 
@@ -176,8 +176,8 @@ def checkaa(circ_file, ref_dir, output_dir, num_proc):
         num_proc=num_proc
     )
 
-    result_file = os.path.join(output_dir, 'circ.checkAA.tsv')
-    circ_events.checker.save_result(result_file)
+    result_file = os.path.join(output_dir, 'circ.summary.tsv')
+    circ_events.get_summary().to_csv(result_file, sep='\t', index=False)
 
 
 @cli.group(hidden=True)
