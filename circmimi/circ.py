@@ -55,6 +55,23 @@ class CircEvents:
 
         return df
 
+    def _expand_to_all_events(self, ev_df, fillna_value):
+        expanded_df = self.original_df.reset_index().rename(
+            {
+                'index': 'ev_id'
+            },
+            axis=1
+        ).loc[:, ['ev_id']].merge(
+            ev_df,
+            on='ev_id',
+            how='left'
+        ).fillna(fillna_value)
+
+        return expanded_df
+
+    def _submit_to_summary(self, summary_column, type_):
+        self._summary_columns[type_].append(summary_column)
+
     def check_annotation(self, anno_db):
         self._anno_utils = AnnotationUtils(anno_db)
         self.anno_df = self.df.pipe(self._anno_utils.get_annotation)
@@ -99,23 +116,6 @@ class CircEvents:
 
         self._submit_to_summary(colinear_df, type_='filters')
         self._submit_to_summary(multiple_hits_df, type_='filters')
-
-    def _submit_to_summary(self, summary_column, type_):
-        self._summary_columns[type_].append(summary_column)
-
-    def _expand_to_all_events(self, ev_df, fillna_value):
-        expanded_df = self.original_df.reset_index().rename(
-            {
-                'index': 'ev_id'
-            },
-            axis=1
-        ).loc[:, ['ev_id']].merge(
-            ev_df,
-            on='ev_id',
-            how='left'
-        ).fillna(fillna_value)
-
-        return expanded_df
 
     @staticmethod
     def _merge_columns(df, column_dfs):
