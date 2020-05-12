@@ -95,9 +95,21 @@ class Circmimi:
             self.mir_target_db,
             on='mirna',
             how='left'
-        ).drop('ev_id', axis=1)
+        )
 
-        return res_df
+        res_count_df = res_df[['ev_id']].assign(
+            num_of_interactions=1
+        ).groupby(
+            'ev_id'
+        ).agg(
+            'count'
+        ).pipe(
+            self.circ_events.expand_to_all_events,
+            fillna_value=0
+        )
+        self.circ_events.submit_to_summary(res_count_df, type_='summary')
+
+        return res_df.drop('ev_id', axis=1)
 
     def save_circRNAs_summary(self, out_file):
         self.circ_events.get_summary().to_csv(out_file, sep='\t', index=False)

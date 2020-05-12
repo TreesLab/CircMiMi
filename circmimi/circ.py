@@ -56,7 +56,7 @@ class CircEvents:
 
         return df
 
-    def _expand_to_all_events(self, ev_df, fillna_value):
+    def expand_to_all_events(self, ev_df, fillna_value):
         expanded_df = self.original_df.reset_index().rename(
             {
                 'index': 'ev_id'
@@ -70,7 +70,7 @@ class CircEvents:
 
         return expanded_df
 
-    def _submit_to_summary(self, summary_column, type_):
+    def submit_to_summary(self, summary_column, type_):
         self._summary_columns[type_].append(summary_column)
 
     def check_annotation(self, anno_db):
@@ -83,9 +83,9 @@ class CircEvents:
             'ev_id',
             'no_common_transcript'
         ]].drop_duplicates(
-        ).pipe(self._expand_to_all_events, fillna_value='1')
+        ).pipe(self.expand_to_all_events, fillna_value='1')
 
-        self._submit_to_summary(no_common_transcript_df, type_='filters')
+        self.submit_to_summary(no_common_transcript_df, type_='filters')
 
     def check_ambiguous(self,
                         ref_file,
@@ -104,19 +104,19 @@ class CircEvents:
         colinear_df = self.checker.colinear_result.assign(
             colinear='1'
         ).pipe(
-            self._expand_to_all_events,
+            self.expand_to_all_events,
             fillna_value='0'
         )
 
         multiple_hits_df = self.checker.multiple_hits_result.assign(
             multiple_hits='1'
         ).pipe(
-            self._expand_to_all_events,
+            self.expand_to_all_events,
             fillna_value='0'
         )
 
-        self._submit_to_summary(colinear_df, type_='filters')
-        self._submit_to_summary(multiple_hits_df, type_='filters')
+        self.submit_to_summary(colinear_df, type_='filters')
+        self.submit_to_summary(multiple_hits_df, type_='filters')
 
     @staticmethod
     def _merge_columns(df, column_dfs):
@@ -149,7 +149,7 @@ class CircEvents:
 
         summary_df = self.original_df.reset_index().pipe(
             self._merge_columns,
-            [pass_column, filters_df]
+            [pass_column] + self._summary_columns['summary'] + [filters_df]
         ).set_index('ev_id')
 
         return summary_df
