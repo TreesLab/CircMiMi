@@ -128,22 +128,40 @@ class CircEvents:
         return merged_df
 
     def get_summary(self):
-        summary_df = self.original_df.pipe(
+        filters_df = pd.DataFrame(self.df.index).pipe(
             self._merge_columns,
             self._summary_columns['filters']
         )
+
+        pass_column = filters_df.set_index(
+            'ev_id'
+        ).agg(
+            'sum',
+            axis=1
+        ).eq(
+            0
+        ).replace(
+            {
+                True: 'yes',
+                False: 'no'
+            }
+        ).reset_index().rename({0: 'pass'}, axis=1)
+
+        summary_df = self.original_df.reset_index().pipe(
+            self._merge_columns,
+            [pass_column, filters_df]
+        ).set_index('ev_id')
 
         return summary_df
 
     @property
     def clear_df(self):
-        return self.get_summary()[lambda df: df.iloc[:, 4:].agg('sum', axis=1) == 0].iloc[:, :4]
+        return self.get_summary()[lambda df: df['pass'] == 'yes'].loc[:, :'strand']
 
     @property
     def clear_anno_df(self):
         return self.anno_df.merge(
             self.clear_df.reset_index(),
-            left_on='ev_id',
-            right_on='index',
+            on='ev_id',
             how='inner'
         )
