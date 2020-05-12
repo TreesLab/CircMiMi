@@ -9,7 +9,10 @@ class CircEvents:
         self.original_df = self._read_file(self._filename)
         self.df = self._get_donor_acceptor_df(self.original_df)
 
-        self._summary_columns = []
+        self._summary_columns = {
+            'summary': [],
+            'filters': [],
+        }
 
     @staticmethod
     def _read_file(filename):
@@ -64,7 +67,7 @@ class CircEvents:
         ]].drop_duplicates(
         ).pipe(self._expand_to_all_events, fillna_value='1')
 
-        self._submit_to_summary(no_common_transcript_df)
+        self._submit_to_summary(no_common_transcript_df, type_='filters')
 
     def check_ambiguous(self,
                         ref_file,
@@ -94,11 +97,11 @@ class CircEvents:
             fillna_value='0'
         )
 
-        self._submit_to_summary(colinear_df)
-        self._submit_to_summary(multiple_hits_df)
+        self._submit_to_summary(colinear_df, type_='filters')
+        self._submit_to_summary(multiple_hits_df, type_='filters')
 
-    def _submit_to_summary(self, summary_column):
-        self._summary_columns.append(summary_column)
+    def _submit_to_summary(self, summary_column, type_):
+        self._summary_columns[type_].append(summary_column)
 
     def _expand_to_all_events(self, ev_df, fillna_value):
         expanded_df = self.original_df.reset_index().rename(
@@ -133,7 +136,7 @@ class CircEvents:
     def get_summary(self):
         summary_df = self.original_df.pipe(
             self._merge_columns,
-            self._summary_columns
+            self._summary_columns['filters']
         )
 
         return summary_df
