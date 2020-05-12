@@ -85,21 +85,17 @@ class Circmimi:
     def get_result_table(self):
         res_df = self.circ_events.clear_df.reset_index().merge(
             self.gene_symbol_df,
-            left_on='index',
-            right_on='ev_id',
+            on='ev_id',
             how='left'
         ).merge(
             self.grouped_res_df,
             on='ev_id',
             how='left'
-        ).drop(
-            ['index', 'ev_id'],
-            axis=1
         ).merge(
             self.mir_target_db,
             on='mirna',
             how='left'
-        )
+        ).drop('ev_id', axis=1)
 
         return res_df
 
