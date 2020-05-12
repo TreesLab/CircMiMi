@@ -106,7 +106,7 @@ class Circmimi:
         ).pipe(
             self.circ_events.expand_to_all_events,
             fillna_value=0
-        )
+        ).astype('int')
         self.circ_events.submit_to_summary(res_count_df, type_='summary')
 
         return res_df.drop('ev_id', axis=1)
