@@ -26,7 +26,8 @@ class CircEvents:
                 'pos2': 'int',
                 'strand': 'category'
             }
-        )
+        ).rename_axis('ev_id')
+
         return df
 
     @staticmethod
@@ -119,17 +120,10 @@ class CircEvents:
 
     @staticmethod
     def _merge_columns(df, column_dfs):
-        merged_df = df.reset_index().rename(
-            {
-                'index': 'ev_id'
-            },
-            axis=1
-        )
+        merged_df = df
 
         for col_df in column_dfs:
             merged_df = merged_df.merge(col_df, on='ev_id', how='left')
-
-        merged_df = merged_df.drop('ev_id', axis=1)
 
         return merged_df
 

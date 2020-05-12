@@ -145,12 +145,6 @@ class AmbiguousChecker:
         df = pd.DataFrame(
             regions,
             columns=['regions']
-        ).reset_index(
-        ).rename(
-            {
-                'index': 'regions_id'
-            },
-            axis=1
-        )
+        ).rename_axis('regions_id').reset_index()
 
         return df
