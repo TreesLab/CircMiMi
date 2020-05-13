@@ -97,8 +97,8 @@ class Circmimi:
             how='left'
         )
 
-        res_count_df = res_df[['ev_id']].assign(
-            num_of_interactions=1
+        total_count = res_df[['ev_id']].assign(
+            circRNA_miRNA_mRNA=1
         ).groupby(
             'ev_id'
         ).agg(
@@ -107,7 +107,7 @@ class Circmimi:
             self.circ_events.expand_to_all_events,
             fillna_value=0
         ).astype('int')
-        self.circ_events.submit_to_summary(res_count_df, type_='summary')
+        self.circ_events.submit_to_summary(total_count, type_='summary')
 
         return res_df.drop('ev_id', axis=1)
 
