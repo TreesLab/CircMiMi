@@ -155,13 +155,42 @@ def genmirdb(species, version, ref_dir, out_file, show_accession):
     genmirdb.generate(species, version, ref_dir, out_file, show_accession)
 
 
-@cli.command(hidden=True)
+@cli.group(hidden=True)
+def check():
+    pass
+
+
+@check.command()
+@click.argument('circ_file')
+@click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
+@click.option('-o', '--out-prefix', 'out_prefix', default='./out/', metavar="OUT_PREFIX")
+def annotation(circ_file, ref_dir, out_prefix):
+    from circmimi.config import get_refs
+    from circmimi.circ import CircEvents
+    from circmimi.utils import add_prefix
+
+    output_dir = os.path.dirname(out_prefix)
+    if output_dir == '':
+        output_dir = '.'
+
+    if output_dir != '.':
+        os.makedirs(output_dir, exist_ok=True)
+
+    anno_db, _, _, _, _ = get_refs(ref_dir)
+
+    circ_events = CircEvents(circ_file)
+    circ_events.check_annotation(anno_db)
+    res_file = add_prefix('circ.summary.tsv', out_prefix)
+    circ_events.get_summary().to_csv(res_file, sep='\t', index=False)
+
+
+@check.command()
 @click.argument('circ_file')
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
 @click.option('-o', '--out', 'output_dir', metavar="OUT_DIR", required=True)
 @click.option('-p', '--num_proc', default=1, type=click.INT, metavar="NUM_PROC",
     help="Number of processes")
-def checkaa(circ_file, ref_dir, output_dir, num_proc):
+def ambiguous(circ_file, ref_dir, output_dir, num_proc):
     os.makedirs(output_dir, exist_ok=True)
 
     from circmimi.config import get_refs
