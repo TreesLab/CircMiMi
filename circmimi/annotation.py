@@ -75,10 +75,6 @@ class Annotation:
 
         return anno_data
 
-    # @staticmethod
-    # def get_exon_region(exon):
-    #     return [exon.chr_.name, exon.start, exon.end, exon.strand.name]
-
 
 class AnnotationUtils:
     def __init__(self, anno_db_file):
@@ -115,16 +111,6 @@ class AnnotationUtils:
         ]
 
         transcripts_data_df = pd.DataFrame(transcripts_data, columns=df_cols)
-
-        if not transcripts_data_df.empty:
-            int_cols = [
-                'ev_id',
-                'exon_number_d',
-                'exon_number_a'
-            ]
-
-            transcripts_data_df[int_cols] = \
-                transcripts_data_df[int_cols].replace('NA', np.nan).astype('Int64')
 
         return transcripts_data_df
 
