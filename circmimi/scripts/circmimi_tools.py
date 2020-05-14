@@ -29,8 +29,14 @@ def cli():
 @click.option('--checkAA', 'checkAA', is_flag=True, help="Check if the circRNA has ambiguous alignments.")
 @click.option('--header', 'header', flag_value=True, type=click.BOOL,
               default=True, hidden=True)
-@click.option('--no-header', 'header', flag_value=False, type=click.BOOL)
-def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
+@click.option('--no-header', 'header', flag_value=False, type=click.BOOL, hidden=True)
+@click.option('--miranda-sc', 'sc', metavar='S', type=click.FLOAT)
+@click.option('--miranda-en', 'en', metavar='-E', type=click.FLOAT)
+@click.option('--miranda-scale', 'scale', metavar='Z', type=click.FLOAT)
+@click.option('--miranda-strict', 'strict', is_flag=True)
+@click.option('--miranda-go', 'go', metavar='-X', type=click.FLOAT)
+@click.option('--miranda-ge', 'ge', metavar='-Y', type=click.FLOAT)
+def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA, **miranda_options):
     from circmimi.utils import add_prefix
 
     output_dir = os.path.dirname(out_prefix)
@@ -51,6 +57,15 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
     else:
         other_ref_file = None
 
+    miranda_options_list = []
+    for k, v in miranda_options.items():
+        if v is not None:
+            cmd = ['-' + k]
+            if k != 'strict':
+                cmd.append(str(v))
+
+            miranda_options_list.extend(cmd)
+
     from circmimi.circmimi import Circmimi
     circmimi_result = Circmimi(
         anno_db,
@@ -59,7 +74,8 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA):
         mir_target,
         other_ref_file,
         work_dir=output_dir,
-        num_proc=num_proc
+        num_proc=num_proc,
+        miranda_options=miranda_options_list
     )
 
     circmimi_result.run(circ_file)

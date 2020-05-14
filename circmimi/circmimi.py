@@ -14,7 +14,8 @@ class Circmimi:
                  mir_target_file,
                  other_ref_file=None,
                  work_dir='.',
-                 num_proc=1):
+                 num_proc=1,
+                 miranda_options=None):
 
         self.anno_db_file = anno_db_file
         self.ref_file = ref_file
@@ -23,6 +24,7 @@ class Circmimi:
         self.other_ref_file = other_ref_file
         self.work_dir = work_dir
         self.num_proc = num_proc
+        self.miranda_options = miranda_options
 
         self.circ_events = None
         self.uniq_exons_df = None
@@ -57,7 +59,8 @@ class Circmimi:
             get_binding_sites,
             mir_ref_file=self.mir_ref_file,
             work_dir=self.work_dir,
-            num_proc=self.num_proc
+            num_proc=self.num_proc,
+            miranda_options=self.miranda_options
         ).pipe(
             MirandaUtils.append_exons_len,
             exons_len_df=self.uniq_exons_df[['exons_id', 'total_len']]

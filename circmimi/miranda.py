@@ -40,6 +40,7 @@ class Miranda:
         else:
             self.options = []
         self.options += ['-keyval']
+        self.options = list(map(str, self.options))
 
     def _generate_cmd(self, seq_file, out_file=None):
         cmd = [self.bin_path, self.ref_file, seq_file] + self.options
@@ -114,8 +115,20 @@ class Miranda:
             yield cls._get_value(m.group(1))
 
 
-def get_binding_sites(seq_df, mir_ref_file, work_dir='.', num_proc=1):
-    miranda = Miranda(mir_ref_file, work_dir=work_dir, options=['-quiet'])
+def get_binding_sites(seq_df,
+                      mir_ref_file,
+                      work_dir='.',
+                      num_proc=1,
+                      miranda_options=None):
+
+    if miranda_options is None:
+        miranda_options = []
+
+    miranda = Miranda(
+        mir_ref_file,
+        work_dir=work_dir,
+        options=['-quiet'] + miranda_options
+    )
 
     with tp.NamedTemporaryFile(dir=work_dir) as tmp_fa_file:
         with open(tmp_fa_file.name, 'w') as fa_out:
