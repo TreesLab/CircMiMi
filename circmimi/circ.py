@@ -1,5 +1,5 @@
 import pandas as pd
-from circmimi.annotation import AnnotationUtils
+from circmimi.annotation import Annotator
 from circmimi.ambiguous import AmbiguousChecker
 
 
@@ -74,18 +74,10 @@ class CircEvents:
         self._summary_columns[type_].append(summary_column)
 
     def check_annotation(self, anno_db):
-        self._anno_utils = AnnotationUtils(anno_db)
-        self.anno_df = self.df.pipe(self._anno_utils.get_annotation)
+        self._annotator = Annotator(anno_db)
+        self.anno_df, anno_status = self.df.pipe(self._annotator.annotate)
 
-        no_common_transcript_df = self.anno_df.assign(
-            no_common_transcript='0'
-        )[[
-            'ev_id',
-            'no_common_transcript'
-        ]].drop_duplicates(
-        ).pipe(self.expand_to_all_events, fillna_value='1')
-
-        self.submit_to_summary(no_common_transcript_df, type_='filters')
+        self.submit_to_summary(anno_status, type_='filters')
 
     def check_ambiguous(self,
                         ref_file,

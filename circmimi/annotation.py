@@ -76,9 +76,31 @@ class Annotation:
         return anno_data
 
 
-class AnnotationUtils:
+class Annotator:
+    _CHECK_LIST = [
+        'donor_not_annotated',
+        'acceptor_not_annotated',
+        'no_common_transcript'
+    ]
+
     def __init__(self, anno_db_file):
-        self.db = Annotation(anno_db_file)
+        self._db = Annotation(anno_db_file)
+
+    def _report_status(self, ev_id, status=None):
+        if ev_id in self._checking_result.index:
+            if status is not None:
+                self._checking_result.loc[ev_id, status] = '1'
+        else:
+            ev_status = pd.Series(
+                ['0'] * len(self._CHECK_LIST),
+                index=self._CHECK_LIST,
+                name=ev_id
+            )
+
+            if status is not None:
+                ev_status[status] = '1'
+
+            self._checking_result = self._checking_result.append(ev_status)
 
     def _get_anno_data_of_ev(self, s):
         chr_, donor_site, acceptor_site, strand = \
@@ -86,11 +108,11 @@ class AnnotationUtils:
 
         ev_id = s.name
 
-        donor = self.db.get_donor_site(chr_, donor_site, strand)
-        acceptor = self.db.get_acceptor_site(chr_, acceptor_site, strand)
+        donor = self._db.get_donor_site(chr_, donor_site, strand)
+        acceptor = self._db.get_acceptor_site(chr_, acceptor_site, strand)
 
-        donor_transcripts = self.db.get_transcripts_of_js(donor)
-        acceptor_transcripts = self.db.get_transcripts_of_js(acceptor)
+        donor_transcripts = self._db.get_transcripts_of_js(donor)
+        acceptor_transcripts = self._db.get_transcripts_of_js(acceptor)
 
         common_transcripts = sorted(
             set(donor_transcripts) & set(acceptor_transcripts),
@@ -98,7 +120,7 @@ class AnnotationUtils:
         )
 
         transcripts_data = [
-            [ev_id] + self.db.get_inter_exons_data(transcript, donor, acceptor)
+            [ev_id] + self._db.get_inter_exons_data(transcript, donor, acceptor)
             for transcript in common_transcripts
         ]
 
@@ -112,9 +134,26 @@ class AnnotationUtils:
 
         transcripts_data_df = pd.DataFrame(transcripts_data, columns=df_cols)
 
+        if common_transcripts == []:
+            if donor is None:
+                self._report_status(ev_id, self._CHECK_LIST[0])
+
+            if acceptor is None:
+                self._report_status(ev_id, self._CHECK_LIST[1])
+
+            if (donor is not None) and (acceptor is not None):
+                self._report_status(ev_id, self._CHECK_LIST[2])
+        else:
+            self._report_status(ev_id)
+
         return transcripts_data_df
 
-    def get_annotation(self, df):
+    def annotate(self, df):
+        self._checking_result = pd.DataFrame(
+            [],
+            columns=self._CHECK_LIST
+        ).rename_axis('ev_id')
+
         if df.empty:
             anno_df = pd.DataFrame(
                 [],
@@ -130,4 +169,4 @@ class AnnotationUtils:
             raw_anno_dfs = df.apply(self._get_anno_data_of_ev, axis=1)
             anno_df = pd.concat(list(raw_anno_dfs)).reset_index(drop=True)
 
-        return anno_df
+        return anno_df, self._checking_result
