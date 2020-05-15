@@ -100,6 +100,21 @@ class Circmimi:
             how='left'
         )
 
+        circ_miRNA_count = res_df[['ev_id', 'mirna']].drop_duplicates().rename(
+            {
+                'mirna': '#circRNA_miRNA'
+            },
+            axis=1
+        ).groupby(
+            'ev_id'
+        ).agg(
+            'count'
+        ).pipe(
+            self.circ_events.expand_to_all_events,
+            fillna_value=0
+        ).astype('int')
+        self.circ_events.submit_to_summary(circ_miRNA_count, type_='summary')
+
         circ_mRNA_count = res_df[['ev_id', 'target_gene']].drop_duplicates().rename(
             {
                 'target_gene': '#circRNA_mRNA'
