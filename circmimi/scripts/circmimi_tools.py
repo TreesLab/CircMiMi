@@ -3,24 +3,17 @@ import click
 import os
 
 
-@click.group(help="""
-    A toolset for investigating the interactions between circRNA, miRNA, and mRNA.
-
-    Example.                                                    
-    circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
-    circmimi_tools run -r ./refs -p 10 circ_events.tsv > out.tsv
-    """)
+@click.group()
 @click.version_option()
 def cli():
+    """
+    A toolset for investigating the interactions between circRNA, miRNA, and mRNA.
+    """
+
     pass
 
 
-@cli.command(help="""
-    Main pipeline.
-
-    Example.                                                    
-    circmimi_tools run -r ./refs -p 10 circ_events.tsv > out.tsv
-    """)
+@cli.command()
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
 @click.option('-i', '--circ', 'circ_file', metavar="CIRC_FILE", required=True)
 @click.option('-o', '--out-prefix', 'out_prefix', default='./out/', metavar="OUT_PREFIX")
@@ -37,6 +30,10 @@ def cli():
 @click.option('--miranda-go', 'go', metavar='-X', type=click.FLOAT)
 @click.option('--miranda-ge', 'ge', metavar='-Y', type=click.FLOAT)
 def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA, **miranda_options):
+    """
+    This command is the main pipeline od CircMiMi.
+    """
+
     from circmimi.utils import add_prefix
 
     output_dir = os.path.dirname(out_prefix)
@@ -87,38 +84,7 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA, **miranda_opt
     circmimi_result.save_clear_circRNAs(clear_file)
 
 
-@cli.command(help="""
-    Generate index and references.                                          
-    The generated files would be saved in the directory REF_DIR.
-
-    Example.                                                    
-    circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
-    
-    ---------------------                                                    
-    | Available Species |                                                   
-    --------------------------------------------------------------------------
-    | Key | Name                    | Ensembl | Gencode | Alternative Source |
-    | --- | ----------------------- | ------- | ------- | --------------------
-    | ath | Arabidopsis thaliana    |    *    |         | Ensembl Plants     |
-    | bmo | Bombyx mori             |    *    |         | Ensembl Metazoa    |
-    | bta | Bos taurus              |    V    |         |                    |
-    | cel | Caenorhabditis elegans  |    V    |         | Ensembl Metazoa    |
-    | cfa | Canis familiaris        |    V    |         |                    |
-    | dre | Danio rerio             |    V    |         |                    |
-    | dme | Drosophila melanogaster |    V    |         |                    |
-    | gga | Gallus gallus           |    V    |         |                    |
-    | hsa | Homo sapiens            |    V    |    V    |                    |
-    | mmu | Mus musculus            |    V    |    V    |                    |
-    | osa | Oryza sativa            |    *    |         | Ensembl Plants     |
-    | ola | Oryzias latipes         |    V    |         |                    |
-    | oar | Ovis aries              |    V    |         |                    |
-    | rno | Rattus norvegicus       |    V    |         |                    |
-    | ssc | Sus scrofa              |    V    |         |                    |
-    | tgu | Taeniopygia guttata     |    V    |         |                    |
-    | xtr | Xenopus tropicalis      |    V    |         |                    |
-    --------------------------------------------------------------------------
-    * Only in the alternative source
-    """)
+@cli.command()
 @click.option('--species', 'species', metavar="SPECIES_KEY", required=True)
 @click.option('--source', 'source', metavar="SOURCE", required=True,
     help="""
@@ -133,6 +99,12 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA, **miranda_opt
 @click.option('--init', 'init', is_flag=True, help="Create an init template ref_dir.", hidden=True)
 @click.argument('ref_dir')
 def genref(species, source, version, ref_dir, init):
+    """
+    Generate the references.                                          
+    
+    The generated reference files will be saved in the REF_DIR.
+    """
+
     os.makedirs(ref_dir, exist_ok=True)
 
     from circmimi.config import RefConfig
@@ -225,8 +197,12 @@ def ambiguous(circ_file, ref_dir, output_dir, num_proc):
     circ_events.get_summary().to_csv(result_file, sep='\t', index=False)
 
 
-@cli.group(hidden=True)
+@cli.group()
 def network():
+    """
+    Command to create the network file for Cytoscape.
+    """
+
     pass
 
 
@@ -236,6 +212,13 @@ def network():
 @click.option('-f', '--format', 'format_', default='xgmml',
               help="Assign the format of the OUT_FILE.", hidden=True)
 def create(in_file, out_file, format_):
+    """
+    Create the network file.
+
+    This command would transform the IN_FILE to XGMML format,
+    and save to OUT_FILE.
+    """
+
     from circmimi.network.network import CyNetwork, Layout, Style
 
     network = CyNetwork()
@@ -251,7 +234,7 @@ def create(in_file, out_file, format_):
         network.to_xgmml(out_file)
 
 
-@cli.group()
+@cli.group(hidden=True)
 def update_mirna():
     pass
 
