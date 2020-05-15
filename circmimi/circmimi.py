@@ -102,7 +102,7 @@ class Circmimi:
 
         circ_mRNA_count = res_df[['ev_id', 'target_gene']].drop_duplicates().rename(
             {
-                'target_gene': 'circRNA_mRNA'
+                'target_gene': '#circRNA_mRNA'
             },
             axis=1
         ).groupby(
@@ -124,7 +124,12 @@ class Circmimi:
         ).pipe(
             self.circ_events.expand_to_all_events,
             fillna_value=0
-        ).astype('int')
+        ).astype('int').rename(
+            {
+                'circRNA_miRNA_mRNA': '#circRNA_miRNA_mRNA'
+            },
+            axis=1
+        )
         self.circ_events.submit_to_summary(total_count, type_='summary')
 
         return res_df.drop('ev_id', axis=1)

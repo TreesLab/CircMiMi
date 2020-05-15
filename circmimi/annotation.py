@@ -78,9 +78,9 @@ class Annotation:
 
 class Annotator:
     _CHECK_LIST = [
-        'donor_not_annotated',
-        'acceptor_not_annotated',
-        'no_common_transcript'
+        'donor site not at the annotated boundary',
+        'acceptor site not at the annotated boundary',
+        'donor/acceptor sites not at the same transcript isoform'
     ]
 
     def __init__(self, anno_db_file):

@@ -98,6 +98,11 @@ class CircEvents:
         ).pipe(
             self.expand_to_all_events,
             fillna_value='0'
+        ).rename(
+            {
+                'colinear': 'ambiguity with an co-linear explanation'
+            },
+            axis=1
         )
 
         multiple_hits_df = self.checker.multiple_hits_result.assign(
@@ -105,6 +110,11 @@ class CircEvents:
         ).pipe(
             self.expand_to_all_events,
             fillna_value='0'
+        ).rename(
+            {
+                'multiple_hits': 'ambiguity with multiple hits'
+            },
+            axis=1
         )
 
         self.submit_to_summary(colinear_df, type_='filters')
