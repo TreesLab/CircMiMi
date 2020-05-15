@@ -46,7 +46,7 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA, **miranda_opt
     from circmimi.config import get_refs
     anno_db, ref_file, mir_ref, mir_target, other_transcripts = get_refs(ref_dir)
 
-    summary_file = add_prefix('circ.summary.tsv', out_prefix)
+    summary_file = add_prefix('summary_list.tsv', out_prefix)
     clear_file = add_prefix('circ.clear.tsv', out_prefix)
 
     if checkAA:
@@ -78,7 +78,7 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA, **miranda_opt
     circmimi_result.run(circ_file)
 
     result_table = circmimi_result.get_result_table()
-    res_file = add_prefix('out.tsv', out_prefix)
+    res_file = add_prefix('all_interactions.tsv', out_prefix)
     result_table.to_csv(res_file, sep='\t', index=False, header=header)
     circmimi_result.save_circRNAs_summary(summary_file)
     circmimi_result.save_clear_circRNAs(clear_file)
@@ -168,7 +168,7 @@ def annotation(circ_file, ref_dir, out_prefix):
 
     circ_events = CircEvents(circ_file)
     circ_events.check_annotation(anno_db)
-    res_file = add_prefix('circ.summary.tsv', out_prefix)
+    res_file = add_prefix('circ.summary_list.tsv', out_prefix)
     circ_events.get_summary().to_csv(res_file, sep='\t', index=False)
 
 
@@ -193,7 +193,7 @@ def ambiguous(circ_file, ref_dir, output_dir, num_proc):
         num_proc=num_proc
     )
 
-    result_file = os.path.join(output_dir, 'circ.summary.tsv')
+    result_file = os.path.join(output_dir, 'circ.summary_list.tsv')
     circ_events.get_summary().to_csv(result_file, sep='\t', index=False)
 
 
