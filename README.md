@@ -18,6 +18,7 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
         - [summary_list.tsv](#summary_listtsv)
         - [all_interactions.tsv](#all_interactionstsv)
     - [Create the network file for Cytoscape](#create-the-network-file-for-cytoscape)
+      - [Parameters](#parameters-2)
 
 
 # Requirements
@@ -228,4 +229,11 @@ The summary list contains the counts of interactions and some checking results o
 circmimi_tools network create IN_FILE OUT_FILE
 ```
 
-We may use the subcommand to create the network file (in XGMML format), which can be load into the Cytoscape to visualize the network.
+### Parameters
+Parameter     | Description
+:------------ | :------------------------------
+IN_FILE       | Input the file "all_interactions.tsv" produced from the CircMiMi main pipeline.
+OUT_FILE      | The output filename. The file extension should be ".xgmml" or ".xml", so that the Cytoscape would recognize this file as an XGMML network file.
+
+
+We may use this subcommand to create the network file (in XGMML format), which can be loaded into the Cytoscape to visualize the network.
