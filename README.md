@@ -157,8 +157,9 @@ Parameters | Description
 
 
 
+### Input file
 
-The input format for the CIRC_FILE.
+The input file(CIRC_FILE) is a TAB-separated file with the following columns:
 
 \#   | Column  | Description
 :--: | :-----: | :----------
@@ -172,11 +173,38 @@ The input format for the CIRC_FILE.
   - For example, "1" for "ensembl", and "chr1" for "gencode".
 
 
-### Output format
-CircMiMi appends the following columns to the original input.
+### Output files
+The main pipeline of CircMiMi outputs two main files: "summary_list.tsv" and "all_interactions.tsv".
+
+
+#### summary_list.tsv
+The summary list contains the counts of interactions and some checking results of the circRNAs.
 
 \#   | Column          | Description
-:--: | :-------------: | :----------
+:--: | :-------------- | :----------
+  1  |  chr            | Chromosome name
+  2  |  pos1           | One of the position of the circRNA junction site
+  3  |  pos2           | Another position of the circRNA junction site
+  4  |  strand         | + / -
+  5  |  pass           | 'yes' for the circRNA passing all of the checking items (column 9 to 13). Otherwise 'no'.
+  6  |  #circRNA_miRNA | Count for the circRNA-miRNA interactions.
+  7  |  #circRNA_mRNA  | Count for the circRNA-mRNA interactions.
+  8  |  #circRNA_miRNA_mRNA | Count for the circRNA-miRNA-mRNA interactions.
+  9  |  donor site not at the annotated boundary | '1' if the donor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
+ 10  |  acceptor site not at the annotated boundary | '1' if the acceptor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
+ 11  |  donor/acceptor sites not at the same transcript isoform | '1' if the donor and acceptor are not at the same annotated transcript isoform. Otherwise '0'.
+ 12  |  ambiguity with an co-linear explanation | '1' if the merged flanking sequence of the circRNA junction sites has an co-linear explanation. Otherwise '0'.
+ 13  |  ambiguity with multiple hits | '1' if the merged flanking sequence of the circRNA junction sites is with multiple hits. Otherwise '0'.
+
+
+#### all_interactions.tsv
+
+\#   | Column          | Description
+:--: | :-------------- | :----------
+  1  |  chr            | Chromosome name
+  2  |  pos1           | One of the position of the circRNA junction site
+  3  |  pos2           | Another position of the circRNA junction site
+  4  |  strand         | + / -
   5  |  host_gene      | Host gene of the circRNA
   6  |  mirna          | The miRNA which may bind on the circRNA
   7  |  max_score      | The maximum binding score reported by miRanda
