@@ -31,21 +31,21 @@ The recommended way is via `conda`, a package and environment management system.
 
 
 You may install `circmimi` by the following steps:
-```
+```bash
 $ conda create -n circmimi python3
 $ conda activate circmimi
 $ pip install circmimi
 ```
 
 For the external tools, they can also be installed via `conda` with the `bioconda`(https://bioconda.github.io/) channel:
-```
+```bash
 $ conda install -c bioconda bedtools miranda blat
 ```
 
 
 
 Now, you can try the following command to test the installation,
-```
+```bash
 $ circmimi_tools --help
 ```
 it should print out with the help messages.
@@ -55,20 +55,22 @@ it should print out with the help messages.
 # Quick Start
 
 1. Generate the references
-```
+
+```bash
 $ circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
 ```
 
 
 2. Run the main pipeline of CircMiMi
 
-```
+```bash
 $ circmimi_tools run -r ./refs -i circRNAs.tsv -o ./out/ -p 5 --checkAA
 ```
 
 
 3. Create the network file for Cytoscape
-```
+
+```bash
 $ circmimi_tools network create ./out/out.tsv ./out/out.xgmml
 ```
 
@@ -80,8 +82,8 @@ $ circmimi_tools network create ./out/out.tsv ./out/out.xgmml
 circmimi_tools genref --species SPECIES --source SOURCE [--version RELEASE_VER] REF_DIR
 ```
 
-### Options
-Option                | Description
+### Parameters
+Parameter             | Description
 :-------------------- | :------------------------------
 --species SPECIES     | Assign the species for references. Use the species code for SPECIES. ***[required]***
 --source SOURCE       | Available values for SOURCE: "ensembl", "ensembl_plants", "ensembl_metazoa", "gencode". ***[required]***
@@ -133,8 +135,8 @@ xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |
 circmimi_tools run -r REF_DIR -i CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC] [--checkAA]
 ```
 
-### Options
-Option                      | Description
+### Parameters
+Parameter                   | Description
 :-------------------------- | :------------------------------
 -r, --ref REF_DIR           | The directory of the pre-genereated reference files. ***[required]***
 -i, --circ CIRC_FILE        | The file of circRNAs. ***[required]***
