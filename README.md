@@ -64,7 +64,7 @@ $ circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
 2. Run the main pipeline of CircMiMi
 
 ```bash
-$ circmimi_tools run -r ./refs -i circRNAs.tsv -o ./out/ -p 5 --checkAA
+$ circmimi_tools run -r ./refs -i circRNAs.tsv -o ./out/ -p 5 --checkAA --miranda-sc 175
 ```
 
 
@@ -144,8 +144,19 @@ Parameter                   | Description
 -p, --num_proc NUM_PROC     | Assign the number of processes.
 --checkAA                   | Check the circRNAs if there are ambiguous alignments.
 
+And there are some parameters for tuning the process of [**miRanda**](http://cbio.mskcc.org/microrna_data/manual.html):
 
-### Input format
+Parameters | Description
+:-------------------------- | :------------------------------
+--miranda-sc SCORE | Set the alignment score threshold to SCORE. Only alignments with scores >= SCORE will be used for further analysis. (default: 140.0)
+--miranda-en ENERGY | Set the energy threshold to ENERGY. Only alignments with energies <= ENERGY will be used for further analysis. A negative value is required for filtering to occur. (default: 1.0)
+--miranda-scale SCALE | Set the scaling parameter to SCALE. This scaling is applied to match / mismatch scores in the critical 7bp region near the 5' end of the microRNA. Many known examples of miRNA:Target duplexes are highly complementary in this region. This parameter can be thought of as a contrast function to more effectively detect alignments of this type. (default: 4.0)
+--miranda-strict | Require strict alignment in the seed region (offset positions 2-8). This option prevents the detection of target sites which contain gaps or non-cannonical base pairing in this region.
+--miranda-go X | Set the gap-opening penalty to X for alignments. This value must be negative. (default: -4.0)
+--miranda-ge Y | Set the gap-extend penalty to Y for alignments. This value must be negative. (default: -9.0)
+
+
+
 
 The input format for the CIRC_FILE.
 
