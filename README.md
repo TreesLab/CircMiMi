@@ -236,4 +236,4 @@ IN_FILE       | Input the file "all_interactions.tsv" produced from the CircMiMi
 OUT_FILE      | The output filename. The file extension should be ".xgmml" or ".xml", so that the Cytoscape would recognize this file as an XGMML network file.
 
 
-We may use this subcommand to create the network file (in XGMML format), which can be loaded into the Cytoscape to visualize the network.
+This command can generate a Cytoscape-executable file (.xgmml) for visualization of the input circRNA-miRNA-mRNA regulatory axes in Cytoscape.
