@@ -9,10 +9,14 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
 - [Quick Start](#quick-start)
 - [Usage](#usage)
     - [Generate the references](#generate-the-references)
-        - [Available species and sources](#available-species-and-sources)
+      - [Parameters](#parameters)
+      - [Available species and sources](#available-species-and-sources)
     - [Run the main pipeline](#run-the-main-pipeline)
-      - [Input format](#input-format)
-      - [Output format](#output-format)
+      - [Parameters](#parameters-1)
+      - [Input file](#input-file)
+      - [Output files](#output-files)
+        - [summary_list.tsv](#summary_listtsv)
+        - [all_interactions.tsv](#all_interactionstsv)
     - [Create the network file for Cytoscape](#create-the-network-file-for-cytoscape)
 
 
