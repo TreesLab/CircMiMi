@@ -136,7 +136,8 @@ xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |
 ## Run the main pipeline
 
 ```
-circmimi_tools run -r REF_DIR -i CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC] [--checkAA]
+circmimi_tools run -r REF_DIR -i CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC] [--checkAA] \
+[--miranda-sc SCORE] [--miranda-en ENERGY] [--miranda-scale SCALE] [--miranda-strict] [--miranda-go X] [--miranda-ge Y]
 ```
 
 ### Parameters
@@ -148,7 +149,7 @@ Parameter                   | Description
 -p, --num_proc NUM_PROC     | Assign the number of processes.
 --checkAA                   | Check the circRNAs if there are ambiguous alignments.
 
-And there are some parameters for tuning the process of [**miRanda**](http://cbio.mskcc.org/microrna_data/manual.html):
+The miRanda parameters are also available (see [the manual of miRanda](http://cbio.mskcc.org/microrna_data/manual.html)).
 
 Parameters | Description
 :-------------------------- | :------------------------------
