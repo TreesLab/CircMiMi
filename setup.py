@@ -46,5 +46,6 @@ setup(
     },
     description=("A toolset for investigating the interactions between"
                  " circRNA - miRNA - mRNA."),
-    long_description=long_description
+    long_description=long_description,
+    long_description_content_type="text/markdown"
 )
