@@ -73,19 +73,21 @@ class CircEvents:
     def submit_to_summary(self, summary_column, type_):
         self._summary_columns[type_].append(summary_column)
 
-    def check_annotation(self, anno_db):
-        self._annotator = Annotator(anno_db)
+    def check_annotation(self, anno_db_file):
+        self._annotator = Annotator(anno_db_file)
         self.anno_df, anno_status = self.df.pipe(self._annotator.annotate)
 
         self.submit_to_summary(anno_status, type_='filters')
 
     def check_ambiguous(self,
+                        anno_db_file,
                         ref_file,
                         other_ref_file,
                         work_dir='.',
                         num_proc=1):
 
         self.checker = AmbiguousChecker(
+            anno_db_file,
             ref_file,
             other_ref_file,
             work_dir=work_dir,
