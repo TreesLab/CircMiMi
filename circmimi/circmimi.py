@@ -89,15 +89,15 @@ class Circmimi:
         res_df = self.circ_events.clear_df.reset_index().merge(
             self.gene_symbol_df,
             on='ev_id',
-            how='left'
+            how='inner'
         ).merge(
             self.grouped_res_df,
             on='ev_id',
-            how='left'
+            how='inner'
         ).merge(
             self.mir_target_db,
             on='mirna',
-            how='left'
+            how='inner'
         )
 
         circ_miRNA_count = res_df[['ev_id', 'mirna']].drop_duplicates().rename(
