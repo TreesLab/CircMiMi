@@ -5,10 +5,17 @@ from functools import reduce
 from circmimi.bed import BedUtils
 from circmimi.seq import Seq
 from circmimi.blat import Blat, PslFilters, PslUtils
+from circmimi.annotation import Annotation
 
 
 class AmbiguousChecker:
+    _CHECK_LIST = [
+        'ambiguity with an co-linear explanation',
+        'ambiguity with multiple hits'
+    ]
+
     def __init__(self,
+                 anno_db_file,
                  ref_file,
                  other_ref_file,
                  work_dir='.',
@@ -21,17 +28,19 @@ class AmbiguousChecker:
         self.blat_bin = blat_bin
         self.mp_blat_bin = mp_blat_bin
 
+        self.anno_db = Annotation(anno_db_file)
         self.ref_file = ref_file
         self.other_ref_file = other_ref_file
 
     def check(self, circ_df):
+        self._init_status(circ_df)
 
         # 1. get flanking sequences
         flanking_regions = circ_df.apply(
             self._get_flanking_region,
             axis=1
         )
-        flanking_regions_df = self._to_regions_df(flanking_regions)
+        flanking_regions_df = self._to_regions_df(flanking_regions).dropna()
         flanking_seq_df = flanking_regions_df.pipe(
             BedUtils.to_bed_df
         ).pipe(
@@ -121,22 +130,70 @@ class AmbiguousChecker:
             self._all_colinear_ids
         )
 
-        self.colinear_result = pd.DataFrame(self._all_colinear_ids, columns=['ev_id'])
-        self.multiple_hits_result = pd.DataFrame(self._all_multiple_hits_ids, columns=['ev_id'])
+        for id_ in self._all_colinear_ids:
+            self._report_status(id_, self._CHECK_LIST[0])
 
-    @staticmethod
-    def _get_flanking_region(circ_data):
+        for id_ in self._all_multiple_hits_ids:
+            self._report_status(id_, self._CHECK_LIST[1])
+
+        return self._checking_result
+
+    def _get_flanking_region(self, circ_data):
         chr_ = circ_data.chr
-        donor = circ_data.donor
-        acceptor = circ_data.acceptor
+        donor_site = circ_data.donor
+        acceptor_site = circ_data.acceptor
         strand = circ_data.strand
 
+        ev_id = circ_data.name
+
+        donor = self.anno_db\
+            .get_nearest_donor_site(chr_, donor_site, strand, dist=5)
+        acceptor = self.anno_db\
+            .get_nearest_acceptor_site(chr_, acceptor_site, strand, dist=5)
+
+        if (donor is None) or (acceptor is None):
+            self._report_status(ev_id, self._CHECK_LIST[0], np.nan)
+            self._report_status(ev_id, self._CHECK_LIST[1], np.nan)
+            return np.nan
+
+        donor_site = donor.junc_site
+        donor_exon = max(donor.exons, key=lambda exon: len(exon))
+        donor_acceptor = donor_exon.acceptor.junc_site
+
+        acceptor_site = acceptor.junc_site
+        acceptor_exon = max(acceptor.exons, key=lambda exon: len(exon))
+        acceptor_donor = acceptor_exon.donor.junc_site
+
         if strand == '+':
-            donor_flanking = [chr_, donor - 99, donor, strand]
-            acceptor_flanking = [chr_, acceptor, acceptor + 99, strand]
+
+            donor_flanking = [
+                chr_,
+                max(donor_site - 99, donor_acceptor),
+                donor_site,
+                strand
+            ]
+
+            acceptor_flanking = [
+                chr_,
+                acceptor_site,
+                min(acceptor_site + 99, acceptor_donor),
+                strand
+            ]
+
         elif strand == "-":
-            donor_flanking = [chr_, donor, donor + 99, strand]
-            acceptor_flanking = [chr_, acceptor - 99, acceptor, strand]
+            donor_flanking = [
+                chr_,
+                donor_site,
+                min(donor_site + 99, donor_acceptor),
+                strand
+            ]
+
+            acceptor_flanking = [
+                chr_,
+                max(acceptor_site - 99, acceptor_donor),
+                acceptor_site,
+                strand
+            ]
 
         return [donor_flanking, acceptor_flanking]
 
@@ -148,3 +205,28 @@ class AmbiguousChecker:
         ).rename_axis('regions_id').reset_index()
 
         return df
+
+    def _init_status(self, circ_df):
+        self._checking_result = pd.DataFrame(
+            [],
+            columns=self._CHECK_LIST
+        ).rename_axis('ev_id')
+
+        for id_ in circ_df.index:
+            self._report_status(id_)
+
+    def _report_status(self, ev_id, status=None, value='1', init_value='0'):
+        if ev_id in self._checking_result.index:
+            if status is not None:
+                self._checking_result.loc[ev_id, status] = value
+        else:
+            ev_status = pd.Series(
+                [init_value] * len(self._CHECK_LIST),
+                index=self._CHECK_LIST,
+                name=ev_id
+            )
+
+            if status is not None:
+                ev_status[status] = value
+
+            self._checking_result = self._checking_result.append(ev_status)

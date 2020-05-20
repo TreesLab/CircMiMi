@@ -31,7 +31,7 @@ def cli():
 @click.option('--miranda-ge', 'ge', metavar='-Y', type=click.FLOAT)
 def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA, **miranda_options):
     """
-    This command is the main pipeline od CircMiMi.
+    This command is the main pipeline of CircMiMi.
     """
 
     from circmimi.utils import add_prefix
@@ -182,11 +182,12 @@ def ambiguous(circ_file, ref_dir, output_dir, num_proc):
     os.makedirs(output_dir, exist_ok=True)
 
     from circmimi.config import get_refs
-    _, ref_file, _, _, other_transcripts = get_refs(ref_dir)
+    anno_db, ref_file, _, _, other_transcripts = get_refs(ref_dir)
 
     from circmimi.circ import CircEvents
     circ_events = CircEvents(circ_file)
     circ_events.check_ambiguous(
+        anno_db,
         ref_file,
         other_transcripts,
         work_dir=output_dir,

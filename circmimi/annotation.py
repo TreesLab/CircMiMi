@@ -31,11 +31,40 @@ class Annotation:
 
         return result.first()
 
+    def _get_nearest_junc_site(self, JuncSiteType, chr_name, pos, strand=None, dist=None):
+        query_result = self.session\
+            .query(JuncSiteType)\
+            .filter_by(chr_id=self.chr_dict[chr_name])
+
+        if strand is not None:
+            query_result = query_result\
+                .filter_by(strand_id=self.strand_dict[strand])
+
+        up_result = query_result.filter(JuncSiteType.junc_site >= pos).first()
+        down_result = query_result\
+            .filter(JuncSiteType.junc_site <= pos)\
+            .order_by(JuncSiteType.id.desc()).first()
+
+        result = min([up_result, down_result],
+                     key=lambda JuncSite: abs(JuncSite.junc_site - pos))
+
+        if dist is not None:
+            if abs(result.junc_site - pos) > dist:
+                result = None
+
+        return result
+
     def get_donor_site(self, chr_name, pos, strand=None):
         return self._get_junc_site(DonorSite, chr_name, pos, strand)
 
     def get_acceptor_site(self, chr_name, pos, strand=None):
         return self._get_junc_site(AcceptorSite, chr_name, pos, strand)
+
+    def get_nearest_donor_site(self, chr_name, pos, strand=None, dist=None):
+        return self._get_nearest_junc_site(DonorSite, chr_name, pos, strand, dist)
+
+    def get_nearest_acceptor_site(self, chr_name, pos, strand=None, dist=None):
+        return self._get_nearest_junc_site(AcceptorSite, chr_name, pos, strand, dist)
 
     @staticmethod
     def get_transcripts_of_exons(exons):

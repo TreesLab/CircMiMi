@@ -11,7 +11,7 @@ class CircEvents:
 
         self._summary_columns = {
             'summary': [],
-            'filters': [],
+            'filters': []
         }
 
     @staticmethod
@@ -73,52 +73,29 @@ class CircEvents:
     def submit_to_summary(self, summary_column, type_):
         self._summary_columns[type_].append(summary_column)
 
-    def check_annotation(self, anno_db):
-        self._annotator = Annotator(anno_db)
+    def check_annotation(self, anno_db_file):
+        self._annotator = Annotator(anno_db_file)
         self.anno_df, anno_status = self.df.pipe(self._annotator.annotate)
 
         self.submit_to_summary(anno_status, type_='filters')
 
     def check_ambiguous(self,
+                        anno_db_file,
                         ref_file,
                         other_ref_file,
                         work_dir='.',
                         num_proc=1):
 
         self.checker = AmbiguousChecker(
+            anno_db_file,
             ref_file,
             other_ref_file,
             work_dir=work_dir,
             num_proc=num_proc
         )
-        self.checker.check(self.df)
+        checking_result = self.checker.check(self.df)
 
-        colinear_df = self.checker.colinear_result.assign(
-            colinear='1'
-        ).pipe(
-            self.expand_to_all_events,
-            fillna_value='0'
-        ).rename(
-            {
-                'colinear': 'ambiguity with an co-linear explanation'
-            },
-            axis=1
-        )
-
-        multiple_hits_df = self.checker.multiple_hits_result.assign(
-            multiple_hits='1'
-        ).pipe(
-            self.expand_to_all_events,
-            fillna_value='0'
-        ).rename(
-            {
-                'multiple_hits': 'ambiguity with multiple hits'
-            },
-            axis=1
-        )
-
-        self.submit_to_summary(colinear_df, type_='filters')
-        self.submit_to_summary(multiple_hits_df, type_='filters')
+        self.submit_to_summary(checking_result, type_='filters')
 
     @staticmethod
     def _merge_columns(df, column_dfs):
@@ -135,7 +112,7 @@ class CircEvents:
             self._summary_columns['filters']
         )
 
-        pass_column = filters_df.set_index(
+        pass_column = filters_df.fillna('2').set_index(
             'ev_id'
         ).agg(
             'sum',
@@ -151,7 +128,7 @@ class CircEvents:
 
         summary_df = self.original_df.reset_index().pipe(
             self._merge_columns,
-            [pass_column] + self._summary_columns['summary'] + [filters_df]
+            [pass_column] + self._summary_columns['summary'] + [filters_df.fillna('NA')]
         ).set_index('ev_id')
 
         return summary_df

@@ -40,6 +40,7 @@ class Circmimi:
 
         if self.other_ref_file is not None:
             self.circ_events.check_ambiguous(
+                self.anno_db_file,
                 self.ref_file,
                 self.other_ref_file,
                 work_dir=self.work_dir,
