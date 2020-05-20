@@ -43,7 +43,7 @@ class Annotation:
         up_result = query_result.filter(JuncSiteType.junc_site >= pos).first()
         down_result = query_result\
             .filter(JuncSiteType.junc_site <= pos)\
-            .order_by(DonorSite.id.desc()).first()
+            .order_by(JuncSiteType.id.desc()).first()
 
         result = min([up_result, down_result],
                      key=lambda JuncSite: abs(JuncSite.junc_site - pos))
