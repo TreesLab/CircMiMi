@@ -11,7 +11,7 @@ class CircEvents:
 
         self._summary_columns = {
             'summary': [],
-            'filters': [],
+            'filters': []
         }
 
     @staticmethod
@@ -94,7 +94,6 @@ class CircEvents:
             num_proc=num_proc
         )
         checking_result = self.checker.check(self.df)
-        checking_result = checking_result.drop(self.checker._CHECK_LIST[2], axis=1)
 
         self.submit_to_summary(checking_result, type_='filters')
 

@@ -11,8 +11,7 @@ from circmimi.annotation import Annotation
 class AmbiguousChecker:
     _CHECK_LIST = [
         'ambiguity with an co-linear explanation',
-        'ambiguity with multiple hits',
-        'donor/acceptor not around annotated boundaries'
+        'ambiguity with multiple hits'
     ]
 
     def __init__(self,
@@ -153,7 +152,6 @@ class AmbiguousChecker:
             .get_nearest_acceptor_site(chr_, acceptor_site, strand, dist=5)
 
         if (donor is None) or (acceptor is None):
-            self._report_status(ev_id, self._CHECK_LIST[2])
             self._report_status(ev_id, self._CHECK_LIST[0], np.nan)
             self._report_status(ev_id, self._CHECK_LIST[1], np.nan)
             return np.nan
