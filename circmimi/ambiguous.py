@@ -34,7 +34,7 @@ class AmbiguousChecker:
             self._get_flanking_region,
             axis=1
         )
-        flanking_regions_df = self._to_regions_df(flanking_regions)
+        flanking_regions_df = self._to_regions_df(flanking_regions).dropna()
         flanking_seq_df = flanking_regions_df.pipe(
             BedUtils.to_bed_df
         ).pipe(
@@ -135,12 +135,16 @@ class AmbiguousChecker:
 
         donor = self.anno_db\
             .get_nearest_donor_site(chr_, donor_site, strand, dist=5)
+        acceptor = self.anno_db\
+            .get_nearest_acceptor_site(chr_, acceptor_site, strand, dist=5)
+
+        if (donor is None) or (acceptor is None):
+            return np.nan
+
         donor_site = donor.junc_site
         donor_exon = max(donor.exons, key=lambda exon: len(exon))
         donor_acceptor = donor_exon.acceptor.junc_site
 
-        acceptor = self.anno_db\
-            .get_nearest_acceptor_site(chr_, acceptor_site, strand, dist=5)
         acceptor_site = acceptor.junc_site
         acceptor_exon = max(acceptor.exons, key=lambda exon: len(exon))
         acceptor_donor = acceptor_exon.donor.junc_site
