@@ -93,34 +93,9 @@ class CircEvents:
             work_dir=work_dir,
             num_proc=num_proc
         )
-        self.checker.check(self.df)
+        checking_result = self.checker.check(self.df)
 
-        colinear_df = self.checker.colinear_result.assign(
-            colinear='1'
-        ).pipe(
-            self.expand_to_all_events,
-            fillna_value='0'
-        ).rename(
-            {
-                'colinear': 'ambiguity with an co-linear explanation'
-            },
-            axis=1
-        )
-
-        multiple_hits_df = self.checker.multiple_hits_result.assign(
-            multiple_hits='1'
-        ).pipe(
-            self.expand_to_all_events,
-            fillna_value='0'
-        ).rename(
-            {
-                'multiple_hits': 'ambiguity with multiple hits'
-            },
-            axis=1
-        )
-
-        self.submit_to_summary(colinear_df, type_='filters')
-        self.submit_to_summary(multiple_hits_df, type_='filters')
+        self.submit_to_summary(checking_result, type_='filters')
 
     @staticmethod
     def _merge_columns(df, column_dfs):

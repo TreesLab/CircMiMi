@@ -9,6 +9,12 @@ from circmimi.annotation import Annotation
 
 
 class AmbiguousChecker:
+    _CHECK_LIST = [
+        'ambiguity with an co-linear explanation',
+        'ambiguity with multiple hits',
+        'donor/acceptor not around annotated boundaries'
+    ]
+
     def __init__(self,
                  anno_db_file,
                  ref_file,
@@ -28,6 +34,7 @@ class AmbiguousChecker:
         self.other_ref_file = other_ref_file
 
     def check(self, circ_df):
+        self._init_status(circ_df)
 
         # 1. get flanking sequences
         flanking_regions = circ_df.apply(
@@ -124,8 +131,13 @@ class AmbiguousChecker:
             self._all_colinear_ids
         )
 
-        self.colinear_result = pd.DataFrame(self._all_colinear_ids, columns=['ev_id'])
-        self.multiple_hits_result = pd.DataFrame(self._all_multiple_hits_ids, columns=['ev_id'])
+        for id_ in self._all_colinear_ids:
+            self._report_status(id_, self._CHECK_LIST[0])
+
+        for id_ in self._all_multiple_hits_ids:
+            self._report_status(id_, self._CHECK_LIST[1])
+
+        return self._checking_result
 
     def _get_flanking_region(self, circ_data):
         chr_ = circ_data.chr
@@ -190,3 +202,28 @@ class AmbiguousChecker:
         ).rename_axis('regions_id').reset_index()
 
         return df
+
+    def _init_status(self, circ_df):
+        self._checking_result = pd.DataFrame(
+            [],
+            columns=self._CHECK_LIST
+        ).rename_axis('ev_id')
+
+        for id_ in circ_df.index:
+            self._report_status(id_)
+
+    def _report_status(self, ev_id, status=None):
+        if ev_id in self._checking_result.index:
+            if status is not None:
+                self._checking_result.loc[ev_id, status] = '1'
+        else:
+            ev_status = pd.Series(
+                ['0'] * len(self._CHECK_LIST),
+                index=self._CHECK_LIST,
+                name=ev_id
+            )
+
+            if status is not None:
+                ev_status[status] = '1'
+
+            self._checking_result = self._checking_result.append(ev_status)
