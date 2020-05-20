@@ -94,6 +94,7 @@ class CircEvents:
             num_proc=num_proc
         )
         checking_result = self.checker.check(self.df)
+        checking_result = checking_result.drop(self.checker._CHECK_LIST[2], axis=1)
 
         self.submit_to_summary(checking_result, type_='filters')
 
@@ -112,7 +113,7 @@ class CircEvents:
             self._summary_columns['filters']
         )
 
-        pass_column = filters_df.set_index(
+        pass_column = filters_df.fillna('2').set_index(
             'ev_id'
         ).agg(
             'sum',
@@ -128,7 +129,7 @@ class CircEvents:
 
         summary_df = self.original_df.reset_index().pipe(
             self._merge_columns,
-            [pass_column] + self._summary_columns['summary'] + [filters_df]
+            [pass_column] + self._summary_columns['summary'] + [filters_df.fillna('NA')]
         ).set_index('ev_id')
 
         return summary_df

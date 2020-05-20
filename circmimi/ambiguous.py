@@ -145,12 +145,17 @@ class AmbiguousChecker:
         acceptor_site = circ_data.acceptor
         strand = circ_data.strand
 
+        ev_id = circ_data.name
+
         donor = self.anno_db\
             .get_nearest_donor_site(chr_, donor_site, strand, dist=5)
         acceptor = self.anno_db\
             .get_nearest_acceptor_site(chr_, acceptor_site, strand, dist=5)
 
         if (donor is None) or (acceptor is None):
+            self._report_status(ev_id, self._CHECK_LIST[2])
+            self._report_status(ev_id, self._CHECK_LIST[0], np.nan)
+            self._report_status(ev_id, self._CHECK_LIST[1], np.nan)
             return np.nan
 
         donor_site = donor.junc_site
@@ -212,18 +217,18 @@ class AmbiguousChecker:
         for id_ in circ_df.index:
             self._report_status(id_)
 
-    def _report_status(self, ev_id, status=None):
+    def _report_status(self, ev_id, status=None, value='1', init_value='0'):
         if ev_id in self._checking_result.index:
             if status is not None:
-                self._checking_result.loc[ev_id, status] = '1'
+                self._checking_result.loc[ev_id, status] = value
         else:
             ev_status = pd.Series(
-                ['0'] * len(self._CHECK_LIST),
+                [init_value] * len(self._CHECK_LIST),
                 index=self._CHECK_LIST,
                 name=ev_id
             )
 
             if status is not None:
-                ev_status[status] = '1'
+                ev_status[status] = value
 
             self._checking_result = self._checking_result.append(ev_status)
