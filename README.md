@@ -44,7 +44,7 @@ $ pip install circmimi
 
 For the external tools, they can also be installed via `conda` with the `bioconda`(https://bioconda.github.io/) channel:
 ```bash
-$ conda install -c bioconda bedtools miranda blat
+$ conda install -c bioconda bedtools=2.29.0 miranda blat
 ```
 
 
