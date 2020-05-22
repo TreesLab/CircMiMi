@@ -150,6 +150,9 @@ class Circmimi:
 
         return res_df.drop('ev_id', axis=1)
 
+    def save_result(self, out_file):
+        self.get_result_table().to_csv(out_file, sep='\t', index=False)
+
     def save_circRNAs_summary(self, out_file):
         self.circ_events.get_summary().to_csv(out_file, sep='\t', index=False)
 

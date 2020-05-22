@@ -20,16 +20,13 @@ def cli():
 @click.option('-p', '--num_proc', default=1, type=click.INT, metavar="NUM_PROC",
     help="Number of processes")
 @click.option('--checkAA', 'checkAA', is_flag=True, help="Check if the circRNA has ambiguous alignments.")
-@click.option('--header', 'header', flag_value=True, type=click.BOOL,
-              default=True, hidden=True)
-@click.option('--no-header', 'header', flag_value=False, type=click.BOOL, hidden=True)
 @click.option('--miranda-sc', 'sc', metavar='S', type=click.FLOAT)
 @click.option('--miranda-en', 'en', metavar='-E', type=click.FLOAT)
 @click.option('--miranda-scale', 'scale', metavar='Z', type=click.FLOAT)
 @click.option('--miranda-strict', 'strict', is_flag=True)
 @click.option('--miranda-go', 'go', metavar='-X', type=click.FLOAT)
 @click.option('--miranda-ge', 'ge', metavar='-Y', type=click.FLOAT)
-def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA, **miranda_options):
+def run(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
     """
     This command is the main pipeline of CircMiMi.
     """
@@ -45,8 +42,6 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA, **miranda_opt
 
     from circmimi.config import get_refs
     anno_db, ref_file, mir_ref, mir_target, other_transcripts = get_refs(ref_dir)
-
-    summary_file = add_prefix('summary_list.tsv', out_prefix)
 
     if checkAA:
         other_ref_file = other_transcripts
@@ -76,9 +71,10 @@ def run(circ_file, ref_dir, out_prefix, num_proc, header, checkAA, **miranda_opt
 
     circmimi_result.run(circ_file)
 
-    result_table = circmimi_result.get_result_table()
     res_file = add_prefix('all_interactions.tsv', out_prefix)
-    result_table.to_csv(res_file, sep='\t', index=False, header=header)
+    circmimi_result.save_result(res_file)
+
+    summary_file = add_prefix('summary_list.tsv', out_prefix)
     circmimi_result.save_circRNAs_summary(summary_file)
 
 
