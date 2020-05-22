@@ -84,7 +84,12 @@ class Circmimi:
 
         self.gene_symbol_df = self.circ_events.clear_anno_df.assign(
             host_gene=lambda df: df['transcript'].apply(lambda t: t.gene.gene_symbol)
-        ).loc[:, ['ev_id', 'host_gene']].drop_duplicates().reset_index(drop=True)
+        )[['ev_id', 'host_gene']].drop_duplicates(
+        ).sort_values(
+            'host_gene'
+        ).groupby(
+            'ev_id'
+        ).agg(','.join).reset_index()
 
     def get_result_table(self):
         res_df = self.circ_events.clear_df.reset_index().merge(
