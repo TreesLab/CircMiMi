@@ -76,7 +76,7 @@ $ circmimi_tools run -r ./refs -i circRNAs.tsv -o ./out/ -p 5 --checkAA --mirand
 3. Create the network file for Cytoscape
 
 ```bash
-$ circmimi_tools network create ./out/out.tsv ./out/out.xgmml
+$ circmimi_tools network create ./out/all_interactions.tsv ./out/all_interactions.xgmml
 ```
 
 
