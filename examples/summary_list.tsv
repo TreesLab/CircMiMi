@@ -1,0 +1,7 @@
+chr	pos1	pos2	strand	pass	#circRNA_miRNA	#circRNA_mRNA	#circRNA_miRNA_mRNA	donor site not at the annotated boundary	acceptor site not at the annotated boundary	donor/acceptor sites not at the same transcript isoform	ambiguity with an co-linear explanation	ambiguity with multiple hits
+chr6	152329730	152331890	-	yes	6	2722	3073	0	0	0	0	0
+chr12	48939655	48941188	-	yes	2	2092	2212	0	0	0	0	0
+chr12	20875235	20883602	+	no	0	0	0	0	0	0	1	0
+chr14	49795791	49831361	-	yes	8	6087	9028	0	0	0	0	0
+chr10	100354427	100354632	+	no	0	0	0	0	0	0	0	1
+chr6	152329730	152331880	-	no	0	0	0	0	1	0	NA	NA

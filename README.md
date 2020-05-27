@@ -19,6 +19,7 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
         - [all_interactions.tsv](#all_interactionstsv)
     - [Create the network file for Cytoscape](#create-the-network-file-for-cytoscape)
       - [Parameters](#parameters-2)
+- [Example](#example)
 
 
 # Requirements
@@ -237,3 +238,9 @@ OUT_FILE      | The output filename. The file extension should be ".xgmml" or ".
 
 
 This command can generate a Cytoscape-executable file (.xgmml) for visualization of the input circRNA-miRNA-mRNA regulatory axes in Cytoscape.
+
+
+
+# Example
+
+Please see the "[examples](examples)" directory.
