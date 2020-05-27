@@ -30,7 +30,7 @@ There are two output files:
 - summary_list.tsv
 - all_interactions.tsv
 
-For the format of these two files, please check the "[Output files](../#output-files)" section.
+For the format of these two files, please check the "[Output files](../README.md#output-files)" section.
 
 
 ### 3. Create the network file
