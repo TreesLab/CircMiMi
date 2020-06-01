@@ -17,7 +17,7 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
       - [Output files](#output-files)
         - [summary_list.tsv](#summary_listtsv)
         - [all_interactions.tsv](#all_interactionstsv)
-    - [Create the network file for Cytoscape](#create-the-network-file-for-cytoscape)
+    - [(Optional) Create the network file for Cytoscape](#optional-create-the-network-file-for-cytoscape)
       - [Parameters](#parameters-2)
 - [Example](#example)
 
@@ -224,7 +224,7 @@ The summary list contains the counts of interactions and some checking results o
  14  |  miRDB__targeting_score | The predicted target score from miRDB
 
 
-## Create the network file for Cytoscape
+## (Optional) Create the network file for Cytoscape
 
 ```
 circmimi_tools network create IN_FILE OUT_FILE
