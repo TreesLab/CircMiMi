@@ -347,8 +347,8 @@ def generate(species, source, version, ref_dir):
             'mir_ref': mir_ref.filename,
             'mir_target': mir_target_ref.filename,
             'other_transcripts': others_ref.filename,
-            'Encori_AGO': ENCORI_RBP_files[0].filename,
-            'Encori_RBP': ENCORI_RBP_files[1].filename
+            'AGO_data': ENCORI_RBP_files[0].filename,
+            'RBP_data': ENCORI_RBP_files[1].filename
         }
 
         return info, ref_files
