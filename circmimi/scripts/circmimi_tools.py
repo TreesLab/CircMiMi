@@ -40,7 +40,7 @@ def run(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
     if output_dir != '.':
         os.makedirs(output_dir, exist_ok=True)
 
-    from circmimi.config import get_refs
+    from circmimi.reference.config import get_refs
     anno_db, ref_file, mir_ref, mir_target, other_transcripts = get_refs(ref_dir)
 
     if checkAA:
@@ -101,7 +101,7 @@ def genref(species, source, version, ref_dir, init):
 
     os.makedirs(ref_dir, exist_ok=True)
 
-    from circmimi.config import RefConfig
+    from circmimi.reference.config import RefConfig
     config = RefConfig()
 
     if not init:
@@ -147,7 +147,7 @@ def check():
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
 @click.option('-o', '--out-prefix', 'out_prefix', default='./out/', metavar="OUT_PREFIX")
 def annotation(circ_file, ref_dir, out_prefix):
-    from circmimi.config import get_refs
+    from circmimi.reference.config import get_refs
     from circmimi.circ import CircEvents
     from circmimi.utils import add_prefix
 
@@ -175,7 +175,7 @@ def annotation(circ_file, ref_dir, out_prefix):
 def ambiguous(circ_file, ref_dir, output_dir, num_proc):
     os.makedirs(output_dir, exist_ok=True)
 
-    from circmimi.config import get_refs
+    from circmimi.reference.config import get_refs
     anno_db, ref_file, _, _, other_transcripts = get_refs(ref_dir)
 
     from circmimi.circ import CircEvents
