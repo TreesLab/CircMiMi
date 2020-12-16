@@ -435,11 +435,32 @@ class MiRDBData(Resource):
         return url
 
 
+class EncoriRBPData(Resource):
+    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.hg38.{}.bed.gz"
+
+    def __init__(self, only_AGO=False):
+        self.only_AGO = only_AGO
+
+        url = self.get_url()
+        super().__init__(url)
+
+    def get_url(self):
+        if self.only_AGO:
+            url = self.url_templ.format('AGO')
+        else:
+            url = self.url_templ.format('all')
+
+        return url
+
+
+
 class Error(Exception):
     pass
 
+
 class URLError(Error):
     pass
+
 
 class SourceNotSupportError(Error):
     pass
