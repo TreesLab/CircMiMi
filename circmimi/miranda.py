@@ -242,18 +242,18 @@ class MirandaUtils:
         return miranda_df_with_merged_aln
 
     @classmethod
-    def generate_aln_id(cls, miranda_df_with_aln):
-        all_uniq_alns = pd.Series(
-            miranda_df_with_aln['aln'].unique(),
-            name='aln'
+    def generate_uniq_id(cls, miranda_df, column_name):
+        all_uniq_items = pd.Series(
+            miranda_df[column_name].unique(),
+            name=column_name
         )
-        miranda_df_with_aln_id = miranda_df_with_aln.merge(
-            all_uniq_alns.reset_index(),
-            on='aln',
+        miranda_df_with_id = miranda_df.merge(
+            all_uniq_items.reset_index(),
+            on=column_name,
             how='left'
-        ).rename({'index': 'aln_id'}, axis=1)
+        ).rename({'index': f'{column_name}_id'}, axis=1)
 
-        return miranda_df_with_aln_id
+        return miranda_df_with_id
 
     @staticmethod
     def get_grouped_results(miranda_df_with_aln_id):
@@ -286,3 +286,17 @@ class MirandaUtils:
         )
 
         return grouped_res_df
+
+    @staticmethod
+    def get_genomic_position(miranda_df, pos_map_db):
+        miranda_df_with_genomic_position = miranda_df.assign(
+            genomic_regions=lambda df: df.apply(
+                lambda s: pos_map_db[s['reference_id']].get_real_blocks(
+                    s['ref_start'],
+                    s['ref_end']
+                ),
+                axis=1
+            )
+        )
+
+        return miranda_df_with_genomic_position

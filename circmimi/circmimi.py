@@ -1,9 +1,9 @@
-import os.path
 import pandas as pd
 from circmimi.circ import CircEvents
 from circmimi.bed import BedUtils
 from circmimi.seq import Seq
 from circmimi.miranda import get_binding_sites, MirandaUtils
+from circmimi.rbp import PosMap
 
 
 class Circmimi:
@@ -12,6 +12,8 @@ class Circmimi:
                  ref_file,
                  mir_ref_file,
                  mir_target_file,
+                 AGO_binding_file,
+                 RBP_binding_file,
                  other_ref_file=None,
                  work_dir='.',
                  num_proc=1,
@@ -21,6 +23,8 @@ class Circmimi:
         self.ref_file = ref_file
         self.mir_ref_file = mir_ref_file
         self.mir_target_file = mir_target_file
+        self.AGO_binding_file = AGO_binding_file
+        self.RBP_binding_file = RBP_binding_file
         self.other_ref_file = other_ref_file
         self.work_dir = work_dir
         self.num_proc = num_proc
@@ -47,14 +51,25 @@ class Circmimi:
                 num_proc=self.num_proc
             )
 
-        self.uniq_exons_df = self.circ_events.clear_anno_df.pipe(self._get_uniq_exons)
-        self.bed_df = self.uniq_exons_df.pipe(
+        self.uniq_exons_df = self.circ_events.clear_anno_df.pipe(
+            self._get_uniq_exons
+        )
+        self.uniq_exons_regions_df = self.uniq_exons_df.pipe(
             BedUtils.to_regions_df
-        ).pipe(
+        )
+        self.bed_df = self.uniq_exons_regions_df.pipe(
             BedUtils.to_bed_df
         )
 
-        self.seq_df = self.bed_df.pipe(Seq.get_extended_seq, ref_file=self.ref_file)
+        self.seq_df = self.bed_df.pipe(
+            Seq.get_extended_seq,
+            ref_file=self.ref_file
+        )
+
+        self.pos_map_db = {
+            regions_id: PosMap(regions)
+            for regions_id, regions in  self.uniq_exons_regions_df.values
+        }
 
         self.miranda_df = self.seq_df.pipe(
             get_binding_sites,
@@ -75,8 +90,24 @@ class Circmimi:
         ).pipe(
             MirandaUtils.append_merged_aln
         ).pipe(
-            MirandaUtils.generate_aln_id
-        ).drop('aln', axis=1)
+            MirandaUtils.generate_uniq_id,
+            column_name='aln'
+        ).drop(
+            'aln',
+            axis=1
+        ).pipe(
+            MirandaUtils.get_genomic_position,
+            pos_map_db=self.pos_map_db
+        ).pipe(
+            MirandaUtils.generate_uniq_id,
+            column_name='genomic_regions'
+        )
+
+
+
+
+
+
 
         self.grouped_res_df = MirandaUtils.get_grouped_results(self.miranda_df)
 
