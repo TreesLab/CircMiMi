@@ -1,5 +1,7 @@
 import pandas as pd
 import io
+from collections import namedtuple
+from operator import itemgetter
 
 
 class Bed:
@@ -17,20 +19,32 @@ class Bed:
         'blockSizes',
         'blockStarts'
     )
+    _region = namedtuple('Region', ('start', 'end'))
 
-    def __init__(self, regions, name='.'):
+    def __init__(self, regions, name='.', union=False):
         self.regions = regions
         self.name = name
+        self.union = union
 
-        self._parse_regions(regions)
+        if not self.union:
+            self.regions = self.reverse_regions_if_minus_strand(self.regions)
+        else:
+            self.regions = self.get_union_regions(self.regions)
+
+        self._parse_regions(self.regions)
+
+    @staticmethod
+    def reverse_regions_if_minus_strand(regions):
+        strand = regions[0][3]
+        if strand == '-':
+            regions = list(reversed(regions))
+
+        return regions
 
     def _parse_regions(self, regions):
         self._parse_region(regions[0])
         for region in regions[1:]:
             self._add_block(region)
-
-        if self.strand == '-':
-            self._reverse_region()
 
     def _parse_region(self, region):
         self.chrom = region[0]
@@ -61,10 +75,6 @@ class Bed:
 
         if other.end > self.end:
             self.end = other.end
-
-    def _reverse_region(self):
-        self.block_sizes = list(reversed(self.block_sizes))
-        self.block_starts = list(reversed(self.block_starts))
 
     def get_data(self, all_fields=False):
         fields = [
@@ -99,6 +109,40 @@ class Bed:
             print(*list_, sep=sep, end=end, file=tmp)
             return tmp.getvalue()
 
+    @classmethod
+    def get_union_regions(cls, regions):
+        assert len(set(map(itemgetter(0), regions))) == 1, \
+            "Not all regions in the same chromosome!"
+        assert len(set(map(itemgetter(3), regions))) == 1, \
+            "Not all regions at the same strand!"
+
+        chr_ = regions[0][0]
+        strand = regions[0][3]
+
+        regions = sorted(
+            map(
+                lambda r: cls._region(r[1], r[2]),
+                regions
+            ),
+            key=lambda r: r.start
+        )
+
+        union_regions = []
+        r1 = regions[0]
+        for r2 in regions[1:]:
+            if r1.end < r2.start:
+                union_regions.append(r1)
+                r1 = r2
+            else:
+                if r1.end < r2.end:
+                    r1 = cls._region(r1.start, r2.end)
+        else:
+            union_regions.append(r1)
+
+        union_regions = tuple((chr_, start, end, strand)
+                              for start, end in union_regions)
+        return union_regions
+
 
 class BedUtils:
     @classmethod
@@ -119,16 +163,16 @@ class BedUtils:
         return regions
 
     @classmethod
-    def to_bed_df(cls, regions_df):
+    def to_bed_df(cls, regions_df, union=False):
         if regions_df.empty:
             bed_df = pd.DataFrame([], columns=Bed.BED_TITLE)
         else:
-            bed_df = regions_df.apply(cls._to_bed, axis=1)
+            bed_df = regions_df.apply(cls._to_bed, union=union, axis=1)
             bed_df.columns = Bed.BED_TITLE
 
         return bed_df
 
     @classmethod
-    def _to_bed(cls, s):
-        bed = Bed(s.regions, name=s.regions_id)
+    def _to_bed(cls, s, union=False):
+        bed = Bed(s.regions, name=s.regions_id, union=union)
         return pd.Series(bed.get_data(all_fields=True))
