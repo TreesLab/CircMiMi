@@ -3,7 +3,7 @@ from circmimi.circ import CircEvents
 from circmimi.bed import BedUtils
 from circmimi.seq import Seq
 from circmimi.miranda import get_binding_sites, MirandaUtils
-from circmimi.rbp import PosMap
+from circmimi.rbp import PosMap, RBPBindingSites
 
 
 class Circmimi:
@@ -36,6 +36,9 @@ class Circmimi:
         self.seq_df = None
         self.miranda_df = None
         self.grouped_res_df = None
+
+        self.AGO_binding_sites = RBPBindingSites(self.AGO_binding_file)
+        self.RBP_binding_sites = RBPBindingSites(self.RBP_binding_file)
 
     def run(self, circ_file):
 
@@ -103,18 +106,35 @@ class Circmimi:
             column_name='genomic_regions'
         )
 
+        self.miRNA_binding_sites_bed = self.miranda_df[[
+            'genomic_regions_id',
+            'genomic_regions'
+        ]].drop_duplicates(
+        ).reset_index(
+            drop=True
+        ).rename(
+            {
+                'genomic_regions_id': 'regions_id',
+                'genomic_regions': 'regions'
+            },
+            axis=1
+        ).pipe(
+            BedUtils.to_bed_df,
+            union=True
+        )
 
-
-
-
-
+        self.AGO_overlap = self.AGO_binding_sites.overlap(
+            self.miRNA_binding_sites_bed
+        )
 
         self.grouped_res_df = MirandaUtils.get_grouped_results(self.miranda_df)
 
         self.mir_target_db = get_mir_target_db(self.mir_target_file)
 
         self.gene_symbol_df = self.circ_events.clear_anno_df.assign(
-            host_gene=lambda df: df['transcript'].apply(lambda t: t.gene.gene_symbol)
+            host_gene=lambda df: df['transcript'].apply(
+                lambda t: t.gene.gene_symbol
+            )
         )[['ev_id', 'host_gene']].drop_duplicates(
         ).sort_values(
             'host_gene'

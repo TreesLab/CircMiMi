@@ -1,5 +1,7 @@
 import pandas as pd
 import io
+import subprocess as sp
+import tempfile as tp
 from collections import namedtuple
 from operator import itemgetter
 
@@ -176,3 +178,42 @@ class BedUtils:
     def _to_bed(cls, s, union=False):
         bed = Bed(s.regions, name=s.regions_id, union=union)
         return pd.Series(bed.get_data(all_fields=True))
+
+
+class IntersectBED:
+    _dummy_tmpfile = namedtuple('DummyTmpFile', ['name'])
+
+    def __init__(self, bedtools_bin='bedtools', options=''):
+        self._bedtools_bin = bedtools_bin
+
+        if isinstance(options, str):
+            self._options = options.split()
+        else:
+            self._options = options
+
+    @classmethod
+    def _save_temp(cls, bed):
+        if isinstance(bed, str):
+            tmp_file = cls._dummy_tmpfile(bed)
+        else:
+            tmp_file = tp.NamedTemporaryFile(dir='.', prefix='intersectBED.')
+            bed.to_csv(tmp_file.name, sep='\t', index=False)
+
+        return tmp_file
+
+    def _generate_cmd(self, bed_file_1, bed_file_2):
+        cmd = [self._bedtools_bin, 'intersect'] + self._options
+        cmd += ['-a', bed_file_1]
+        cmd += ['-b', bed_file_2]
+
+        return cmd
+
+    def intersect(self, bed_1, bed_2):
+        bed_tmp_file_1 = self._save_temp(bed_1)
+        bed_tmp_file_2 = self._save_temp(bed_2)
+
+        cmd = self._generate_cmd(bed_tmp_file_1.name, bed_tmp_file_2.name)
+
+        with sp.Popen(cmd, stdout=sp.PIPE, encoding='utf-8') as p:
+            for line in p.stdout:
+                yield line.rstrip('\n').split('\t')
