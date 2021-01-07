@@ -3,7 +3,7 @@ from circmimi.circ import CircEvents
 from circmimi.bed import BedUtils
 from circmimi.seq import Seq
 from circmimi.miranda import get_binding_sites, MirandaUtils
-from circmimi.rbp import PosMap, RBPBindingSites
+from circmimi.rbp import PosMap, RBPBindingSites, RBPBindingSitesFilters
 
 
 class Circmimi:
@@ -74,6 +74,7 @@ class Circmimi:
             for regions_id, regions in  self.uniq_exons_regions_df.values
         }
 
+        # miRNAs part
         self.miranda_df = self.seq_df.pipe(
             get_binding_sites,
             mir_ref_file=self.mir_ref_file,
@@ -123,8 +124,44 @@ class Circmimi:
             union=True
         )
 
-        self.AGO_overlap = self.AGO_binding_sites.overlap(
+        self.AGO_overlap_raw_data = self.AGO_binding_sites.overlap(
             self.miRNA_binding_sites_bed
+        ).pipe(
+            RBPBindingSites.append_joined_overlap
+        )
+        self.AGO_overlap = self.AGO_overlap_raw_data.pipe(
+            RBPBindingSitesFilters.AGO_overlap_filter
+        )
+
+        self.AGO_overlap_count = self.AGO_overlap[[
+            'name',
+            'sample_id'
+        ]].groupby(
+            'name'
+        ).count(
+        ).reset_index(
+        ).rename(
+            {
+                'name': 'genomic_regions_id',
+                'sample_id': 'AGO_support'
+            },
+            axis=1
+        ).astype(
+            {
+                'AGO_support': 'object'
+            }
+        )
+
+        self.miranda_df = self.miranda_df.merge(
+            self.AGO_overlap_count,
+            on='genomic_regions_id',
+            how='left'
+        ).fillna(
+            {
+                'AGO_support': 0
+            }
+        ).assign(
+            AGO_support_yn=lambda df: (df['AGO_support'] > 0).apply(int)
         )
 
         self.grouped_res_df = MirandaUtils.get_grouped_results(self.miranda_df)

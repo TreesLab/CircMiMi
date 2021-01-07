@@ -246,12 +246,23 @@ class MirandaUtils:
         all_uniq_items = pd.Series(
             miranda_df[column_name].unique(),
             name=column_name
+        ).reset_index(
+        ).astype(
+            {
+                'index': str
+            }
+        ).rename(
+            {
+                'index': f'{column_name}_id'
+            },
+            axis=1
         )
+
         miranda_df_with_id = miranda_df.merge(
-            all_uniq_items.reset_index(),
+            all_uniq_items,
             on=column_name,
             how='left'
-        ).rename({'index': f'{column_name}_id'}, axis=1)
+        )
 
         return miranda_df_with_id
 
@@ -262,26 +273,35 @@ class MirandaUtils:
             'query_id',
             'score',
             'aln_id',
-            'cross_boundary'
-        ]].groupby([
+            'cross_boundary',
+            'AGO_support',
+            'AGO_support_yn'
+        ]].drop_duplicates(
+        ).groupby([
             'ev_id',
             'query_id'
         ]).agg({
             'score': 'max',
             'aln_id': 'nunique',
-            'cross_boundary': 'max'
-        }).reset_index().rename(
+            'cross_boundary': 'max',
+            'AGO_support': 'max',
+            'AGO_support_yn': 'sum'
+        }).reset_index(
+        ).rename(
             {
                 'query_id': 'mirna',
                 'score': 'max_score',
-                'aln_id': 'count'
+                'aln_id': 'binding_sites',
+                'AGO_support': 'AGO_support_datasets',
+                'AGO_support_yn': 'AGO_support_binding_sites'
             },
             axis=1
         ).astype(
             {
                 'ev_id': 'object',
-                'mirna': 'object',
-                'count': "Int64"
+                'binding_sites': 'Int64',
+                'AGO_support_datasets': 'Int64',
+                'AGO_support_binding_sites': 'Int64'
             }
         )
 

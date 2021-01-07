@@ -59,13 +59,14 @@ class RBPBindingSites:
 
         return overlap
 
-    def _get_real_overlap(self, bed_line):
+    @classmethod
+    def _get_real_overlap(cls, bed_line):
         blockCount = bed_line['blockCount']
 
         if blockCount == 1:
             overlap = bed_line['overlap']
         elif blockCount > 1:
-            overlap = self._calculate_overlap(bed_line)
+            overlap = cls._calculate_overlap(bed_line)
 
         return overlap
 
@@ -73,7 +74,7 @@ class RBPBindingSites:
     def _get_split_rbp_name(idx):
         return lambda df: df['name_rbp'].apply(lambda name: name.split('_')[idx])
 
-    def overlap(self, bed_df, filter_=lambda df: df):
+    def overlap(self, bed_df):
         intersect_result_df = pd.DataFrame(
             self.intersect_bed.intersect(bed_df, self.rbp_file),
             columns=self._titles,
@@ -100,6 +101,54 @@ class RBPBindingSites:
         )
 
         return intersect_result_df
+
+    @staticmethod
+    def _get_joined_overlap(group_df):
+        joined_overlap = sum(group_df['real_overlap'])
+        group_elts = tuple(group_df.index)
+        joined_overlap_df = group_df.assign(
+            joined_overlap=joined_overlap,
+            group_elements=','.join(map(str, group_elts))
+        )
+
+        return joined_overlap_df
+
+    @classmethod
+    def append_joined_overlap(cls, df):
+        groupby_df = df.groupby(
+            [
+                'name',
+                'sample_id'
+            ]
+        ).apply(
+            cls._get_joined_overlap
+        ).reset_index(
+            [
+                'name',
+                'sample_id'
+            ],
+            drop=True
+        ).sort_index()
+
+        return groupby_df
+
+
+class RBPBindingSitesFilters:
+    def AGO_overlap_filter(df):
+        coverage_df = df[[
+            'name',
+            'sample_id',
+            'RBP_name',
+            'joined_overlap',
+            'total_blocks_len'
+        ]].drop_duplicates(
+        ).assign(
+            coverage=lambda df: (df['joined_overlap'] / df['total_blocks_len']).apply(lambda n: round(n, 2))
+        )[
+            lambda df: df['coverage'] >= 0.8
+        ]
+
+        return coverage_df
 
 
 class PosMap:
