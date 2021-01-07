@@ -33,14 +33,14 @@ class CyNetwork:
                 circRNA_id,
                 data.mirna,
                 data_type="circ-mir",
-                data=dict(list(data._asdict().items())[6:9])
+                data=dict(list(data._asdict().items())[6:11])
             )
 
             self.graph.add_edge(
                 data.mirna,
                 data.target_gene,
                 data_type="mir-target",
-                data=dict(list(data._asdict().items())[10:])
+                data=dict(list(data._asdict().items())[12:])
             )
 
     def update_node(self, node, key_val):
