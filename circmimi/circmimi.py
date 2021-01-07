@@ -179,8 +179,8 @@ class Circmimi:
             'ev_id'
         ).agg(','.join).reset_index()
 
-    def get_result_table(self):
-        res_df = self.circ_events.clear_df.reset_index().merge(
+        # final result table
+        self.res_df = self.circ_events.clear_df.reset_index().merge(
             self.gene_symbol_df,
             on='ev_id',
             how='inner'
@@ -200,7 +200,8 @@ class Circmimi:
             ]
         ).reset_index(drop=True)
 
-        circ_miRNA_count = res_df[['ev_id', 'mirna']].drop_duplicates().rename(
+        # submit summary
+        circ_miRNA_count = self.res_df[['ev_id', 'mirna']].drop_duplicates().rename(
             {
                 'mirna': '#circRNA_miRNA'
             },
@@ -215,7 +216,7 @@ class Circmimi:
         ).astype('int')
         self.circ_events.submit_to_summary(circ_miRNA_count, type_='summary')
 
-        circ_mRNA_count = res_df[['ev_id', 'target_gene']].drop_duplicates().rename(
+        circ_mRNA_count = self.res_df[['ev_id', 'target_gene']].drop_duplicates().rename(
             {
                 'target_gene': '#circRNA_mRNA'
             },
@@ -230,7 +231,7 @@ class Circmimi:
         ).astype('int')
         self.circ_events.submit_to_summary(circ_mRNA_count, type_='summary')
 
-        total_count = res_df[['ev_id', 'mirna', 'target_gene']].drop_duplicates().assign(
+        total_count = self.res_df[['ev_id', 'mirna', 'target_gene']].drop_duplicates().assign(
             circRNA_miRNA_mRNA=1
         ).drop(
             ['mirna', 'target_gene'],
@@ -250,10 +251,10 @@ class Circmimi:
         )
         self.circ_events.submit_to_summary(total_count, type_='summary')
 
-        return res_df.drop('ev_id', axis=1)
+        self.res_df = self.res_df.drop('ev_id', axis=1)
 
     def save_result(self, out_file):
-        self.get_result_table().to_csv(out_file, sep='\t', index=False)
+        self.res_df.to_csv(out_file, sep='\t', index=False)
 
     def save_circRNAs_summary(self, out_file):
         self.circ_events.get_summary().to_csv(out_file, sep='\t', index=False)
