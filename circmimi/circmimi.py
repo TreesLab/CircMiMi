@@ -192,7 +192,13 @@ class Circmimi:
             self.mir_target_db,
             on='mirna',
             how='inner'
-        )
+        ).sort_values(
+            [
+                'ev_id',
+                'mirna',
+                'target_gene'
+            ]
+        ).reset_index(drop=True)
 
         circ_miRNA_count = res_df[['ev_id', 'mirna']].drop_duplicates().rename(
             {
