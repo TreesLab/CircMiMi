@@ -179,6 +179,19 @@ class Circmimi:
             'ev_id'
         ).agg(','.join).reset_index()
 
+        # RBP part
+        self.union_bed_df = self.uniq_exons_regions_df.pipe(
+            BedUtils.to_bed_df,
+            union=True
+        )
+
+        self.RBP_overlap_raw_data = self.RBP_binding_sites.overlap(
+            self.union_bed_df
+        )
+        self.RBP_overlap = self.RBP_overlap_raw_data.pipe(
+            RBPBindingSitesFilters.RBP_overlap_filter
+        )
+
         # final result table
         self.res_df = self.circ_events.clear_df.reset_index().merge(
             self.gene_symbol_df,

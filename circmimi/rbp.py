@@ -150,6 +150,25 @@ class RBPBindingSitesFilters:
 
         return coverage_df
 
+    def RBP_overlap_filter(df):
+        coverage_df = df[[
+            'name',
+            'chr_rbp',
+            'start_rbp',
+            'end_rbp',
+            'strand_rbp',
+            'sample_id',
+            'RBP_name',
+            'real_overlap',
+            'rbp_region_len'
+        ]].assign(
+            coverage=lambda df: (df['real_overlap']/df['rbp_region_len']).apply(lambda n: round(n, 2))
+        )[
+            lambda df: df['coverage'] >= 0.8
+        ]
+
+        return coverage_df
+
 
 class PosMap:
     def __init__(self, genomic_regions):
