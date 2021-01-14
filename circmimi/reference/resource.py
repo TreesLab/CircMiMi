@@ -453,6 +453,18 @@ class EncoriRBPData(Resource):
         return url
 
 
+class EncoriRBPTargetData(Resource):
+    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_Target.grouped.tsv.gz"
+
+    def __init__(self):
+        url = self.get_url()
+        super().__init__(url)
+
+    def get_url(self):
+        url = self.url_templ.format()
+
+        return url
+
 
 class Error(Exception):
     pass
