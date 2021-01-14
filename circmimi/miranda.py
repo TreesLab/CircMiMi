@@ -267,43 +267,73 @@ class MirandaUtils:
         return miranda_df_with_id
 
     @staticmethod
-    def get_grouped_results(miranda_df_with_aln_id):
-        grouped_res_df = miranda_df_with_aln_id[[
-            'ev_id',
-            'query_id',
-            'score',
-            'aln_id',
-            'cross_boundary',
-            'AGO_support',
-            'AGO_support_yn'
-        ]].drop_duplicates(
-        ).groupby([
-            'ev_id',
-            'query_id'
-        ]).agg({
-            'score': 'max',
-            'aln_id': 'nunique',
-            'cross_boundary': 'max',
-            'AGO_support': 'max',
-            'AGO_support_yn': 'sum'
-        }).reset_index(
-        ).rename(
-            {
-                'query_id': 'mirna',
-                'score': 'max_score',
-                'aln_id': 'binding_sites',
-                'AGO_support': 'AGO_support_datasets',
-                'AGO_support_yn': 'AGO_support_binding_sites'
-            },
-            axis=1
-        ).astype(
-            {
-                'ev_id': 'object',
-                'binding_sites': 'Int64',
-                'AGO_support_datasets': 'Int64',
-                'AGO_support_binding_sites': 'Int64'
-            }
-        )
+    def get_grouped_results(miranda_df_with_aln_id, with_AGO=False):
+        if with_AGO:
+            grouped_res_df = miranda_df_with_aln_id[[
+                'ev_id',
+                'query_id',
+                'score',
+                'aln_id',
+                'cross_boundary',
+                'AGO_support',
+                'AGO_support_yn'
+            ]].drop_duplicates(
+            ).groupby([
+                'ev_id',
+                'query_id'
+            ]).agg({
+                'score': 'max',
+                'aln_id': 'nunique',
+                'cross_boundary': 'max',
+                'AGO_support': 'max',
+                'AGO_support_yn': 'sum'
+            }).reset_index(
+            ).rename(
+                {
+                    'query_id': 'mirna',
+                    'score': 'max_score',
+                    'aln_id': '#binding_sites',
+                    'AGO_support': 'AGO_support_datasets',
+                    'AGO_support_yn': 'AGO_support_binding_sites'
+                },
+                axis=1
+            ).astype(
+                {
+                    'ev_id': 'object',
+                    '#binding_sites': 'Int64',
+                    'AGO_support_datasets': 'Int64',
+                    'AGO_support_binding_sites': 'Int64'
+                }
+            )
+        else:
+            grouped_res_df = miranda_df_with_aln_id[[
+                'ev_id',
+                'query_id',
+                'score',
+                'aln_id',
+                'cross_boundary'
+            ]].drop_duplicates(
+            ).groupby([
+                'ev_id',
+                'query_id'
+            ]).agg({
+                'score': 'max',
+                'aln_id': 'nunique',
+                'cross_boundary': 'max'
+            }).reset_index(
+            ).rename(
+                {
+                    'query_id': 'mirna',
+                    'score': 'max_score',
+                    'aln_id': '#binding_sites'
+                },
+                axis=1
+            ).astype(
+                {
+                    'ev_id': 'object',
+                    '#binding_sites': 'Int64'
+                }
+            )
 
         return grouped_res_df
 

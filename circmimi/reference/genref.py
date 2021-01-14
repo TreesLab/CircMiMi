@@ -266,9 +266,9 @@ def generate(species, source, version, ref_dir):
         )
         ENCORI_RBP_files = Files(
             [
-                rs.EncoriRBPData(only_AGO=True),
-                rs.EncoriRBPData(),
-                rs.EncoriRBPTargetData()
+                rs.EncoriRBPData(species.key, only_AGO=True),
+                rs.EncoriRBPData(species.key),
+                rs.EncoriRBPTargetData(species.key)
             ]
         )
 

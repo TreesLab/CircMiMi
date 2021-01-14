@@ -25,6 +25,9 @@ class Resource:
         self.filename = os.path.basename(url)
 
     def download(self, dir_='.'):
+        if self.filename == '':
+            return ''
+
         dest_path = os.path.join(dir_, self.filename)
 
         if os.path.exists(dest_path):
@@ -438,13 +441,17 @@ class MiRDBData(Resource):
 class EncoriRBPData(Resource):
     url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.hg38.{}.bed.gz"
 
-    def __init__(self, only_AGO=False):
+    def __init__(self, species, only_AGO=False):
+        self.species = species
         self.only_AGO = only_AGO
 
         url = self.get_url()
         super().__init__(url)
 
     def get_url(self):
+        if self.species != 'hsa':
+            return ''
+
         if self.only_AGO:
             url = self.url_templ.format('AGO')
         else:
@@ -456,11 +463,16 @@ class EncoriRBPData(Resource):
 class EncoriRBPTargetData(Resource):
     url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_Target.grouped.tsv.gz"
 
-    def __init__(self):
+    def __init__(self, species):
+        self.species = species
+
         url = self.get_url()
         super().__init__(url)
 
     def get_url(self):
+        if self.species != 'hsa':
+            return ''
+
         url = self.url_templ.format()
 
         return url

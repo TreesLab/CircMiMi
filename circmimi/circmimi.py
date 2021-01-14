@@ -12,9 +12,9 @@ class Circmimi:
                  ref_file,
                  mir_ref_file,
                  mir_target_file,
-                 AGO_binding_file,
-                 RBP_binding_file,
-                 RBP_target_file,
+                 AGO_binding_file=None,
+                 RBP_binding_file=None,
+                 RBP_target_file=None,
                  other_ref_file=None,
                  work_dir='.',
                  num_proc=1,
@@ -26,6 +26,7 @@ class Circmimi:
         self.mir_target_file = mir_target_file
         self.AGO_binding_file = AGO_binding_file
         self.RBP_binding_file = RBP_binding_file
+        self.RBP_target_file = RBP_target_file
         self.other_ref_file = other_ref_file
         self.work_dir = work_dir
         self.num_proc = num_proc
@@ -38,9 +39,29 @@ class Circmimi:
         self.miranda_df = None
         self.grouped_res_df = None
 
-        self.AGO_binding_sites = RBPBindingSites(self.AGO_binding_file)
-        self.RBP_binding_sites = RBPBindingSites(self.RBP_binding_file)
-        self.RBP_target_file = RBP_target_file
+        self.mir_target_db = get_mir_target_db(self.mir_target_file)
+
+        if self.AGO_binding_file:
+            self.AGO_binding_sites = RBPBindingSites(self.AGO_binding_file)
+            self.check_AGO_support = True
+        else:
+            self.check_AGO_support = False
+
+        if self.RBP_binding_file:
+            self.RBP_binding_sites = RBPBindingSites(self.RBP_binding_file)
+            self.do_circRNA_RBP = True
+        else:
+            self.do_circRNA_RBP = False
+
+        if self.RBP_target_file:
+            self.RBP_target_db = pd.read_csv(
+                self.RBP_target_file,
+                sep='\t',
+                dtype='object'
+            )
+            self.do_RBP_mRNA = True
+        else:
+            self.do_RBP_mRNA = False
 
     def run(self, circ_file):
 
@@ -109,66 +130,69 @@ class Circmimi:
             column_name='genomic_regions'
         )
 
-        self.miRNA_binding_sites_bed = self.miranda_df[[
-            'genomic_regions_id',
-            'genomic_regions'
-        ]].drop_duplicates(
-        ).reset_index(
-            drop=True
-        ).rename(
-            {
-                'genomic_regions_id': 'regions_id',
-                'genomic_regions': 'regions'
-            },
-            axis=1
-        ).pipe(
-            BedUtils.to_bed_df,
-            union=True
-        )
+        # AGO overlap
+        if self.check_AGO_support:
+            self.miRNA_binding_sites_bed = self.miranda_df[[
+                'genomic_regions_id',
+                'genomic_regions'
+            ]].drop_duplicates(
+            ).reset_index(
+                drop=True
+            ).rename(
+                {
+                    'genomic_regions_id': 'regions_id',
+                    'genomic_regions': 'regions'
+                },
+                axis=1
+            ).pipe(
+                BedUtils.to_bed_df,
+                union=True
+            )
 
-        self.AGO_overlap_raw_data = self.AGO_binding_sites.overlap(
-            self.miRNA_binding_sites_bed
-        ).pipe(
-            RBPBindingSites.append_joined_overlap
-        )
-        self.AGO_overlap = self.AGO_overlap_raw_data.pipe(
-            RBPBindingSitesFilters.AGO_overlap_filter
-        )
+            self.AGO_overlap_raw_data = self.AGO_binding_sites.overlap(
+                self.miRNA_binding_sites_bed
+            ).pipe(
+                RBPBindingSites.append_joined_overlap
+            )
+            self.AGO_overlap = self.AGO_overlap_raw_data.pipe(
+                RBPBindingSitesFilters.AGO_overlap_filter
+            )
 
-        self.AGO_overlap_count = self.AGO_overlap[[
-            'name',
-            'sample_id'
-        ]].groupby(
-            'name'
-        ).count(
-        ).reset_index(
-        ).rename(
-            {
-                'name': 'genomic_regions_id',
-                'sample_id': 'AGO_support'
-            },
-            axis=1
-        ).astype(
-            {
-                'AGO_support': 'object'
-            }
+            self.AGO_overlap_count = self.AGO_overlap[[
+                'name',
+                'sample_id'
+            ]].groupby(
+                'name'
+            ).count(
+            ).reset_index(
+            ).rename(
+                {
+                    'name': 'genomic_regions_id',
+                    'sample_id': 'AGO_support'
+                },
+                axis=1
+            ).astype(
+                {
+                    'AGO_support': 'object'
+                }
+            )
+
+            self.miranda_df = self.miranda_df.merge(
+                self.AGO_overlap_count,
+                on='genomic_regions_id',
+                how='left'
+            ).fillna(
+                {
+                    'AGO_support': 0
+                }
+            ).assign(
+                AGO_support_yn=lambda df: (df['AGO_support'] > 0).apply(int)
+            )
+
+        self.grouped_res_df = MirandaUtils.get_grouped_results(
+            self.miranda_df,
+            with_AGO=self.check_AGO_support
         )
-
-        self.miranda_df = self.miranda_df.merge(
-            self.AGO_overlap_count,
-            on='genomic_regions_id',
-            how='left'
-        ).fillna(
-            {
-                'AGO_support': 0
-            }
-        ).assign(
-            AGO_support_yn=lambda df: (df['AGO_support'] > 0).apply(int)
-        )
-
-        self.grouped_res_df = MirandaUtils.get_grouped_results(self.miranda_df)
-
-        self.mir_target_db = get_mir_target_db(self.mir_target_file)
 
         self.gene_symbol_df = self.circ_events.clear_anno_df.assign(
             host_gene=lambda df: df['transcript'].apply(
@@ -182,69 +206,68 @@ class Circmimi:
         ).agg(','.join).reset_index()
 
         # RBP part
-        self.union_bed_df = self.uniq_exons_regions_df.pipe(
-            BedUtils.to_bed_df,
-            union=True
-        )
+        if self.do_circRNA_RBP:
+            self.union_bed_df = self.uniq_exons_regions_df.pipe(
+                BedUtils.to_bed_df,
+                union=True
+            )
 
-        self.RBP_overlap_raw_data = self.RBP_binding_sites.overlap(
-            self.union_bed_df
-        )
-        self.RBP_overlap = self.RBP_overlap_raw_data.pipe(
-            RBPBindingSitesFilters.RBP_overlap_filter
-        ).merge(
-            self.uniq_exons_df[['exons_id', 'ev_id']],
-            left_on='name',
-            right_on='exons_id',
-            how='left'
-        ).drop(
-            'exons_id',
-            axis=1
-        )
-        self.RBP_overlap_count = self.RBP_overlap[[
-            'ev_id',
-            'RBP_name',
-            'chr_rbp',
-            'start_rbp',
-            'end_rbp',
-            'strand_rbp',
-            'sample_id'
-        ]].drop_duplicates(
-        ).groupby(
-            [
+            self.RBP_overlap_raw_data = self.RBP_binding_sites.overlap(
+                self.union_bed_df
+            )
+            self.RBP_overlap = self.RBP_overlap_raw_data.pipe(
+                RBPBindingSitesFilters.RBP_overlap_filter
+            ).merge(
+                self.uniq_exons_df[['exons_id', 'ev_id']],
+                left_on='name',
+                right_on='exons_id',
+                how='left'
+            ).drop(
+                'exons_id',
+                axis=1
+            )
+            self.RBP_overlap_count = self.RBP_overlap[[
                 'ev_id',
                 'RBP_name',
                 'chr_rbp',
                 'start_rbp',
                 'end_rbp',
-                'strand_rbp'
-            ]
-        ).agg(
-            {
-                'sample_id': 'nunique'
-            }
-        ).reset_index(
-        ).assign(
-            count=1
-        ).groupby(
-            [
-                'ev_id',
-                'RBP_name'
-            ]
-        ).agg(
-            {
-                'sample_id': 'max',
-                'count': 'sum'
-            }
-        ).reset_index(
-        ).rename(
-            {
-                'sample_id': 'max_sample_count'
-            },
-            axis=1
-        )
-
-        self.RBP_target_db = pd.read_csv(self.RBP_target_file, sep='\t', dtype='object')
+                'strand_rbp',
+                'sample_id'
+            ]].drop_duplicates(
+            ).groupby(
+                [
+                    'ev_id',
+                    'RBP_name',
+                    'chr_rbp',
+                    'start_rbp',
+                    'end_rbp',
+                    'strand_rbp'
+                ]
+            ).agg(
+                {
+                    'sample_id': 'nunique'
+                }
+            ).reset_index(
+            ).assign(
+                count=1
+            ).groupby(
+                [
+                    'ev_id',
+                    'RBP_name'
+                ]
+            ).agg(
+                {
+                    'sample_id': 'max',
+                    'count': 'sum'
+                }
+            ).reset_index(
+            ).rename(
+                {
+                    'sample_id': 'max_sample_count'
+                },
+                axis=1
+            )
 
         # final result table
         self.res_df = self.circ_events.clear_df.reset_index().merge(
@@ -267,25 +290,31 @@ class Circmimi:
             ]
         ).reset_index(drop=True)
 
-        self.RBP_res_df = self.circ_events.clear_df.merge(
-            self.gene_symbol_df,
-            on='ev_id',
-            how='inner'
-        ).merge(
-            self.RBP_overlap_count,
-            on='ev_id',
-            how='left'
-        ).merge(
-            self.RBP_target_db,
-            left_on='RBP_name',
-            right_on='RBP',
-            how='inner'
-        ).drop(
-            [
-                'RBP'
-            ],
-            axis=1
-        )
+        if self.do_circRNA_RBP:
+            self.RBP_res_df = self.circ_events.clear_df.merge(
+                self.gene_symbol_df,
+                on='ev_id',
+                how='inner'
+            ).merge(
+                self.RBP_overlap_count,
+                on='ev_id',
+                how='left'
+            )
+
+            if self.do_RBP_mRNA:
+                self.RBP_res_df = self.RBP_res_df.merge(
+                    self.RBP_target_db,
+                    left_on='RBP_name',
+                    right_on='RBP',
+                    how='inner'
+                ).drop(
+                    [
+                        'RBP'
+                    ],
+                    axis=1
+                )
+        else:
+            self.RBP_res_df = None
 
         # submit summary
         circ_miRNA_count = self.res_df[['ev_id', 'mirna']].drop_duplicates().rename(
