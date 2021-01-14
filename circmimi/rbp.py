@@ -88,6 +88,8 @@ class RBPBindingSites:
                 'end_rbp': int,
                 'overlap': int
             }
+        ).astype(
+            'object'
         ).assign(
             sample_id=self._get_split_rbp_name(0),
             RBP_name=self._get_split_rbp_name(1)

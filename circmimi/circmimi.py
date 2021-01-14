@@ -14,6 +14,7 @@ class Circmimi:
                  mir_target_file,
                  AGO_binding_file,
                  RBP_binding_file,
+                 RBP_target_file,
                  other_ref_file=None,
                  work_dir='.',
                  num_proc=1,
@@ -39,6 +40,7 @@ class Circmimi:
 
         self.AGO_binding_sites = RBPBindingSites(self.AGO_binding_file)
         self.RBP_binding_sites = RBPBindingSites(self.RBP_binding_file)
+        self.RBP_target_file = RBP_target_file
 
     def run(self, circ_file):
 
@@ -190,7 +192,59 @@ class Circmimi:
         )
         self.RBP_overlap = self.RBP_overlap_raw_data.pipe(
             RBPBindingSitesFilters.RBP_overlap_filter
+        ).merge(
+            self.uniq_exons_df[['exons_id', 'ev_id']],
+            left_on='name',
+            right_on='exons_id',
+            how='left'
+        ).drop(
+            'exons_id',
+            axis=1
         )
+        self.RBP_overlap_count = self.RBP_overlap[[
+            'ev_id',
+            'RBP_name',
+            'chr_rbp',
+            'start_rbp',
+            'end_rbp',
+            'strand_rbp',
+            'sample_id'
+        ]].drop_duplicates(
+        ).groupby(
+            [
+                'ev_id',
+                'RBP_name',
+                'chr_rbp',
+                'start_rbp',
+                'end_rbp',
+                'strand_rbp'
+            ]
+        ).agg(
+            {
+                'sample_id': 'nunique'
+            }
+        ).reset_index(
+        ).assign(
+            count=1
+        ).groupby(
+            [
+                'ev_id',
+                'RBP_name'
+            ]
+        ).agg(
+            {
+                'sample_id': 'max',
+                'count': 'sum'
+            }
+        ).reset_index(
+        ).rename(
+            {
+                'sample_id': 'max_sample_count'
+            },
+            axis=1
+        )
+
+        self.RBP_target_db = pd.read_csv(self.RBP_target_file, sep='\t', dtype='object')
 
         # final result table
         self.res_df = self.circ_events.clear_df.reset_index().merge(
@@ -212,6 +266,26 @@ class Circmimi:
                 'target_gene'
             ]
         ).reset_index(drop=True)
+
+        self.RBP_res_df = self.circ_events.clear_df.merge(
+            self.gene_symbol_df,
+            on='ev_id',
+            how='inner'
+        ).merge(
+            self.RBP_overlap_count,
+            on='ev_id',
+            how='left'
+        ).merge(
+            self.RBP_target_db,
+            left_on='RBP_name',
+            right_on='RBP',
+            how='inner'
+        ).drop(
+            [
+                'RBP'
+            ],
+            axis=1
+        )
 
         # submit summary
         circ_miRNA_count = self.res_df[['ev_id', 'mirna']].drop_duplicates().rename(
