@@ -338,10 +338,11 @@ class Circmimi:
         )
         self.circ_events.submit_to_summary(total_count, type_='summary')
 
-        self.res_df = self.res_df.drop('ev_id', axis=1)
-
     def save_result(self, out_file):
-        self.res_df.to_csv(out_file, sep='\t', index=False)
+        self.res_df.drop('ev_id', axis=1).to_csv(out_file, sep='\t', index=False)
+
+    def save_RBP_result(self, out_file):
+        self.RBP_res_df.drop('ev_id', axis=1).to_csv(out_file, sep='\t', index=False)
 
     def save_circRNAs_summary(self, out_file):
         self.circ_events.get_summary().to_csv(out_file, sep='\t', index=False)

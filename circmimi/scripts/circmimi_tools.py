@@ -41,7 +41,7 @@ def run(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
         os.makedirs(output_dir, exist_ok=True)
 
     from circmimi.reference.config import get_refs
-    anno_db, ref_file, mir_ref, mir_target, other_transcripts, AGO_data, RBP_data = get_refs(ref_dir)
+    anno_db, ref_file, mir_ref, mir_target, other_transcripts, AGO_data, RBP_data, RBP_target = get_refs(ref_dir)
 
     if checkAA:
         other_ref_file = other_transcripts
@@ -63,6 +63,9 @@ def run(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
         ref_file,
         mir_ref,
         mir_target,
+        AGO_data,
+        RBP_data,
+        RBP_target,
         other_ref_file,
         work_dir=output_dir,
         num_proc=num_proc,
@@ -71,8 +74,11 @@ def run(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
 
     circmimi_result.run(circ_file)
 
-    res_file = add_prefix('all_interactions.tsv', out_prefix)
+    res_file = add_prefix('all_interactions.miRNA.tsv', out_prefix)
     circmimi_result.save_result(res_file)
+
+    RBP_res_file = add_prefix('all_interactions.RBP.tsv', out_prefix)
+    circmimi_result.save_RBP_result(RBP_res_file)
 
     summary_file = add_prefix('summary_list.tsv', out_prefix)
     circmimi_result.save_circRNAs_summary(summary_file)

@@ -18,6 +18,7 @@ CONFIG_TEMPL = """
     other_transcripts =
     AGO_data =
     RBP_data =
+    RBP_target =
 """
 
 
@@ -52,5 +53,6 @@ def get_refs(ref_dir):
     other_transcripts = os.path.join(ref_dir, config['refs']['other_transcripts'])
     AGO_data = os.path.join(ref_dir, config['refs']['AGO_data'])
     RBP_data = os.path.join(ref_dir, config['refs']['RBP_data'])
+    RBP_target = os.path.join(ref_dir, config['refs']['RBP_target'])
 
-    return anno_db, ref_file, mir_ref, mir_target, other_transcripts, AGO_data, RBP_data
+    return anno_db, ref_file, mir_ref, mir_target, other_transcripts, AGO_data, RBP_data, RBP_target
