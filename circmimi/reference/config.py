@@ -25,6 +25,7 @@ CONFIG_TEMPL = """
 class RefConfig:
     def __init__(self):
         self.config = configparser.ConfigParser()
+        self.config.optionxform = str
         self.config.read_string(CONFIG_TEMPL)
 
     def read(self, cfg_file):

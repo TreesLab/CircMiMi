@@ -367,6 +367,58 @@ class Circmimi:
         )
         self.circ_events.submit_to_summary(total_count, type_='summary')
 
+        if self.do_circRNA_RBP:
+            circ_RBP_count = self.RBP_res_df[['ev_id', 'RBP_name']].drop_duplicates().rename(
+                {
+                    'RBP_name': '#circRNA_RBP'
+                },
+                axis=1
+            ).groupby(
+                'ev_id'
+            ).agg(
+                'count'
+            ).pipe(
+                self.circ_events.expand_to_all_events,
+                fillna_value=0
+            ).astype('int')
+            self.circ_events.submit_to_summary(circ_RBP_count, type_='summary')
+
+            if self.do_RBP_mRNA:
+                circ_mRNA_via_RBP_count = self.RBP_res_df[['ev_id', 'geneName']].drop_duplicates().rename(
+                    {
+                        'geneName': '#circRNA_mRNA_via_RBP'
+                    },
+                    axis=1
+                ).groupby(
+                    'ev_id'
+                ).agg(
+                    'count'
+                ).pipe(
+                    self.circ_events.expand_to_all_events,
+                    fillna_value=0
+                ).astype('int')
+                self.circ_events.submit_to_summary(circ_mRNA_via_RBP_count, type_='summary')
+
+                circ_RBP_mRNA_count = self.RBP_res_df[['ev_id', 'RBP_name', 'geneName']].drop_duplicates().assign(
+                    circRNA_RBP_mRNA=1
+                ).drop(
+                    ['RBP_name', 'geneName'],
+                    axis=1
+                ).groupby(
+                    'ev_id'
+                ).agg(
+                    'count'
+                ).pipe(
+                    self.circ_events.expand_to_all_events,
+                    fillna_value=0
+                ).astype('int').rename(
+                    {
+                        'circRNA_RBP_mRNA': '#circRNA_RBP_mRNA'
+                    },
+                    axis=1
+                )
+                self.circ_events.submit_to_summary(circ_RBP_mRNA_count, type_='summary')
+
     def save_result(self, out_file):
         self.res_df.drop('ev_id', axis=1).to_csv(out_file, sep='\t', index=False)
 
