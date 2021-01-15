@@ -15,6 +15,8 @@ genome_filename = reference_genome.filename
 
 import subprocess as sp
 import ftplib
+import urllib.request
+import urllib.error
 import os
 import re
 
@@ -375,6 +377,7 @@ class MiRBaseDat(MiRBaseResource):
 
 class MiRTarBaseResource(Resource):
     url_templ = "http://mirtarbase.mbc.nctu.edu.tw/cache/download/{version}/miRTarBase_MTI.xlsx"
+    url_templ_2 = "http://mirtarbase.cuhk.edu.cn/cache/download/{version}/miRTarBase_MTI.xlsx"
 
     def __init__(self, species, version):
         self.species = species
@@ -384,6 +387,13 @@ class MiRTarBaseResource(Resource):
 
     def get_url(self):
         url = self.url_templ.format(species=self.species, version=self.version)
+
+        try:
+            urllib.request.urlopen(url, timeout=10)
+
+        except urllib.error.URLError:
+            url = self.url_templ_2.format(species=self.species, version=self.version)
+
         return url
 
 
