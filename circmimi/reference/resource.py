@@ -450,9 +450,11 @@ class MiRDBData(Resource):
 
 class EncoriRBPData(Resource):
     url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.hg38.{}.bed.gz"
+    url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.hg38.no_chr.{}.bed.gz"
 
-    def __init__(self, species, only_AGO=False):
+    def __init__(self, species, source, only_AGO=False):
         self.species = species
+        self.source = source
         self.only_AGO = only_AGO
 
         url = self.get_url()
@@ -462,10 +464,15 @@ class EncoriRBPData(Resource):
         if self.species != 'hsa':
             return ''
 
-        if self.only_AGO:
-            url = self.url_templ.format('AGO')
+        if self.source == 'gencode':
+            url_templ = self.url_templ
         else:
-            url = self.url_templ.format('all')
+            url_templ = self.url_templ_2
+
+        if self.only_AGO:
+            url = url_templ.format('AGO')
+        else:
+            url = url_templ.format('all')
 
         return url
 
