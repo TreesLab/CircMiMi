@@ -323,11 +323,11 @@ class GencodeGenome(GencodeResource):
 
 
 class GencodeProteinCodingTranscripts(GencodeResource):
-    file_pattern = r".+\.lncRNA_transcripts\.fa\.gz$"
+    file_pattern = r".+\.pc_transcripts\.fa\.gz$"
 
 
 class GencodeLongNonCodingTranscripts(GencodeResource):
-    file_pattern = r".+\.pc_transcripts\.fa\.gz$"
+    file_pattern = r".+\.lncRNA_transcripts\.fa\.gz$"
 
 
 class GencodeAnnotation(GencodeResource):
