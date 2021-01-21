@@ -495,6 +495,24 @@ class EncoriRBPTargetData(Resource):
         return url
 
 
+class EncoriMiRNATargetData(Resource):
+    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_miRNA/mir_target_ref.ENCORI.miRBase_v22.tsv.gz"
+
+    def __init__(self, species):
+        self.species = species
+
+        url = self.get_url()
+        super().__init__(url)
+
+    def get_url(self):
+        if self.species != 'hsa':
+            return ''
+
+        url = self.url_templ.format()
+
+        return url
+
+
 class Error(Exception):
     pass
 
