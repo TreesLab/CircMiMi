@@ -176,6 +176,8 @@ class MirTargetRef:
         self.species = species
         self.filename = "mir_target.{}.tsv".format(self.species.key)
 
+        self.remove_unavailable_files()
+
     def generate(self):
         merged_df = pd.DataFrame([], columns=['mirna', 'target_gene'])
         for ref_file, ref_name in zip(self.ref_files, self.ref_names):
@@ -211,6 +213,17 @@ class MirTargetRef:
                 item_idx = result_items.index(item)
                 result_items = [result_items[item_idx]] + result_items[:item_idx] + result_items[(item_idx + 1):]
         return result_items
+
+    def remove_unavailable_files(self):
+        ref_files = []
+        ref_names = []
+        for ref_file, ref_name in zip(self.ref_files, self.ref_names):
+            if ref_file.filename != '':
+                ref_files.append(ref_file)
+                ref_names.append(ref_name)
+
+        self.ref_files = ref_files
+        self.ref_names = ref_names
 
 
 def generate(species, source, version, ref_dir):
@@ -261,7 +274,8 @@ def generate(species, source, version, ref_dir):
         mir_target_files = Files(
             [
                 rs.MiRTarBaseResource(None, "7.0"),
-                rs.MiRDBData(species.key, "6.0")
+                rs.MiRDBData(species.key, "6.0"),
+                rs.EncoriMiRNATargetData(species.key)
             ]
         )
         ENCORI_RBP_files = Files(
@@ -316,13 +330,15 @@ def generate(species, source, version, ref_dir):
 
         mir_target_refs = [
             miRTarBase_ref,
-            mir_target_files[1]
+            mir_target_files[1],
+            mir_target_files[2]
         ]
         mir_target_ref = MirTargetRef(
             mir_target_refs,
             [
                 "miRTarBase",
-                "miRDB"
+                "miRDB",
+                "ENCORI"
             ],
             species
         )
