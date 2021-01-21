@@ -181,7 +181,7 @@ class MirTargetRef:
     def generate(self):
         merged_df = pd.DataFrame([], columns=['mirna', 'target_gene'])
         for ref_file, ref_name in zip(self.ref_files, self.ref_names):
-            ref_df = pd.read_csv(ref_file.filename, sep='\t', dtype='object')
+            ref_df = pd.read_csv(ref_file, sep='\t', dtype='object')
             ref_df = ref_df.pipe(self.add_ref_name, ref_name).pipe(self.add_ref_col, ref_name)
             merged_df = merged_df.merge(ref_df, on=['mirna', 'target_gene'], how="outer")
 
@@ -218,7 +218,7 @@ class MirTargetRef:
         ref_files = []
         ref_names = []
         for ref_file, ref_name in zip(self.ref_files, self.ref_names):
-            if ref_file.filename != '':
+            if ref_file:
                 ref_files.append(ref_file)
                 ref_names.append(ref_name)
 
@@ -318,20 +318,19 @@ def generate(species, source, version, ref_dir):
         updater = MatureMiRNAUpdater("21", "22", species.key)
         updater.create()
 
-        updated_file = "miRTarBase.{}.miRBase_v22.tsv".format(species.key)
+        updated_miRTarBase_ref_filename = "miRTarBase.{}.miRBase_v22.tsv".format(species.key)
         updater.update_file(
             miRTarBase_ref.filename,
-            updated_file,
+            updated_miRTarBase_ref_filename,
             col_key=0,
             inplace=True,
             remove_deleted=True
         )
-        miRTarBase_ref.filename = updated_file
 
         mir_target_refs = [
-            miRTarBase_ref,
-            mir_target_files[1],
-            mir_target_files[2]
+            updated_miRTarBase_ref_filename,
+            mir_target_files[1].filename,
+            mir_target_files[2].filename
         ]
         mir_target_ref = MirTargetRef(
             mir_target_refs,
