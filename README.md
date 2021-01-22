@@ -94,6 +94,7 @@ Parameter             | Description
 --species SPECIES     | Assign the species for references. Use the species code for SPECIES. ***[required]***
 --source SOURCE       | Available values for SOURCE: "ensembl", "ensembl_plants", "ensembl_metazoa", "gencode". ***[required]***
 --version RELEASE_VER | The release version of the SOURCE. For examples,  "98" for ("hsa", "ensembl"), "M24" for ("mmu", "gencode"). If the version is not assigned, the latest one will be used.
+REF_DIR               | The directory for all generated references.
 
 
 
@@ -130,7 +131,7 @@ xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |
    - **MB**: miRBase (v22) (http://www.mirbase.org/)
 
 ###### Databases for miRNA-mRNA interactions
-   - **MTB**: miRTarBase (v7.0) (http://mirtarbase.mbc.nctu.edu.tw/php/index.php)
+   - **MTB**: miRTarBase (v7.0) ~(http://mirtarbase.mbc.nctu.edu.tw/php/index.php)~ (http://mirtarbase.cuhk.edu.cn/php/index.php)
    - **MDB**: miRDB (v6.0) (http://mirdb.org/)
 
 
@@ -181,7 +182,10 @@ The input file(CIRC_FILE) is a TAB-separated file with the following columns:
 
 
 ### Output files
-The main pipeline of CircMiMi outputs two main files: "summary_list.tsv" and "all_interactions.tsv".
+The main pipeline of CircMiMi outputs three main files:
+ - "summary_list.tsv"
+ - "all_interactions.miRNA.tsv"
+ - "all_interactions.RBP.tsv"
 
 
 #### summary_list.tsv
@@ -195,16 +199,19 @@ The summary list contains the counts of interactions and some checking results o
   4  |  strand         | + / -
   5  |  pass           | 'yes' for the circRNA passing all of the checking items (column 9 to 13). Otherwise 'no'.
   6  |  #circRNA_miRNA | Count for the circRNA-miRNA interactions.
-  7  |  #circRNA_mRNA  | Count for the circRNA-mRNA interactions.
+  7  |  #circRNA_mRNA  | Count for the miRNAs-mediated circRNA-mRNA interactions.
   8  |  #circRNA_miRNA_mRNA | Count for the circRNA-miRNA-mRNA interactions.
-  9  |  donor site not at the annotated boundary | '1' if the donor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
- 10  |  acceptor site not at the annotated boundary | '1' if the acceptor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
- 11  |  donor/acceptor sites not at the same transcript isoform | '1' if the donor and acceptor are not at the same annotated transcript isoform. Otherwise '0'.
- 12  |  ambiguity with an co-linear explanation | '1' if the merged flanking sequence of the circRNA junction sites has an co-linear explanation. Otherwise '0'.
- 13  |  ambiguity with multiple hits | '1' if the merged flanking sequence of the circRNA junction sites is with multiple hits. Otherwise '0'.
+  9  |  #circRNA_RBP | Count for the circRNA-RBP interactions.
+  10  |  #circRNA_mRNA_via_RBP  | Count for the RBP-mediated circRNA-mRNA interactions.
+  11  |  #circRNA_RBP_mRNA | Count for the circRNA-RBP-mRNA interactions.
+  12  |  donor site not at the annotated boundary | '1' if the donor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
+ 13  |  acceptor site not at the annotated boundary | '1' if the acceptor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
+ 14  |  donor/acceptor sites not at the same transcript isoform | '1' if the donor and acceptor are not at the same annotated transcript isoform. Otherwise '0'.
+ 15  |  ambiguity with an co-linear explanation | '1' if the merged flanking sequence of the circRNA junction sites has an co-linear explanation. Otherwise '0'.
+ 16  |  ambiguity with multiple hits | '1' if the merged flanking sequence of the circRNA junction sites is with multiple hits. Otherwise '0'.
 
 
-#### all_interactions.tsv
+#### all_interactions.miRNA.tsv
 
 \#   | Column          | Description
 :--: | :-------------- | :----------
@@ -215,13 +222,51 @@ The summary list contains the counts of interactions and some checking results o
   5  |  host_gene      | Host gene of the circRNA
   6  |  mirna          | The miRNA which may bind on the circRNA
   7  |  max_score      | The maximum binding score reported by miRanda
-  8  |  count          | The number of the miRNA-binding sites on the circRNA
-  9  |  cross_boundary | If there is a binding site across the junction of the circRNA
- 10  |  target_gene    | The miRNA-targeted gene
- 11  |  miRTarBase      | Is the miRNA-mRNA interaction reported from miRTarBase
- 12  |  miRDB      | Is the miRNA-mRNA interaction reported from miRDB
- 13  |  miRTarBase__ref_count | The number of references reporting the interaction
- 14  |  miRDB__targeting_score | The predicted target score from miRDB
+  8  |  #binding_sites | The number of binding sites of the miRNA on the circRNA
+  9  |  cross_boundary | '1' if there is a binding site across the junction of the circRNA. Otherwise '0'.
+ 10  |  MaxAgoExpNum | 
+ 11  |  #AGO_supported_binding_sites | 
+ 12  |  target_gene    | The miRNA-targeted gene
+ 13  |  miRTarBase      | '1' if the miRNA-mRNA interaction is reported from miRTarBase. Otherwise '0'.
+ 14  |  miRDB      | '1' if the miRNA-mRNA interaction is reported from miRDB. Otherwise '0'.
+ 15  |  ENCORI     | '1' if the miRNA-mRNA interaction is reported from ENCORI. Otherwise '0'.
+ 16  |  miRTarBase__ref_count | The number of references reporting the interaction
+ 17  |  miRDB__targeting_score | The predicted target score from miRDB
+ 18  |  ENCORI__geneID      |
+ 19  |  ENCORI__geneType      |
+ 20  |  ENCORI__clipExpNum      |
+ 21  |  ENCORI__RBP      |
+ 22  |  ENCORI__PITA      |
+ 23  |  ENCORI__RNA22      |
+ 24  |  ENCORI__miRmap      |
+ 25  |  ENCORI__microT      |
+ 26  |  ENCORI__miRanda      |
+ 27  |  ENCORI__PicTar      |
+ 28  |  ENCORI__TargetScan      |
+ 29  |  ENCORI__pancancerNum      |
+
+
+
+#### all_interactions.RBP.tsv
+
+\#   | Column          | Description
+:--: | :-------------- | :----------
+  1  |  chr            | Chromosome name
+  2  |  pos1           | One of the position of the circRNA junction site
+  3  |  pos2           | Another position of the circRNA junction site
+  4  |  strand         | + / -
+  5  |  host_gene      | Host gene of the circRNA
+  6  |  RBP            | The RBP which may bind on the circRNA
+  7  |  MaxRbpExpNum  | The maximum number of experiments supporting the RBP binding sites
+  8  |  #RBP_binding_sites   | The number of binding sites of the RBP on the circRNA
+  9  |  target_gene | The RBP-targeted gene
+ 10  |  geneID    | The gene ID of the RBP-targeted gene
+ 11  |  #RBP_binding_sites      | The number of RBP-binding sites on the RBP-targeted gene
+ 12  |  maxClipExpNum      | The maximum number of CLIP experiments supporting the RBP binding site
+
+
+#### Note.
+For now, the ENCORI and RBP data are only work for 'human' species.
 
 
 ## (Optional) Create the network file for Cytoscape
