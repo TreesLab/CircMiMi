@@ -293,16 +293,16 @@ class MirandaUtils:
                     'query_id': 'mirna',
                     'score': 'max_score',
                     'aln_id': '#binding_sites',
-                    'AGO_support': 'AGO_support_datasets',
-                    'AGO_support_yn': 'AGO_support_binding_sites'
+                    'AGO_support': 'MaxAgoExpNum',
+                    'AGO_support_yn': '#AGO_supported_binding_sites'
                 },
                 axis=1
             ).astype(
                 {
                     'ev_id': 'object',
                     '#binding_sites': 'Int64',
-                    'AGO_support_datasets': 'Int64',
-                    'AGO_support_binding_sites': 'Int64'
+                    'MaxAgoExpNum': 'Int64',
+                    '#AGO_supported_binding_sites': 'Int64'
                 }
             )
         else:
