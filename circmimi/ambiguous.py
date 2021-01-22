@@ -10,8 +10,8 @@ from circmimi.annotation import Annotation
 
 class AmbiguousChecker:
     _CHECK_LIST = [
-        'ambiguity with an co-linear explanation',
-        'ambiguity with multiple hits'
+        'ambiguity_with_an_colinear_explanation',
+        'ambiguity_with_multiple_hits'
     ]
 
     def __init__(self,

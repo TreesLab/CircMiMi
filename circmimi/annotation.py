@@ -107,9 +107,9 @@ class Annotation:
 
 class Annotator:
     _CHECK_LIST = [
-        'donor site not at the annotated boundary',
-        'acceptor site not at the annotated boundary',
-        'donor/acceptor sites not at the same transcript isoform'
+        'donor_site_not_at_the_annotated_boundary',
+        'acceptor_site_not_at_the_annotated_boundary',
+        'donor_acceptor_sites_not_at_the_same_transcript_isoform'
     ]
 
     def __init__(self, anno_db_file):
