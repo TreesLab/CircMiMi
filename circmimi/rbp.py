@@ -92,7 +92,7 @@ class RBPBindingSites:
             'object'
         ).assign(
             sample_id=self._get_split_rbp_name(0),
-            RBP_name=self._get_split_rbp_name(1)
+            RBP=self._get_split_rbp_name(1)
         ).assign(
             real_overlap=lambda df: df.apply(self._get_real_overlap, axis=1)
         ).assign(
@@ -140,7 +140,7 @@ class RBPBindingSitesFilters:
         coverage_df = df[[
             'name',
             'sample_id',
-            'RBP_name',
+            'RBP',
             'joined_overlap',
             'total_blocks_len'
         ]].drop_duplicates(
@@ -160,7 +160,7 @@ class RBPBindingSitesFilters:
             'end_rbp',
             'strand_rbp',
             'sample_id',
-            'RBP_name',
+            'RBP',
             'real_overlap',
             'rbp_region_len'
         ]].assign(

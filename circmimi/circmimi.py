@@ -228,7 +228,7 @@ class Circmimi:
             )
             self.RBP_overlap_count = self.RBP_overlap[[
                 'ev_id',
-                'RBP_name',
+                'RBP',
                 'chr_rbp',
                 'start_rbp',
                 'end_rbp',
@@ -238,7 +238,7 @@ class Circmimi:
             ).groupby(
                 [
                     'ev_id',
-                    'RBP_name',
+                    'RBP',
                     'chr_rbp',
                     'start_rbp',
                     'end_rbp',
@@ -254,7 +254,7 @@ class Circmimi:
             ).groupby(
                 [
                     'ev_id',
-                    'RBP_name'
+                    'RBP'
                 ]
             ).agg(
                 {
@@ -304,14 +304,8 @@ class Circmimi:
             if self.do_RBP_mRNA:
                 self.RBP_res_df = self.RBP_res_df.merge(
                     self.RBP_target_db,
-                    left_on='RBP_name',
-                    right_on='RBP',
+                    on='RBP',
                     how='inner'
-                ).drop(
-                    [
-                        'RBP'
-                    ],
-                    axis=1
                 )
         else:
             self.RBP_res_df = None
@@ -368,9 +362,9 @@ class Circmimi:
         self.circ_events.submit_to_summary(total_count, type_='summary')
 
         if self.do_circRNA_RBP:
-            circ_RBP_count = self.RBP_res_df[['ev_id', 'RBP_name']].drop_duplicates().rename(
+            circ_RBP_count = self.RBP_res_df[['ev_id', 'RBP']].drop_duplicates().rename(
                 {
-                    'RBP_name': '#circRNA_RBP'
+                    'RBP': '#circRNA_RBP'
                 },
                 axis=1
             ).groupby(
@@ -399,10 +393,10 @@ class Circmimi:
                 ).astype('int')
                 self.circ_events.submit_to_summary(circ_mRNA_via_RBP_count, type_='summary')
 
-                circ_RBP_mRNA_count = self.RBP_res_df[['ev_id', 'RBP_name', 'geneName']].drop_duplicates().assign(
+                circ_RBP_mRNA_count = self.RBP_res_df[['ev_id', 'RBP', 'geneName']].drop_duplicates().assign(
                     circRNA_RBP_mRNA=1
                 ).drop(
-                    ['RBP_name', 'geneName'],
+                    ['RBP', 'geneName'],
                     axis=1
                 ).groupby(
                     'ev_id'
