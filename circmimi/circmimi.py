@@ -264,7 +264,8 @@ class Circmimi:
             ).reset_index(
             ).rename(
                 {
-                    'sample_id': 'max_sample_count'
+                    'sample_id': 'MaxRbpExpNum',
+                    'count': '#RBP_binding_sites'
                 },
                 axis=1
             )
