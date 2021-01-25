@@ -44,8 +44,9 @@ setup(
             'mp_blat.py = circmimi.scripts.mp_blat:cli'
         ]
     },
-    description=("A toolset for investigating the interactions between"
-                 " circRNA - miRNA - mRNA."),
+    description=("A package for constructing CLIP-seq data-supported "
+                 "\"circRNA - miRNA - mRNA\" and \"circRNA - RBP - mRNA\""
+                 " interactions"),
     long_description=long_description,
     long_description_content_type="text/markdown"
 )
