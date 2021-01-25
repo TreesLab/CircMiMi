@@ -292,17 +292,17 @@ class MirandaUtils:
                 {
                     'query_id': 'mirna',
                     'score': 'max_score',
-                    'aln_id': '#binding_sites',
+                    'aln_id': 'num_binding_sites',
                     'AGO_support': 'MaxAgoExpNum',
-                    'AGO_support_yn': '#AGO_supported_binding_sites'
+                    'AGO_support_yn': 'num_AGO_supported_binding_sites'
                 },
                 axis=1
             ).astype(
                 {
                     'ev_id': 'object',
-                    '#binding_sites': 'Int64',
+                    'num_binding_sites': 'Int64',
                     'MaxAgoExpNum': 'Int64',
-                    '#AGO_supported_binding_sites': 'Int64'
+                    'num_AGO_supported_binding_sites': 'Int64'
                 }
             )
         else:
@@ -325,13 +325,13 @@ class MirandaUtils:
                 {
                     'query_id': 'mirna',
                     'score': 'max_score',
-                    'aln_id': '#binding_sites'
+                    'aln_id': 'num_binding_sites'
                 },
                 axis=1
             ).astype(
                 {
                     'ev_id': 'object',
-                    '#binding_sites': 'Int64'
+                    'num_binding_sites': 'Int64'
                 }
             )
 

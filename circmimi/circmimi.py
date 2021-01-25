@@ -265,7 +265,7 @@ class Circmimi:
             ).rename(
                 {
                     'sample_id': 'MaxRbpExpNum',
-                    'count': '#RBP_binding_sites'
+                    'count': 'num_RBP_binding_sites'
                 },
                 axis=1
             )
@@ -379,9 +379,9 @@ class Circmimi:
             self.circ_events.submit_to_summary(circ_RBP_count, type_='summary')
 
             if self.do_RBP_mRNA:
-                circ_mRNA_via_RBP_count = self.RBP_res_df[['ev_id', 'geneName']].drop_duplicates().rename(
+                circ_mRNA_via_RBP_count = self.RBP_res_df[['ev_id', 'target_gene']].drop_duplicates().rename(
                     {
-                        'geneName': '#circRNA_mRNA_via_RBP'
+                        'target_gene': '#circRNA_mRNA_via_RBP'
                     },
                     axis=1
                 ).groupby(
@@ -394,10 +394,10 @@ class Circmimi:
                 ).astype('int')
                 self.circ_events.submit_to_summary(circ_mRNA_via_RBP_count, type_='summary')
 
-                circ_RBP_mRNA_count = self.RBP_res_df[['ev_id', 'RBP', 'geneName']].drop_duplicates().assign(
+                circ_RBP_mRNA_count = self.RBP_res_df[['ev_id', 'RBP', 'target_gene']].drop_duplicates().assign(
                     circRNA_RBP_mRNA=1
                 ).drop(
-                    ['RBP', 'geneName'],
+                    ['RBP', 'target_gene'],
                     axis=1
                 ).groupby(
                     'ev_id'
