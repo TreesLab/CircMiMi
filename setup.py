@@ -34,7 +34,7 @@ setup(
         'sqlalchemy>=1.3.8',
         'numpy>=1.17.2',
         'pandas>=0.25.1',
-        'xlrd>=1.2.0',
+        'openpyxl',
         'networkx>=2.4',
         'lxml>=4.5.0'
     ],

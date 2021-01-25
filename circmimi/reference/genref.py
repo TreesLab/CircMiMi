@@ -45,7 +45,7 @@ class MirRef(RefFile):
 
 class MiRTarBaseRef(RefFile):
     def generate(self, species):
-        df = pd.read_excel(self.src_name)
+        df = pd.read_excel(self.src_name, engine='openpyxl')
 
         formatted_data = df[
             df['Species (miRNA)'] == species.fullname
