@@ -101,25 +101,25 @@ REF_DIR               | The directory for all generated references.
 
 ### Available species and sources
 
-Code | Name                    |  E  |  G  |  EP |  EM |  MB | MTB | MDB |
-:--  | :---------------------- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-ath  | Arabidopsis thaliana    |     |     |  V  |     |  V  |  V  |     |
-bmo  | Bombyx mori             |     |     |     |  V  |  V  |  V  |     |
-bta  | Bos taurus              |  V  |     |     |     |  V  |  V  |     |
-cel  | Caenorhabditis elegans  |  V  |     |     |  V  |  V  |  V  |     |
-cfa  | Canis familiaris        |  V  |     |     |     |  V  |  V  |  V  |
-dre  | Danio rerio             |  V  |     |     |     |  V  |  V  |     |
-dme  | Drosophila melanogaster |  V  |     |     |     |  V  |  V  |     |
-gga  | Gallus gallus           |  V  |     |     |     |  V  |  V  |  V  |
-hsa  | Homo sapiens            |  V  |  V  |     |     |  V  |  V  |  V  |
-mmu  | Mus musculus            |  V  |  V  |     |     |  V  |  V  |  V  |
-osa  | Oryza sativa            |     |     |  V  |     |  V  |  V  |     |
-ola  | Oryzias latipes         |  V  |     |     |     |  V  |  V  |     |
-oar  | Ovis aries              |  V  |     |     |     |  V  |  V  |     |
-rno  | Rattus norvegicus       |  V  |     |     |     |  V  |  V  |  V  |
-ssc  | Sus scrofa              |  V  |     |     |     |  V  |  V  |     |
-tgu  | Taeniopygia guttata     |  V  |     |     |     |  V  |  V  |     |
-xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |
+Code | Name                    |  E  |  G  |  EP |  EM |  MB | MTB | MDB | ECR |
+:--  | :---------------------- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+ath  | Arabidopsis thaliana    |     |     |  V  |     |  V  |  V  |     |     |
+bmo  | Bombyx mori             |     |     |     |  V  |  V  |  V  |     |     |
+bta  | Bos taurus              |  V  |     |     |     |  V  |  V  |     |     |
+cel  | Caenorhabditis elegans  |  V  |     |     |  V  |  V  |  V  |     |     |
+cfa  | Canis familiaris        |  V  |     |     |     |  V  |  V  |  V  |     |
+dre  | Danio rerio             |  V  |     |     |     |  V  |  V  |     |     |
+dme  | Drosophila melanogaster |  V  |     |     |     |  V  |  V  |     |     |
+gga  | Gallus gallus           |  V  |     |     |     |  V  |  V  |  V  |     |
+hsa  | Homo sapiens            |  V  |  V  |     |     |  V  |  V  |  V  |  V  |
+mmu  | Mus musculus            |  V  |  V  |     |     |  V  |  V  |  V  |     |
+osa  | Oryza sativa            |     |     |  V  |     |  V  |  V  |     |     |
+ola  | Oryzias latipes         |  V  |     |     |     |  V  |  V  |     |     |
+oar  | Ovis aries              |  V  |     |     |     |  V  |  V  |     |     |
+rno  | Rattus norvegicus       |  V  |     |     |     |  V  |  V  |  V  |     |
+ssc  | Sus scrofa              |  V  |     |     |     |  V  |  V  |     |     |
+tgu  | Taeniopygia guttata     |  V  |     |     |     |  V  |  V  |     |     |
+xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |     |
 
 ###### Gene annotation
    - **E**: Ensembl (https://www.ensembl.org/index.html)
@@ -133,6 +133,9 @@ xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |
 ###### Databases for miRNA-mRNA interactions
    - **MTB**: miRTarBase (v7.0) ~(http://mirtarbase.mbc.nctu.edu.tw/php/index.php)~ (http://mirtarbase.cuhk.edu.cn/php/index.php)
    - **MDB**: miRDB (v6.0) (http://mirdb.org/)
+
+###### Databases for miRNA-mRNA interactions and RBP-related data
+   - **ECR**: ENCORI (http://starbase.sysu.edu.cn/index.php)
 
 
 
