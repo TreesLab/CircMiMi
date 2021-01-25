@@ -16,7 +16,8 @@ A toolset for investigating the interactions between circRNA - miRNA - mRNA.
       - [Input file](#input-file)
       - [Output files](#output-files)
         - [summary_list.tsv](#summary_listtsv)
-        - [all_interactions.tsv](#all_interactionstsv)
+        - [all_interactions.miRNA.tsv](#all_interactionsmirnatsv)
+        - [all_interactions.RBP.tsv](#all_interactionsrbptsv)
     - [(Optional) Create the network file for Cytoscape](#optional-create-the-network-file-for-cytoscape)
       - [Parameters](#parameters-2)
 - [Example](#example)
@@ -227,26 +228,26 @@ The summary list contains the counts of interactions and some checking results o
   7  |  max_score      | The maximum binding score reported by miRanda
   8  |  #binding_sites | The number of binding sites of the miRNA on the circRNA
   9  |  cross_boundary | '1' if there is a binding site across the junction of the circRNA. Otherwise '0'.
- 10  |  MaxAgoExpNum | 
- 11  |  #AGO_supported_binding_sites | 
+ 10  |  MaxAgoExpNum | The maximum number of supporting CLIP-seq experiments
+ 11  |  #AGO_supported_binding_sites | The number of AGO-supported miRNA-binding sites
  12  |  target_gene    | The miRNA-targeted gene
  13  |  miRTarBase      | '1' if the miRNA-mRNA interaction is reported from miRTarBase. Otherwise '0'.
  14  |  miRDB      | '1' if the miRNA-mRNA interaction is reported from miRDB. Otherwise '0'.
  15  |  ENCORI     | '1' if the miRNA-mRNA interaction is reported from ENCORI. Otherwise '0'.
  16  |  miRTarBase__ref_count | The number of references reporting the interaction
  17  |  miRDB__targeting_score | The predicted target score from miRDB
- 18  |  ENCORI__geneID      |
- 19  |  ENCORI__geneType      |
- 20  |  ENCORI__clipExpNum      |
- 21  |  ENCORI__RBP      |
- 22  |  ENCORI__PITA      |
- 23  |  ENCORI__RNA22      |
- 24  |  ENCORI__miRmap      |
- 25  |  ENCORI__microT      |
- 26  |  ENCORI__miRanda      |
- 27  |  ENCORI__PicTar      |
- 28  |  ENCORI__TargetScan      |
- 29  |  ENCORI__pancancerNum      |
+ 18  |  ENCORI__geneID      | The gene ID of the target gene
+ 19  |  ENCORI__geneType      | The gene type of the target gene
+ 20  |  ENCORI__clipExpNum      | The number of supporting CLIP-seq experiments
+ 21  |  ENCORI__RBP      | RBP name
+ 22  |  ENCORI__PITA      | The number of target sites predicted by PITA
+ 23  |  ENCORI__RNA22      | The number of target sites predicted by RNA22
+ 24  |  ENCORI__miRmap      | The number of target sites predicted by miRmap
+ 25  |  ENCORI__microT      | The number of target sites predicted by microT
+ 26  |  ENCORI__miRanda      | The number of target sites predicted by miRanda
+ 27  |  ENCORI__PicTar      | The number of target sites predicted by PicTar
+ 28  |  ENCORI__TargetScan      | The number of target sites predicted by TargetScan
+ 29  |  ENCORI__pancancerNum      | The number of cancer types
 
 
 
