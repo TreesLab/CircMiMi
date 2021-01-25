@@ -10,7 +10,7 @@ Before running the main pipeline, we need to generate the reference files first.
 ```
 $ circmimi_tools genref --species hsa --source gencode --version 34 ./refs
 ```
-The above command will automatically download and generate the needed files from the "[gencode release 34](https://www.gencodegenes.org/human/release_34.html)".
+The above command will automatically download and generate the needed files from the "[gencode release 34](https://www.gencodegenes.org/human/release_34.html)" and other databases.
 
 <!-- *(explain the options here)* -->
 
@@ -25,10 +25,11 @@ $ circmimi_tools run -r ./refs -i circRNAs.gencode_format.tsv -o . --checkAA --m
 
 <!-- *(explain the options here)* -->
 
-There are two output files:
+There are three output files:
 
 - summary_list.tsv
-- all_interactions.tsv
+- all_interactions.miRNA.tsv
+- all_interactions.RBP.tsv
 
 For the format of these two files, please check the "[Output files](../README.md#output-files)" section.
 

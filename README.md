@@ -1,7 +1,6 @@
 # CircMiMi
 
-A toolset for investigating the interactions between circRNA - miRNA - mRNA.
-
+A package for constructing CLIP-seq data-supported "circRNA - miRNA - mRNA" and "circRNA - RBP - mRNA" interactions
 
 # Table of Contents
 - [Requirements](#requirements)
@@ -226,28 +225,28 @@ The summary list contains the counts of interactions and some checking results o
   5  |  host_gene      | Host gene of the circRNA
   6  |  mirna          | The miRNA which may bind on the circRNA
   7  |  max_score      | The maximum binding score reported by miRanda
-  8  |  #binding_sites | The number of binding sites of the miRNA on the circRNA
+  8  |  num_binding_sites | The number of binding sites of the miRNA on the circRNA
   9  |  cross_boundary | '1' if there is a binding site across the junction of the circRNA. Otherwise '0'.
- 10  |  MaxAgoExpNum | The maximum number of supporting CLIP-seq experiments
- 11  |  #AGO_supported_binding_sites | The number of AGO-supported miRNA-binding sites
+ 10  |  MaxAgoExpNum   | The maximum number of supporting CLIP-seq experiments
+ 11  |  num_AGO_supported_binding_sites | The number of AGO-supported miRNA-binding sites
  12  |  target_gene    | The miRNA-targeted gene
- 13  |  miRTarBase      | '1' if the miRNA-mRNA interaction is reported from miRTarBase. Otherwise '0'.
- 14  |  miRDB      | '1' if the miRNA-mRNA interaction is reported from miRDB. Otherwise '0'.
- 15  |  ENCORI     | '1' if the miRNA-mRNA interaction is reported from ENCORI. Otherwise '0'.
+ 13  |  miRTarBase     | '1' if the miRNA-mRNA interaction is reported from miRTarBase. Otherwise '0'.
+ 14  |  miRDB          | '1' if the miRNA-mRNA interaction is reported from miRDB. Otherwise '0'.
+ 15  |  ENCORI         | '1' if the miRNA-mRNA interaction is reported from ENCORI. Otherwise '0'.
  16  |  miRTarBase__ref_count | The number of references reporting the interaction
  17  |  miRDB__targeting_score | The predicted target score from miRDB
- 18  |  ENCORI__geneID      | The gene ID of the target gene
- 19  |  ENCORI__geneType      | The gene type of the target gene
- 20  |  ENCORI__clipExpNum      | The number of supporting CLIP-seq experiments
- 21  |  ENCORI__RBP      | RBP name
- 22  |  ENCORI__PITA      | The number of target sites predicted by PITA
- 23  |  ENCORI__RNA22      | The number of target sites predicted by RNA22
- 24  |  ENCORI__miRmap      | The number of target sites predicted by miRmap
- 25  |  ENCORI__microT      | The number of target sites predicted by microT
- 26  |  ENCORI__miRanda      | The number of target sites predicted by miRanda
- 27  |  ENCORI__PicTar      | The number of target sites predicted by PicTar
- 28  |  ENCORI__TargetScan      | The number of target sites predicted by TargetScan
- 29  |  ENCORI__pancancerNum      | The number of cancer types
+ 18  |  ENCORI__geneID | The gene ID of the target gene
+ 19  |  ENCORI__geneType | The gene type of the target gene
+ 20  |  ENCORI__clipExpNum | The number of supporting CLIP-seq experiments
+ 21  |  ENCORI__RBP    | RBP name
+ 22  |  ENCORI__PITA   | The number of target sites predicted by PITA
+ 23  |  ENCORI__RNA22  | The number of target sites predicted by RNA22
+ 24  |  ENCORI__miRmap | The number of target sites predicted by miRmap
+ 25  |  ENCORI__microT | The number of target sites predicted by microT
+ 26  |  ENCORI__miRanda | The number of target sites predicted by miRanda
+ 27  |  ENCORI__PicTar | The number of target sites predicted by PicTar
+ 28  |  ENCORI__TargetScan | The number of target sites predicted by TargetScan
+ 29  |  ENCORI__pancancerNum | The number of cancer types
 
 
 
@@ -261,12 +260,12 @@ The summary list contains the counts of interactions and some checking results o
   4  |  strand         | + / -
   5  |  host_gene      | Host gene of the circRNA
   6  |  RBP            | The RBP which may bind on the circRNA
-  7  |  MaxRbpExpNum  | The maximum number of experiments supporting the RBP binding sites
-  8  |  #RBP_binding_sites   | The number of binding sites of the RBP on the circRNA
-  9  |  target_gene | The RBP-targeted gene
- 10  |  geneID    | The gene ID of the RBP-targeted gene
- 11  |  #RBP_binding_sites      | The number of RBP-binding sites on the RBP-targeted gene
- 12  |  maxClipExpNum      | The maximum number of CLIP experiments supporting the RBP binding site
+  7  |  MaxRbpExpNum   | The maximum number of experiments supporting the RBP binding sites
+  8  |  num_RBP_binding_sites | The number of binding sites of the RBP on the circRNA
+  9  |  target_gene    | The RBP-targeted gene
+ 10  |  geneID         | The gene ID of the RBP-targeted gene
+ 11  |  num_RBP_binding_sites_on_target | The number of RBP-binding sites on the RBP-targeted gene
+ 12  |  maxClipExpNum  | The maximum number of CLIP experiments supporting the RBP binding site
 
 
 #### Note.
