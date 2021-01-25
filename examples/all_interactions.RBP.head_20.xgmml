@@ -1,0 +1,250 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<graph xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cy="http://www.cytoscape.org" xmlns="http://www.cs.rpi.edu/XGMML" id="1842" label="circmimi_result" directed="1" cy:documentVersion="3.0">
+  <node id="chr6:152329730:152331890:-:SYNE1" label="chr6:152329730:152331890:-:SYNE1">
+    <att name="data_type" value="circRNA" type="string"/>
+    <att name="chr" value="chr6" type="string"/>
+    <att name="pos1" value="152329730" type="string"/>
+    <att name="pos2" value="152331890" type="string"/>
+    <att name="strand" value="-" type="string"/>
+    <att name="host_gene" value="SYNE1" type="string"/>
+  </node>
+  <node id="ACIN1" label="ACIN1">
+    <att name="data_type" value="RBP" type="string"/>
+    <att name="name" value="ACIN1" type="string"/>
+  </node>
+  <node id="AAAS" label="AAAS">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AAAS" type="string"/>
+  </node>
+  <node id="AACS" label="AACS">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AACS" type="string"/>
+  </node>
+  <node id="AADAT" label="AADAT">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AADAT" type="string"/>
+  </node>
+  <node id="AAED1" label="AAED1">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AAED1" type="string"/>
+  </node>
+  <node id="AAGAB" label="AAGAB">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AAGAB" type="string"/>
+  </node>
+  <node id="AAK1" label="AAK1">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AAK1" type="string"/>
+  </node>
+  <node id="AAMDC" label="AAMDC">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AAMDC" type="string"/>
+  </node>
+  <node id="AAMP" label="AAMP">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AAMP" type="string"/>
+  </node>
+  <node id="AARS" label="AARS">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AARS" type="string"/>
+  </node>
+  <node id="AARSD1" label="AARSD1">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AARSD1" type="string"/>
+  </node>
+  <node id="AASDH" label="AASDH">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AASDH" type="string"/>
+  </node>
+  <node id="AASDHPPT" label="AASDHPPT">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AASDHPPT" type="string"/>
+  </node>
+  <node id="AATF" label="AATF">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AATF" type="string"/>
+  </node>
+  <node id="AATK" label="AATK">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="AATK" type="string"/>
+  </node>
+  <node id="ABCA1" label="ABCA1">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="ABCA1" type="string"/>
+  </node>
+  <node id="ABCA13" label="ABCA13">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="ABCA13" type="string"/>
+  </node>
+  <node id="ABCA2" label="ABCA2">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="ABCA2" type="string"/>
+  </node>
+  <node id="ABCA3" label="ABCA3">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="ABCA3" type="string"/>
+  </node>
+  <node id="ABCA5" label="ABCA5">
+    <att name="data_type" value="target_gene" type="string"/>
+    <att name="name" value="ABCA5" type="string"/>
+  </node>
+  <edge id="" label="chr6:152329730:152331890:-:SYNE1 - ACIN1" source="chr6:152329730:152331890:-:SYNE1" target="ACIN1">
+    <att name="data_type" value="circ-RBP" type="string"/>
+    <att name="source" value="chr6:152329730:152331890:-:SYNE1" type="string"/>
+    <att name="target" value="ACIN1" type="string"/>
+    <att name="MaxRbpExpNum" value="1" type="string"/>
+    <att name="num_RBP_binding_sites" value="9" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AAAS" source="ACIN1" target="AAAS">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AAAS" type="string"/>
+    <att name="geneID" value="ENSG00000094914" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="2" type="string"/>
+    <att name="maxClipExpNum" value="1" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AACS" source="ACIN1" target="AACS">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AACS" type="string"/>
+    <att name="geneID" value="ENSG00000081760" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="4" type="string"/>
+    <att name="maxClipExpNum" value="2" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AADAT" source="ACIN1" target="AADAT">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AADAT" type="string"/>
+    <att name="geneID" value="ENSG00000109576" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="4" type="string"/>
+    <att name="maxClipExpNum" value="1" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AAED1" source="ACIN1" target="AAED1">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AAED1" type="string"/>
+    <att name="geneID" value="ENSG00000158122" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="1" type="string"/>
+    <att name="maxClipExpNum" value="1" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AAGAB" source="ACIN1" target="AAGAB">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AAGAB" type="string"/>
+    <att name="geneID" value="ENSG00000103591" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="2" type="string"/>
+    <att name="maxClipExpNum" value="2" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AAK1" source="ACIN1" target="AAK1">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AAK1" type="string"/>
+    <att name="geneID" value="ENSG00000115977" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="3" type="string"/>
+    <att name="maxClipExpNum" value="1" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AAMDC" source="ACIN1" target="AAMDC">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AAMDC" type="string"/>
+    <att name="geneID" value="ENSG00000087884" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="2" type="string"/>
+    <att name="maxClipExpNum" value="1" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AAMP" source="ACIN1" target="AAMP">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AAMP" type="string"/>
+    <att name="geneID" value="ENSG00000127837" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="2" type="string"/>
+    <att name="maxClipExpNum" value="1" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AARS" source="ACIN1" target="AARS">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AARS" type="string"/>
+    <att name="geneID" value="ENSG00000090861" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="19" type="string"/>
+    <att name="maxClipExpNum" value="4" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AARSD1" source="ACIN1" target="AARSD1">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AARSD1" type="string"/>
+    <att name="geneID" value="ENSG00000266967" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="12" type="string"/>
+    <att name="maxClipExpNum" value="3" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AASDH" source="ACIN1" target="AASDH">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AASDH" type="string"/>
+    <att name="geneID" value="ENSG00000157426" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="1" type="string"/>
+    <att name="maxClipExpNum" value="2" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AASDHPPT" source="ACIN1" target="AASDHPPT">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AASDHPPT" type="string"/>
+    <att name="geneID" value="ENSG00000149313" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="1" type="string"/>
+    <att name="maxClipExpNum" value="1" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AATF" source="ACIN1" target="AATF">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AATF" type="string"/>
+    <att name="geneID" value="ENSG00000275700" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="18" type="string"/>
+    <att name="maxClipExpNum" value="2" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - AATK" source="ACIN1" target="AATK">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="AATK" type="string"/>
+    <att name="geneID" value="ENSG00000181409" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="1" type="string"/>
+    <att name="maxClipExpNum" value="3" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - ABCA1" source="ACIN1" target="ABCA1">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="ABCA1" type="string"/>
+    <att name="geneID" value="ENSG00000165029" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="1" type="string"/>
+    <att name="maxClipExpNum" value="1" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - ABCA13" source="ACIN1" target="ABCA13">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="ABCA13" type="string"/>
+    <att name="geneID" value="ENSG00000179869" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="2" type="string"/>
+    <att name="maxClipExpNum" value="4" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - ABCA2" source="ACIN1" target="ABCA2">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="ABCA2" type="string"/>
+    <att name="geneID" value="ENSG00000107331" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="11" type="string"/>
+    <att name="maxClipExpNum" value="3" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - ABCA3" source="ACIN1" target="ABCA3">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="ABCA3" type="string"/>
+    <att name="geneID" value="ENSG00000167972" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="7" type="string"/>
+    <att name="maxClipExpNum" value="2" type="string"/>
+  </edge>
+  <edge id="" label="ACIN1 - ABCA5" source="ACIN1" target="ABCA5">
+    <att name="data_type" value="RBP-target" type="string"/>
+    <att name="source" value="ACIN1" type="string"/>
+    <att name="target" value="ABCA5" type="string"/>
+    <att name="geneID" value="ENSG00000154265" type="string"/>
+    <att name="num_RBP_binding_sites_on_target" value="16" type="string"/>
+    <att name="maxClipExpNum" value="3" type="string"/>
+  </edge>
+</graph>
