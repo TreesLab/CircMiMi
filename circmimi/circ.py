@@ -114,6 +114,8 @@ class CircEvents:
 
         pass_column = filters_df.fillna('2').set_index(
             'ev_id'
+        ).astype(
+            int
         ).agg(
             'sum',
             axis=1
