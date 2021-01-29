@@ -46,15 +46,16 @@ class MatureMiRNAUpdater:
         ).group(1)
 
         diff_of_species = re.findall(
-            r'(.*)\t({}-.*)\t(.*)'.format(species),
-            mature_diff_text
+            r'^([^\t]*)\t({}-[^\t]*)\t(.*)'.format(species),
+            mature_diff_text,
+            flags=re.M
         )
 
         return diff_of_species
 
     @staticmethod
     def _get_accessions_of_type(diff_type, diff_data):
-        diff_data_of_type = filter(lambda data: data[2] == diff_type, diff_data)
+        diff_data_of_type = filter(lambda data: diff_type in data[2], diff_data)
         accessions = list(map(itemgetter(0), diff_data_of_type))
         return accessions
 
