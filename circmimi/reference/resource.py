@@ -377,7 +377,7 @@ class MiRBaseDat(MiRBaseResource):
 
 class MiRTarBaseResource(Resource):
     url_templ = "http://mirtarbase.mbc.nctu.edu.tw/cache/download/{version}/miRTarBase_MTI.xlsx"
-    url_templ_2 = "http://mirtarbase.cuhk.edu.cn/cache/download/{version}/miRTarBase_MTI.xlsx"
+    url_templ_2 = "https://mirtarbase.cuhk.edu.cn/~miRTarBase/miRTarBase_2019/cache/download/{version}/miRTarBase_MTI.xlsx"
 
     def __init__(self, species, version):
         self.species = species
