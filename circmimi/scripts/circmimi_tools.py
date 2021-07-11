@@ -1,6 +1,10 @@
 #! /usr/bin/env python
 import click
 import os
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 @click.group()
@@ -30,6 +34,8 @@ def run(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
     """
     This command is the main pipeline of CircMiMi.
     """
+
+    logger.info('Preparing ...')
 
     from circmimi.utils import add_prefix
 
@@ -72,16 +78,25 @@ def run(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
         miranda_options=miranda_options_list
     )
 
+    logger.info('Starting the main pipeline.')
     circmimi_result.run(circ_file)
+    logger.info('Pipeline completed.')
 
+    logger.info('Saving results ...')
     res_file = add_prefix('all_interactions.miRNA.tsv', out_prefix)
     circmimi_result.save_result(res_file)
+    logger.info('miRNA part ... done')
 
     RBP_res_file = add_prefix('all_interactions.RBP.tsv', out_prefix)
     circmimi_result.save_RBP_result(RBP_res_file)
+    logger.info('RBP part ... done')
 
     summary_file = add_prefix('summary_list.tsv', out_prefix)
     circmimi_result.save_circRNAs_summary(summary_file)
+    logger.info('summary file ... done')
+    logger.info('All results are saved.')
+
+    logger.info('Process completed.')
 
 
 @cli.command()

@@ -1,9 +1,13 @@
+import logging
 import pandas as pd
 from circmimi.circ import CircEvents
 from circmimi.bed import BedUtils
 from circmimi.seq import Seq
 from circmimi.miranda import get_binding_sites, MirandaUtils
 from circmimi.rbp import PosMap, RBPBindingSites, RBPBindingSitesFilters
+
+
+logger = logging.getLogger(__name__)
 
 
 class Circmimi:
@@ -64,11 +68,14 @@ class Circmimi:
             self.do_RBP_mRNA = False
 
     def run(self, circ_file):
-
+        logger.info('loading circRNAs')
         self.circ_events = CircEvents(circ_file)
+
+        logger.info('checking gene annotation for these circRNAs')
         self.circ_events.check_annotation(self.anno_db_file)
 
         if self.other_ref_file is not None:
+            logger.info('checking ambiguous alignments')
             self.circ_events.check_ambiguous(
                 self.anno_db_file,
                 self.ref_file,
@@ -77,6 +84,7 @@ class Circmimi:
                 num_proc=self.num_proc
             )
 
+        logger.info('getting all possible isoforms of these circRNAs')
         self.uniq_exons_df = self.circ_events.clear_anno_df.pipe(
             self._get_uniq_exons
         )
@@ -98,6 +106,7 @@ class Circmimi:
         }
 
         # miRNAs part
+        logger.info('predicting miRNA-binding sites on circRNAs')
         self.miranda_df = self.seq_df.pipe(
             get_binding_sites,
             mir_ref_file=self.mir_ref_file,
@@ -132,6 +141,7 @@ class Circmimi:
 
         # AGO overlap
         if self.check_AGO_support:
+            logger.info('filtering AGO-supported miRNA-binding sites')
             self.miRNA_binding_sites_bed = self.miranda_df[[
                 'genomic_regions_id',
                 'genomic_regions'
@@ -207,6 +217,7 @@ class Circmimi:
 
         # RBP part
         if self.do_circRNA_RBP:
+            logger.info('predicting RBP-binding sites on circRNAs')
             self.union_bed_df = self.uniq_exons_regions_df.pipe(
                 BedUtils.to_bed_df,
                 union=True
@@ -271,6 +282,7 @@ class Circmimi:
             )
 
         # final result table
+        logger.info('getting final results')
         self.res_df = self.circ_events.clear_df.reset_index().merge(
             self.gene_symbol_df,
             on='ev_id',
@@ -312,6 +324,7 @@ class Circmimi:
             self.RBP_res_df = None
 
         # submit summary
+        logger.info('generating summary')
         circ_miRNA_count = self.res_df[['ev_id', 'mirna']].drop_duplicates().rename(
             {
                 'mirna': '#circRNA_miRNA'
