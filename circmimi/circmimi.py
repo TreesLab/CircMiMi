@@ -142,6 +142,7 @@ class Circmimi:
         # AGO overlap
         if self.check_AGO_support:
             logger.info('filtering AGO-supported miRNA-binding sites')
+            logger.debug('getting miRNA_binding_sites_bed')
             self.miRNA_binding_sites_bed = self.miranda_df[[
                 'genomic_regions_id',
                 'genomic_regions'
@@ -159,15 +160,19 @@ class Circmimi:
                 union=True
             )
 
+            logger.debug('getting AGO_overlap_raw_data')
             self.AGO_overlap_raw_data = self.AGO_binding_sites.overlap(
                 self.miRNA_binding_sites_bed
             ).pipe(
                 RBPBindingSites.append_joined_overlap
             )
+
+            logger.debug('getting AGO_overlap')
             self.AGO_overlap = self.AGO_overlap_raw_data.pipe(
                 RBPBindingSitesFilters.AGO_overlap_filter
             )
 
+            logger.debug('getting AGO_overlap_count')
             self.AGO_overlap_count = self.AGO_overlap[[
                 'name',
                 'sample_id'
@@ -187,6 +192,7 @@ class Circmimi:
                 }
             )
 
+            logger.debug('merge back to miranda_df')
             self.miranda_df = self.miranda_df.merge(
                 self.AGO_overlap_count,
                 on='genomic_regions_id',
@@ -199,6 +205,7 @@ class Circmimi:
                 AGO_support_yn=lambda df: (df['AGO_support'] > 0).apply(int)
             )
 
+        logger.debug('grouping results (miranda_df)')
         self.grouped_res_df = MirandaUtils.get_grouped_results(
             self.miranda_df,
             with_AGO=self.check_AGO_support
@@ -283,14 +290,22 @@ class Circmimi:
 
         # final result table
         logger.info('getting final results')
+        logger.debug('getting res_df')
+        logger.debug('merging gene_symbol')
         self.res_df = self.circ_events.clear_df.reset_index().merge(
             self.gene_symbol_df,
             on='ev_id',
             how='inner'
+        ).pipe(
+            debug_log,
+            msg='merging res_df'
         ).merge(
             self.grouped_res_df,
             on='ev_id',
             how='inner'
+        ).pipe(
+            debug_log,
+            msg='merging mir_target'
         ).merge(
             self.mir_target_db,
             on='mirna',
@@ -304,10 +319,15 @@ class Circmimi:
         ).reset_index(drop=True)
 
         if self.do_circRNA_RBP:
+            logger.debug('getting RBP_res_df')
+            logger.debug('merging gene_symbol')
             self.RBP_res_df = self.circ_events.clear_df.merge(
                 self.gene_symbol_df,
                 on='ev_id',
                 how='inner'
+            ).pipe(
+                debug_log,
+                msg='merging RBP_overlap'
             ).merge(
                 self.RBP_overlap_count,
                 on='ev_id',
@@ -315,6 +335,7 @@ class Circmimi:
             )
 
             if self.do_RBP_mRNA:
+                logger.debug('merging RBP_target')
                 self.RBP_res_df = self.RBP_res_df.merge(
                     self.RBP_target_db,
                     on='RBP',
@@ -473,3 +494,9 @@ def get_mir_target_db(mir_tar_db_path):
          " should be 'mirna' and 'target_gene'")
 
     return db
+
+
+def debug_log(df, msg):
+    logger.debug(msg)
+    return df
+

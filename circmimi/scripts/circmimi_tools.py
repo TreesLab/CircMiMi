@@ -9,12 +9,26 @@ logger = logging.getLogger(__name__)
 
 @click.group()
 @click.version_option()
-def cli():
+@click.option('--debug', 'debug_mode', is_flag=True)
+def cli(debug_mode):
     """
     A toolset for investigating the interactions between circRNA, miRNA, and mRNA.
     """
 
-    pass
+    root_logger = logging.getLogger()
+
+    ch = logging.StreamHandler()
+
+    if debug_mode:
+        logger.warning('Under debug mode')
+        root_logger.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s (%(name)s) [%(levelname)s] %(message)s')
+    else:
+        root_logger.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(asctime)s - %(message)s')
+
+    ch.setFormatter(formatter)
+    root_logger.addHandler(ch)
 
 
 @cli.command()
