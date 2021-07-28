@@ -465,16 +465,19 @@ class EncoriRBPData(Resource):
         if self.species == 'hsa':
             assembly = 'hg38'
         elif self.species == 'mmu':
-            if self.source == 'gencode':
-                if GencodeResource.get_digit_part(self.version) >= 26:
-                    assembly = 'mm39'
-                else:
-                    assembly = 'mm10'
-            elif self.source == 'ensembl':
-                if int(self.version) >= 103:
-                    assembly = 'mm39'
-                else:
-                    assembly = 'mm10'
+            if self.version == 'current':
+                assembly = 'mm39'
+            else:
+                if self.source == 'gencode':
+                    if GencodeResource.get_digit_part(self.version) >= 26:
+                        assembly = 'mm39'
+                    else:
+                        assembly = 'mm10'
+                elif self.source == 'ensembl':
+                    if int(self.version) >= 103:
+                        assembly = 'mm39'
+                    else:
+                        assembly = 'mm10'
         else:
             return ''
 
