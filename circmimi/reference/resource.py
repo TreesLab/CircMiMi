@@ -449,8 +449,8 @@ class MiRDBData(Resource):
 
 
 class EncoriRBPData(Resource):
-    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.hg38.{}.bed.gz"
-    url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.hg38.no_chr.{}.bed.gz"
+    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.{}.{}.bed.gz"
+    url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.{}.no_chr.{}.bed.gz"
 
     def __init__(self, species, source, only_AGO=False):
         self.species = species
@@ -461,7 +461,11 @@ class EncoriRBPData(Resource):
         super().__init__(url)
 
     def get_url(self):
-        if self.species != 'hsa':
+        if self.species == 'hsa':
+            assembly = 'hg38'
+        elif self.species == 'mmu':
+            assembly = 'mm10'
+        else:
             return ''
 
         if self.source == 'gencode':
@@ -470,15 +474,16 @@ class EncoriRBPData(Resource):
             url_templ = self.url_templ_2
 
         if self.only_AGO:
-            url = url_templ.format('AGO')
+            url = url_templ.format(assembly, 'AGO')
         else:
-            url = url_templ.format('all')
+            url = url_templ.format(assembly, 'all')
 
         return url
 
 
 class EncoriRBPTargetData(Resource):
     url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_Target.grouped.tsv.gz"
+    url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_mouse_RBP_Target.grouped.tsv.gz"
 
     def __init__(self, species):
         self.species = species
@@ -487,16 +492,19 @@ class EncoriRBPTargetData(Resource):
         super().__init__(url)
 
     def get_url(self):
-        if self.species != 'hsa':
+        if self.species == 'hsa':
+            url = self.url_templ.format()
+        elif self.species == 'mmu':
+            url = self.url_templ_2.format()
+        else:
             return ''
-
-        url = self.url_templ.format()
 
         return url
 
 
 class EncoriMiRNATargetData(Resource):
     url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_miRNA/mir_target_ref.ENCORI.miRBase_v22.tsv.gz"
+    url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_miRNA/mir_target_ref.ENCORI_mouse.miRBase_v22.tsv.gz"
 
     def __init__(self, species):
         self.species = species
@@ -505,10 +513,12 @@ class EncoriMiRNATargetData(Resource):
         super().__init__(url)
 
     def get_url(self):
-        if self.species != 'hsa':
+        if self.species == 'hsa':
+            url = self.url_templ.format()
+        elif self.species == 'mmu':
+            url = self.url_templ_2.format()
+        else:
             return ''
-
-        url = self.url_templ.format()
 
         return url
 
