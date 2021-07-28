@@ -193,7 +193,7 @@ def annotation(circ_file, ref_dir, out_prefix):
     if output_dir != '.':
         os.makedirs(output_dir, exist_ok=True)
 
-    anno_db, _, _, _, _, _, _ = get_refs(ref_dir)
+    anno_db, _, _, _, _, _, _, _ = get_refs(ref_dir)
 
     circ_events = CircEvents(circ_file)
     circ_events.check_annotation(anno_db)
@@ -211,7 +211,7 @@ def ambiguous(circ_file, ref_dir, output_dir, num_proc):
     os.makedirs(output_dir, exist_ok=True)
 
     from circmimi.reference.config import get_refs
-    anno_db, ref_file, _, _, other_transcripts, _, _ = get_refs(ref_dir)
+    anno_db, ref_file, _, _, other_transcripts, _, _, _ = get_refs(ref_dir)
 
     from circmimi.circ import CircEvents
     circ_events = CircEvents(circ_file)
