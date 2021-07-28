@@ -452,9 +452,10 @@ class EncoriRBPData(Resource):
     url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.{}.{}.bed.gz"
     url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.{}.no_chr.{}.bed.gz"
 
-    def __init__(self, species, source, only_AGO=False):
+    def __init__(self, species, source, version, only_AGO=False):
         self.species = species
         self.source = source
+        self.version = version
         self.only_AGO = only_AGO
 
         url = self.get_url()
@@ -464,7 +465,16 @@ class EncoriRBPData(Resource):
         if self.species == 'hsa':
             assembly = 'hg38'
         elif self.species == 'mmu':
-            assembly = 'mm10'
+            if self.source == 'gencode':
+                if GencodeResource.get_digit_part(self.version) >= 26:
+                    assembly = 'mm39'
+                else:
+                    assembly = 'mm10'
+            elif self.source == 'ensembl':
+                if int(self.version) >= 103:
+                    assembly = 'mm39'
+                else:
+                    assembly = 'mm10'
         else:
             return ''
 
