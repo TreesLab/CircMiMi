@@ -239,9 +239,15 @@ def network():
 @network.command()
 @click.argument('in_file')
 @click.argument('out_file')
+@click.option('-1', 'idx_circRNA', type=int, default=1,
+              help='column key for circRNAs.')
+@click.option('-2', 'idx_mediator', type=int, default=2,
+              help='column key for mediators.')
+@click.option('-3', 'idx_mRNA', type=int, default=3,
+              help='column key for mRNAs.')
 @click.option('-f', '--format', 'format_', default='xgmml',
               help="Assign the format of the OUT_FILE.", hidden=True)
-def create(in_file, out_file, format_):
+def create(in_file, out_file, idx_circRNA, idx_mediator, idx_mRNA, format_):
     """
     Create the network file.
 
@@ -252,7 +258,12 @@ def create(in_file, out_file, format_):
     from circmimi.network.network import CyNetwork, Layout, Style
 
     network = CyNetwork()
-    network.load_data(in_file)
+    network.load_data(
+        in_file,
+        k1=idx_circRNA,
+        k2=idx_mediator,
+        k3=idx_mRNA
+    )
 
     layout = Layout()
     style = Style()
