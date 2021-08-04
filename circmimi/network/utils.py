@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 
-def read_table(filename, sep='\t', titles=None):
+def read_table_with_titles(filename, sep='\t', titles=None):
     """A generator function for reading data.
 
     Args:
@@ -20,4 +20,11 @@ def read_table(filename, sep='\t', titles=None):
 
         for line in f_in:
             data = Data(*line.rstrip('\n').split(sep))
+            yield data
+
+
+def read_table(filename, sep='\t'):
+    with open(filename) as f_in:
+        for line in f_in:
+            data = line.rstrip('\n').split(sep)
             yield data
