@@ -108,6 +108,7 @@ bmo  | Bombyx mori             |     |     |     |  V  |  V  |  V  |     |     |
 bta  | Bos taurus              |  V  |     |     |     |  V  |  V  |     |     |
 cel  | Caenorhabditis elegans  |  V  |     |     |  V  |  V  |  V  |     |     |
 cfa  | Canis familiaris        |  V  |     |     |     |  V  |  V  |  V  |     |
+cgr  | Cricetulus griseus      |  V  |     |     |     |  V  |  V  |     |     |
 dre  | Danio rerio             |  V  |     |     |     |  V  |  V  |     |     |
 dme  | Drosophila melanogaster |  V  |     |     |     |  V  |  V  |     |     |
 gga  | Gallus gallus           |  V  |     |     |     |  V  |  V  |  V  |     |
@@ -131,7 +132,7 @@ xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |     |
    - **MB**: miRBase (v22) (http://www.mirbase.org/)
 
 ###### Databases for miRNA-mRNA interactions
-   - **MTB**: miRTarBase (v7.0) ~(http://mirtarbase.mbc.nctu.edu.tw/php/index.php)~ (http://mirtarbase.cuhk.edu.cn/php/index.php)
+   - **MTB**: miRTarBase (v7.0) ~(http://mirtarbase.mbc.nctu.edu.tw/php/index.php)~ (https://mirtarbase.cuhk.edu.cn/~miRTarBase/miRTarBase_2019/php/index.php)
    - **MDB**: miRDB (v6.0) (http://mirdb.org/)
 
 ###### Databases for miRNA-mRNA interactions and RBP-related data
