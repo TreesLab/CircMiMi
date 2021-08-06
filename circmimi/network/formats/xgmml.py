@@ -46,12 +46,15 @@ class CyXGMML:
             label = attrs.pop('label', node)
             data = attrs.pop('data', {})
             data_type = attrs.pop('data_type', "")
+            graphics = attrs.pop('graphics', {})
             xgmml_node = self.add_node(self.root, id_, label, **attrs)
 
             self.add_att(xgmml_node, 'data_type', data_type)
 
             for k, v in data.items():
                 self.add_att(xgmml_node, k, v)
+
+            self.add_graphics(xgmml_node, **graphics)
 
         # add edges
         for source, target in graph.edges:
@@ -60,6 +63,7 @@ class CyXGMML:
             label = attrs.pop('label', "{} - {}".format(source, target))
             data = attrs.pop('data', {})
             data_type = attrs.pop('data_type', "")
+            graphics = attrs.pop('graphics', {})
             xgmml_edge = self.add_edge(
                 self.root,
                 id_,
@@ -75,6 +79,8 @@ class CyXGMML:
 
             for k, v in data.items():
                 self.add_att(xgmml_edge, k, v)
+
+            self.add_graphics(xgmml_edge, **graphics)
 
     def to_string(self):
         string = etree.tostring(
