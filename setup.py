@@ -44,7 +44,9 @@ setup(
             'mp_blat.py = circmimi.scripts.mp_blat:cli',
             'get_RCS.py = circmimi.scripts.get_RCS.get_RCS:cli',
             'get_RCS_summary.py = circmimi.scripts.get_RCS.get_RCS_summary:cli',
-            'RCS_filter.py = circmimi.scripts.get_RCS.RCS_filter:cli'
+            'RCS_filter.py = circmimi.scripts.get_RCS.RCS_filter:cli',
+            'get_flanking_seq.py = circmimi.scripts.checkAA.get_flanking_seq:cli',
+            'checkAA_reads.py = circmimi.scripts.checkAA.checkAA_reads:cli'
         ]
     },
     description=("A package for constructing CLIP-seq data-supported "

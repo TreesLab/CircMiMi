@@ -202,29 +202,25 @@ def annotation(circ_file, ref_dir, out_prefix):
 
 
 @check.command()
+@click.argument('ref_file')
+@click.argument('other_ref_file')
 @click.argument('circ_file')
-@click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
-@click.option('-o', '--out', 'output_dir', metavar="OUT_DIR", required=True)
-@click.option('-p', '--num_proc', default=1, type=click.INT, metavar="NUM_PROC",
-    help="Number of processes")
-def ambiguous(circ_file, ref_dir, output_dir, num_proc):
-    os.makedirs(output_dir, exist_ok=True)
+@click.argument('out_file')
+@click.option('-p', '--num_proc', default=1, type=click.INT,
+              metavar="NUM_PROC", help="Number of processes")
+def ambiguous(ref_file, other_ref_file, circ_file, out_file, num_proc):
+    import subprocess as sp
+    import tempfile as tp
 
-    from circmimi.reference.config import get_refs
-    anno_db, ref_file, _, _, other_transcripts, _, _, _ = get_refs(ref_dir)
-
-    from circmimi.circ import CircEvents
-    circ_events = CircEvents(circ_file)
-    circ_events.check_ambiguous(
-        anno_db,
-        ref_file,
-        other_transcripts,
-        work_dir=output_dir,
-        num_proc=num_proc
+    tmp_fa = tp.NamedTemporaryFile(
+        dir='.',
+        prefix='flanking_seq.',
+        suffix='.fa'
     )
 
-    result_file = os.path.join(output_dir, 'circ.summary_list.tsv')
-    circ_events.get_summary().to_csv(result_file, sep='\t', index=False)
+    sp.run(['get_flanking_seq.py', ref_file, circ_file, tmp_fa.name])
+    sp.run(['checkAA_reads.py', '-rg', ref_file, '-ro', other_ref_file,
+            tmp_fa.name, out_file, '-p', str(num_proc)])
 
 
 @check.command('RCS')
