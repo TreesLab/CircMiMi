@@ -41,7 +41,10 @@ setup(
     entry_points={
         'console_scripts': [
             'circmimi_tools = circmimi.scripts.circmimi_tools:cli',
-            'mp_blat.py = circmimi.scripts.mp_blat:cli'
+            'mp_blat.py = circmimi.scripts.mp_blat:cli',
+            'get_RCS.py = circmimi.scripts.get_RCS.get_RCS:cli',
+            'get_RCS_summary.py = circmimi.scripts.get_RCS.get_RCS_summary:cli',
+            'RCS_filter.py = circmimi.scripts.get_RCS.RCS_filter:cli'
         ]
     },
     description=("A package for constructing CLIP-seq data-supported "

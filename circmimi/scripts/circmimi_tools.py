@@ -227,6 +227,46 @@ def ambiguous(circ_file, ref_dir, output_dir, num_proc):
     circ_events.get_summary().to_csv(result_file, sep='\t', index=False)
 
 
+@check.command('RCS')
+@click.argument('ref_file')
+@click.argument('circ_file')
+@click.argument('out_file')
+@click.option('-d', '--dist', default=10000, type=click.INT)
+@click.option('-m', '--min-matches', default=80, type=click.FLOAT)
+@click.option('-l', '--min-aln-len', default=50, type=click.INT)
+@click.option('-b', '--min-bitscore', default=100, type=click.FLOAT)
+@click.option('-p', '--num_proc', default=1, type=click.INT,
+              metavar="NUM_PROC", help="Number of processes")
+def RCS(ref_file,
+        circ_file,
+        out_file,
+        dist,
+        min_matches,
+        min_aln_len,
+        min_bitscore,
+        num_proc):
+
+    import subprocess as sp
+
+    cmd1 = ['get_RCS.py', ref_file, circ_file, '--dist', dist, '-p', num_proc]
+    cmd2 = ['RCS_filter.py', '-', '-m', min_matches, '-l', min_aln_len, '-b', min_bitscore]
+    cmd3 = ['get_RCS_summary.py', '-']
+
+    cmd1 = [str(c) for c in cmd1]
+    cmd2 = [str(c) for c in cmd2]
+    cmd3 = [str(c) for c in cmd3]
+
+    with open(out_file, 'w') as out:
+        p1 = sp.Popen(cmd1, stdout=sp.PIPE, encoding='UTF-8')
+        p2 = sp.Popen(cmd2, stdin=p1.stdout, stdout=sp.PIPE, encoding='UTF-8')
+        _ = sp.Popen(cmd3, stdin=p2.stdout, stdout=out, encoding='UTF-8')
+
+
+@cli.command()
+def checking():
+    pass
+
+
 @cli.group()
 def network():
     """
