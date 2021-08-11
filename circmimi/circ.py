@@ -1,4 +1,5 @@
 import pandas as pd
+from collections import Counter, defaultdict
 from circmimi.annotation import Annotator
 from circmimi.ambiguous import AmbiguousChecker
 
@@ -146,3 +147,48 @@ class CircEvents:
             on='ev_id',
             how='inner'
         )
+
+    @property
+    def gene_symbols(self):
+        def get_gene_symbol(anno_df):
+            return anno_df['transcript'].apply(
+                lambda t: t.gene.gene_symbol
+            )
+
+        gene_list_df = self.clear_anno_df.assign(
+            host_gene=get_gene_symbol
+        )[[
+            'ev_id',
+            'host_gene'
+        ]].drop_duplicates(
+        ).groupby(
+            'ev_id'
+        ).agg(lambda genes: ','.join(sorted(genes))).reset_index()
+
+        return gene_list_df
+
+    @property
+    def clear_df_with_gene(self):
+        return self.clear_df.merge(self.gene_symbols, on='ev_id', how='left').set_index('ev_id')
+
+    @property
+    def circ_ids(self):
+        genes = self.gene_symbols['host_gene']
+        gene_count = Counter(genes)
+        idx_dict = defaultdict(int)
+
+        circ_ids = []
+        for gene in genes:
+            if gene_count[gene] == 1:
+                circ_ids.append(f'circ{gene}')
+            else:
+                idx_dict[gene] += 1
+                circ_ids.append(f'circ{gene}_{idx_dict[gene]}')
+
+        circ_ids_df = self.gene_symbols.assign(circ_id=pd.Series(circ_ids))[['ev_id', 'circ_id']]
+
+        return circ_ids_df
+
+    @property
+    def clear_df_with_circ_id(self):
+        return self.clear_df_with_gene.merge(self.circ_ids, on='ev_id', how='left').set_index('ev_id')
