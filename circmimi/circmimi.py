@@ -211,17 +211,6 @@ class Circmimi:
             with_AGO=self.check_AGO_support
         )
 
-        self.gene_symbol_df = self.circ_events.clear_anno_df.assign(
-            host_gene=lambda df: df['transcript'].apply(
-                lambda t: t.gene.gene_symbol
-            )
-        )[['ev_id', 'host_gene']].drop_duplicates(
-        ).sort_values(
-            'host_gene'
-        ).groupby(
-            'ev_id'
-        ).agg(','.join).reset_index()
-
         # RBP part
         if self.do_circRNA_RBP:
             logger.info('predicting RBP-binding sites on circRNAs')
@@ -291,12 +280,7 @@ class Circmimi:
         # final result table
         logger.info('getting final results')
         logger.debug('getting res_df')
-        logger.debug('merging gene_symbol')
-        self.res_df = self.circ_events.clear_df.reset_index().merge(
-            self.gene_symbol_df,
-            on='ev_id',
-            how='inner'
-        ).pipe(
+        self.res_df = self.circ_events.clear_df_with_circ_id.pipe(
             debug_log,
             msg='merging res_df'
         ).merge(
@@ -321,11 +305,7 @@ class Circmimi:
         if self.do_circRNA_RBP:
             logger.debug('getting RBP_res_df')
             logger.debug('merging gene_symbol')
-            self.RBP_res_df = self.circ_events.clear_df.merge(
-                self.gene_symbol_df,
-                on='ev_id',
-                how='inner'
-            ).pipe(
+            self.RBP_res_df = self.circ_events.clear_df_with_circ_id.pipe(
                 debug_log,
                 msg='merging RBP_overlap'
             ).merge(
