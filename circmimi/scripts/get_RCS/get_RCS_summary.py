@@ -51,8 +51,29 @@ class RCSReader:
         return self._reader
 
 
+def circRNA_id_reader(circ_file):
+    if circ_file is not None:
+        for line in circ_file:
+            data = line.rstrip('\n').split('\t')
+            chr_ = data[0]
+            pos1, pos2 = sorted(map(int, data[1:3]))
+            strand = data[3]
+
+            if len(data) >= 5:
+                circ_id = data[4]
+            else:
+                if strand == '+':
+                    circ_id = f"{chr_}:{pos2}|{pos1}({strand})"
+                elif strand == '-':
+                    circ_id = f"{chr_}:{pos1}|{pos2}({strand})"
+
+            yield circ_id
+
+
 def create_parser():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--circ_file', type=argparse.FileType('r'),
+                        help="4-columns TSV file: (chr, pos1, pos2, strand)")
     parser.add_argument('RCS_file', type=argparse.FileType('r'))
 
     return parser
@@ -67,7 +88,16 @@ def cli():
     reader = RCSReader(args.RCS_file)
     group_reader = groupby(reader, key=lambda data: data.circRNA_id)
 
+    circRNA_ids_reader = circRNA_id_reader(args.circ_file)
+
     for circRNA_id, RCS_gp in group_reader:
+
+        for circ_id in circRNA_ids_reader:
+            if circ_id != circRNA_id:
+                print(circ_id, 0, 0, 0, sep='\t')
+            else:
+                break
+
         RCS_gp = list(RCS_gp)
         RCS_types = Counter(
             [(data.region1_type, data.region2_type) for data in RCS_gp]

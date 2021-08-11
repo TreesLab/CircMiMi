@@ -246,7 +246,7 @@ def RCS(ref_file,
 
     cmd1 = ['get_RCS.py', ref_file, circ_file, '--dist', dist, '-p', num_proc]
     cmd2 = ['RCS_filter.py', '-', '-m', min_matches, '-l', min_aln_len, '-b', min_bitscore]
-    cmd3 = ['get_RCS_summary.py', '-']
+    cmd3 = ['get_RCS_summary.py', '--circ_file', circ_file, '-']
 
     cmd1 = [str(c) for c in cmd1]
     cmd2 = [str(c) for c in cmd2]
@@ -255,12 +255,71 @@ def RCS(ref_file,
     with open(out_file, 'w') as out:
         p1 = sp.Popen(cmd1, stdout=sp.PIPE, encoding='UTF-8')
         p2 = sp.Popen(cmd2, stdin=p1.stdout, stdout=sp.PIPE, encoding='UTF-8')
-        _ = sp.Popen(cmd3, stdin=p2.stdout, stdout=out, encoding='UTF-8')
+        p3 = sp.Popen(cmd3, stdin=p2.stdout, stdout=out, encoding='UTF-8')
+
+        p1.wait()
+        p2.wait()
+        p3.wait()
 
 
 @cli.command()
-def checking():
-    pass
+@click.option('-i', '--circ', 'circ_file', metavar="CIRC_FILE", required=True)
+@click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR",
+              required=True)
+@click.option('-o', '--out-prefix', 'out_prefix', default='./out/',
+              metavar="OUT_PREFIX")
+@click.option('-p', '--num_proc', default=1, type=click.INT,
+              metavar="NUM_PROC", help="Number of processes")
+@click.pass_context
+def checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
+    import tempfile as tp
+    from circmimi.reference.config import get_refs
+    from circmimi.utils import add_prefix
+
+    output_dir = os.path.dirname(out_prefix)
+    if output_dir == '':
+        output_dir = '.'
+
+    if output_dir != '.':
+        os.makedirs(output_dir, exist_ok=True)
+
+    anno_db, ref_file, _, _, other_transcripts, _, _, _ = get_refs(ref_dir)
+
+    ambiguous_result_file = tp.NamedTemporaryFile(
+        dir=output_dir,
+        prefix='check.AA.',
+        suffix='.tsv'
+    )
+    RCS_result_file = tp.NamedTemporaryFile(
+        dir=output_dir,
+        prefix='check.RCS.',
+        suffix='.tsv'
+    )
+    out_file = add_prefix('checking.results.tsv', out_prefix)
+
+    ctx.invoke(
+        ambiguous,
+        ref_file=ref_file,
+        other_ref_file=other_transcripts,
+        circ_file=circ_file,
+        out_file=ambiguous_result_file.name,
+        num_proc=num_proc
+    )
+
+    ctx.invoke(
+        RCS,
+        ref_file=ref_file,
+        circ_file=circ_file,
+        out_file=RCS_result_file.name,
+        num_proc=num_proc
+    )
+
+    import pandas as pd
+
+    amb_df = pd.read_csv(ambiguous_result_file.name, sep='\t', dtype='object')
+    rcs_df = pd.read_csv(RCS_result_file.name, sep='\t', dtype='object')
+    result_df = amb_df.merge(rcs_df, on='circRNA_id', how='outer')
+    result_df.to_csv(out_file, sep='\t', index=False)
 
 
 @cli.group()

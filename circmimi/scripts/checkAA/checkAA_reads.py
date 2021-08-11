@@ -397,7 +397,7 @@ class AmbAlnResult:
         with open(out_file, 'w') as out:
             csv_writer = csv.writer(out, delimiter='\t')
 
-            csv_writer.writerow(['circRNA', 'colinear', 'multiple_hits'])
+            csv_writer.writerow(['circRNA_id', 'colinear', 'multiple_hits'])
             for read_id, check_items in self.result.items():
                 csv_writer.writerow([read_id] + check_items)
 
