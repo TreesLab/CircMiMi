@@ -51,21 +51,23 @@ class Circmimi:
         else:
             self.check_AGO_support = False
 
-        if self.RBP_binding_file:
-            self.RBP_binding_sites = RBPBindingSites(self.RBP_binding_file)
-            self.do_circRNA_RBP = True
-        else:
-            self.do_circRNA_RBP = False
+        # if self.RBP_binding_file:
+        #     self.RBP_binding_sites = RBPBindingSites(self.RBP_binding_file)
+        #     self.do_circRNA_RBP = True
+        # else:
+        #     self.do_circRNA_RBP = False
 
-        if self.RBP_target_file:
-            self.RBP_target_db = pd.read_csv(
-                self.RBP_target_file,
-                sep='\t',
-                dtype='object'
-            )
-            self.do_RBP_mRNA = True
-        else:
-            self.do_RBP_mRNA = False
+        # if self.RBP_target_file:
+        #     self.RBP_target_db = pd.read_csv(
+        #         self.RBP_target_file,
+        #         sep='\t',
+        #         dtype='object'
+        #     )
+        #     self.do_RBP_mRNA = True
+        # else:
+        #     self.do_RBP_mRNA = False
+        self.do_circRNA_RBP = False
+        self.do_RBP_mRNA = False
 
     def run(self, circ_file):
         logger.info('loading circRNAs')
@@ -479,4 +481,3 @@ def get_mir_target_db(mir_tar_db_path):
 def debug_log(df, msg):
     logger.debug(msg)
     return df
-

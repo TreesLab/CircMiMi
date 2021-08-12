@@ -53,8 +53,8 @@ def get_refs(ref_dir):
     mir_target = prepend_dirname_to_file(ref_dir, config['refs']['mir_target'])
     other_transcripts = prepend_dirname_to_file(ref_dir, config['refs']['other_transcripts'])
     AGO_data = prepend_dirname_to_file(ref_dir, config['refs']['AGO_data'])
-    RBP_data = prepend_dirname_to_file(ref_dir, config['refs']['RBP_data'])
-    RBP_target = prepend_dirname_to_file(ref_dir, config['refs']['RBP_target'])
+    RBP_data = None #prepend_dirname_to_file(ref_dir, config['refs']['RBP_data'])
+    RBP_target = None #prepend_dirname_to_file(ref_dir, config['refs']['RBP_target'])
 
     return (anno_db,
             ref_file,

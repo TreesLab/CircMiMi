@@ -281,8 +281,8 @@ def generate(species, source, version, ref_dir):
         ENCORI_RBP_files = Files(
             [
                 rs.EncoriRBPData(species.key, source, version, only_AGO=True),
-                rs.EncoriRBPData(species.key, source, version),
-                rs.EncoriRBPTargetData(species.key)
+                # rs.EncoriRBPData(species.key, source, version),
+                # rs.EncoriRBPTargetData(species.key)
             ]
         )
 
@@ -364,8 +364,8 @@ def generate(species, source, version, ref_dir):
             'mir_target': mir_target_ref.filename,
             'other_transcripts': others_ref.filename,
             'AGO_data': ENCORI_RBP_files[0].filename,
-            'RBP_data': ENCORI_RBP_files[1].filename,
-            'RBP_target': ENCORI_RBP_files[2].filename
+            # 'RBP_data': ENCORI_RBP_files[1].filename,
+            # 'RBP_target': ENCORI_RBP_files[2].filename
         }
 
         return info, ref_files

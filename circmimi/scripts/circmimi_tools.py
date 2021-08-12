@@ -49,7 +49,7 @@ def predict_interactions(circ_file, ref_dir, out_prefix, num_proc, checkAA, **mi
     """
     Predict the interactions.
 
-    Predict the interactions between circRNA-miRNA-mRNA and circRNA-RBP-mRNA.
+    Predict the interactions between circRNA-miRNA-mRNA.
     """
 
     logger.info('Preparing ...')
@@ -104,9 +104,9 @@ def predict_interactions(circ_file, ref_dir, out_prefix, num_proc, checkAA, **mi
     circmimi_result.save_result(res_file)
     logger.info('miRNA part ... done')
 
-    RBP_res_file = add_prefix('all_interactions.RBP.tsv', out_prefix)
-    circmimi_result.save_RBP_result(RBP_res_file)
-    logger.info('RBP part ... done')
+    # RBP_res_file = add_prefix('all_interactions.RBP.tsv', out_prefix)
+    # circmimi_result.save_RBP_result(RBP_res_file)
+    # logger.info('RBP part ... done')
 
     summary_file = add_prefix('summary_list.tsv', out_prefix)
     circmimi_result.save_circRNAs_summary(summary_file)
