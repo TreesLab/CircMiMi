@@ -31,22 +31,25 @@ def cli(debug_mode):
     root_logger.addHandler(ch)
 
 
-@cli.command()
+@cli.command('interactions')
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
 @click.option('-i', '--circ', 'circ_file', metavar="CIRC_FILE", required=True)
 @click.option('-o', '--out-prefix', 'out_prefix', default='./out/', metavar="OUT_PREFIX")
 @click.option('-p', '--num_proc', default=1, type=click.INT, metavar="NUM_PROC",
     help="Number of processes")
-@click.option('--checkAA', 'checkAA', is_flag=True, help="Check if the circRNA has ambiguous alignments.")
+@click.option('--checkAA', 'checkAA', is_flag=True,
+    help="Check if the circRNA has ambiguous alignments.", hidden=True)
 @click.option('--miranda-sc', 'sc', metavar='S', type=click.FLOAT)
 @click.option('--miranda-en', 'en', metavar='-E', type=click.FLOAT)
 @click.option('--miranda-scale', 'scale', metavar='Z', type=click.FLOAT)
 @click.option('--miranda-strict', 'strict', is_flag=True)
 @click.option('--miranda-go', 'go', metavar='-X', type=click.FLOAT)
 @click.option('--miranda-ge', 'ge', metavar='-Y', type=click.FLOAT)
-def run(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
+def predict_interactions(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
     """
-    This command is the main pipeline of CircMiMi.
+    Predict the interactions.
+
+    Predict the interactions between circRNA-miRNA-mRNA and circRNA-RBP-mRNA.
     """
 
     logger.info('Preparing ...')
@@ -113,8 +116,8 @@ def run(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
     logger.info('Process completed.')
 
 
-@cli.command()
-@click.option('--species', 'species', metavar="SPECIES_KEY", required=True)
+@cli.command('genref')
+@click.option('--species', 'species', metavar="SPECIES_KEY", required=True, help="eg. hsa, mmu, rno, ...")
 @click.option('--source', 'source', metavar="SOURCE", required=True,
     help="""
         Available sources are "gencode", "ensembl", "ensembl_plants", and "ensembl_metazoa"
@@ -123,14 +126,17 @@ def run(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
 @click.option('--ensembl', 'source', flag_value='ensembl', type=click.STRING, help="--source ensembl", hidden=True)
 @click.option('--version', 'version', default='current', metavar="VERSION",
     help="""
-        The release version. If not assigned, it will be automatically set to the latest version of the SOURCE.
+        The release version. If not specified, it will be automatically set to the latest version of the SOURCE.
     """)
 @click.option('--init', 'init', is_flag=True, help="Create an init template ref_dir.", hidden=True)
 @click.argument('ref_dir')
-def genref(species, source, version, ref_dir, init):
+def generate_references(species, source, version, ref_dir, init):
     """
     Generate the references.                                          
-    
+
+    This command is used to generate the needed references for CircMiMi.
+    It would download the genome ane annotation files automatically, with user-specified version.
+
     The generated reference files will be saved in the REF_DIR.
     """
 
@@ -149,22 +155,22 @@ def genref(species, source, version, ref_dir, init):
     config.write(ref_dir)
 
 
-@cli.command(hidden=True)
+@cli.command('gendb', hidden=True)
 @click.argument('gtf_path')
 @click.argument('db_path', metavar='OUT_PATH')
-def gendb(gtf_path, db_path):
+def generate_annotation_database(gtf_path, db_path):
     from circmimi.reference import gendb
 
     gendb.generate(gtf_path, db_path)
 
 
-@cli.command(hidden=True)
+@cli.command('genmirdb', hidden=True)
 @click.option('--species', 'species', metavar="SPECIES_KEY", required=True)
 @click.option('--version', 'version', default='current', metavar="VERSION", required=True)
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
 @click.option('-o', '--out_file', 'out_file', metavar="OUT_FILE", required=True)
 @click.option('-a', '--show-accession', 'show_accession', is_flag=True)
-def genmirdb(species, version, ref_dir, out_file, show_accession):
+def generate_miRNA_database(species, version, ref_dir, out_file, show_accession):
     os.makedirs(ref_dir, exist_ok=True)
 
     from circmimi.reference import genmirdb
@@ -177,11 +183,11 @@ def check():
     pass
 
 
-@check.command()
+@check.command('annotation')
 @click.argument('circ_file')
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
 @click.option('-o', '--out-prefix', 'out_prefix', default='./out/', metavar="OUT_PREFIX")
-def annotation(circ_file, ref_dir, out_prefix):
+def check_annotation(circ_file, ref_dir, out_prefix):
     from circmimi.reference.config import get_refs
     from circmimi.circ import CircEvents
     from circmimi.utils import add_prefix
@@ -201,14 +207,14 @@ def annotation(circ_file, ref_dir, out_prefix):
     circ_events.get_summary().to_csv(res_file, sep='\t', index=False)
 
 
-@check.command()
+@check.command('ambiguous')
 @click.argument('ref_file')
 @click.argument('other_ref_file')
 @click.argument('circ_file')
 @click.argument('out_file')
 @click.option('-p', '--num_proc', default=1, type=click.INT,
               metavar="NUM_PROC", help="Number of processes")
-def ambiguous(ref_file, other_ref_file, circ_file, out_file, num_proc):
+def check_ambiguous(ref_file, other_ref_file, circ_file, out_file, num_proc):
     import subprocess as sp
     import tempfile as tp
 
@@ -233,14 +239,14 @@ def ambiguous(ref_file, other_ref_file, circ_file, out_file, num_proc):
 @click.option('-b', '--min-bitscore', default=100, type=click.FLOAT)
 @click.option('-p', '--num_proc', default=1, type=click.INT,
               metavar="NUM_PROC", help="Number of processes")
-def RCS(ref_file,
-        circ_file,
-        out_file,
-        dist,
-        min_matches,
-        min_aln_len,
-        min_bitscore,
-        num_proc):
+def check_RCS(ref_file,
+              circ_file,
+              out_file,
+              dist,
+              min_matches,
+              min_aln_len,
+              min_bitscore,
+              num_proc):
 
     import subprocess as sp
 
@@ -262,7 +268,7 @@ def RCS(ref_file,
         p3.wait()
 
 
-@cli.command()
+@cli.command('checking')
 @click.option('-i', '--circ', 'circ_file', metavar="CIRC_FILE", required=True)
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR",
               required=True)
@@ -271,7 +277,15 @@ def RCS(ref_file,
 @click.option('-p', '--num_proc', default=1, type=click.INT,
               metavar="NUM_PROC", help="Number of processes")
 @click.pass_context
-def checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
+def default_checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
+    """
+    Check the circRNAs.
+
+    Check the circRNAs if there are
+    (i) ambiguous alignments for the fragment around the circRNA junction;
+    (ii) RCS pair in the flanking introns.
+    """
+
     import tempfile as tp
     from circmimi.reference.config import get_refs
     from circmimi.utils import add_prefix
@@ -298,7 +312,7 @@ def checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
     out_file = add_prefix('checking.results.tsv', out_prefix)
 
     ctx.invoke(
-        ambiguous,
+        check_ambiguous,
         ref_file=ref_file,
         other_ref_file=other_transcripts,
         circ_file=circ_file,
@@ -307,7 +321,7 @@ def checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
     )
 
     ctx.invoke(
-        RCS,
+        check_RCS,
         ref_file=ref_file,
         circ_file=circ_file,
         out_file=RCS_result_file.name,
@@ -322,7 +336,7 @@ def checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
     result_df.to_csv(out_file, sep='\t', index=False)
 
 
-@cli.group()
+@cli.group(hidden=True)
 def network():
     """
     Command to create the network file for Cytoscape.
@@ -331,7 +345,7 @@ def network():
     pass
 
 
-@network.command()
+@network.command('create')
 @click.argument('in_file')
 @click.argument('out_file')
 @click.option('-1', 'idx_circRNA', type=int, default=1,
@@ -342,7 +356,7 @@ def network():
               help='column key for mRNAs.')
 @click.option('-f', '--format', 'format_', default='xgmml',
               help="Assign the format of the OUT_FILE.", hidden=True)
-def create(in_file, out_file, idx_circRNA, idx_mediator, idx_mRNA, format_):
+def create_network(in_file, out_file, idx_circRNA, idx_mediator, idx_mRNA, format_):
     """
     Create the network file.
 
@@ -370,17 +384,56 @@ def create(in_file, out_file, idx_circRNA, idx_mediator, idx_mRNA, format_):
         network.to_xgmml(out_file)
 
 
-@cli.group(hidden=True)
+@cli.command('visualize')
+@click.argument('in_file')
+@click.argument('out_file')
+@click.option('-1', 'idx_circRNA', type=int, default=1,
+              help='column key for circRNAs.')
+@click.option('-2', 'idx_mediator', type=int, default=2,
+              help='column key for mediators.')
+@click.option('-3', 'idx_mRNA', type=int, default=3,
+              help='column key for mRNAs.')
+@click.option('-f', '--format', 'format_', default='xgmml',
+              help="Assign the format of the OUT_FILE.", hidden=True)
+def visualize_interactions(in_file, out_file, idx_circRNA, idx_mediator, idx_mRNA, format_):
+    """
+    Visualize the interactions.
+
+    This command is used to convert the file of interactions into XGMML format,
+     which then can be loaded into Cytoscape for visualization and further analysis.
+    """
+
+    from circmimi.network.network import CyNetwork, Layout, Style
+
+    network = CyNetwork()
+    network.load_data(
+        in_file,
+        k1=idx_circRNA,
+        k2=idx_mediator,
+        k3=idx_mRNA
+    )
+
+    layout = Layout()
+    style = Style()
+
+    network.apply_layout(layout)
+    network.apply_style(style)
+
+    if format_ == "xgmml":
+        network.to_xgmml(out_file)
+
+
+@cli.group('update_mirna', hidden=True)
 def update_mirna():
     pass
 
 
-@update_mirna.command()
+@update_mirna.command('genmaps')
 @click.option('--from', 'from_', required=True)
 @click.option('--to', 'to_', required=True)
 @click.option('--species')
 @click.option('-o', '--out-prefix', 'out_prefix', default='./', metavar="OUT_PREFIX")
-def genmaps(from_, to_, species, out_prefix):
+def generate_miRNAs_mappings(from_, to_, species, out_prefix):
     from circmimi.reference.mirbase import MatureMiRNAUpdater
     from circmimi.utils import add_prefix
 
@@ -402,7 +455,7 @@ def genmaps(from_, to_, species, out_prefix):
     updater.save(out_file)
 
 
-@update_mirna.command()
+@update_mirna.command('update')
 @click.argument('in_file')
 @click.argument('out_file')
 @click.option('-m', '--maps', 'mapping_file', metavar="MAPPING_FILE", required=True)
@@ -410,7 +463,7 @@ def genmaps(from_, to_, species, out_prefix):
               help="The column number of miRNA IDs.")
 @click.option('-i', '--inplace', is_flag=True)
 @click.option('-R', '--remove-deleted', is_flag=True)
-def update(in_file, out_file, mapping_file, column_key, inplace, remove_deleted):
+def update_miRNAs(in_file, out_file, mapping_file, column_key, inplace, remove_deleted):
     column_key = column_key - 1
 
     from circmimi.reference.mirbase import MatureMiRNAUpdater
