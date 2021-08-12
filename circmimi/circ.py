@@ -129,9 +129,13 @@ class CircEvents:
             }
         ).reset_index().rename({0: 'pass'}, axis=1)
 
+        columns_to_be_merged = [self.gene_symbols, self.circ_ids]
+        columns_to_be_merged += self._summary_columns['summary']
+        columns_to_be_merged += [pass_column, filters_df.fillna('NA')]
+
         summary_df = self.original_df.reset_index().pipe(
             self._merge_columns,
-            [pass_column] + self._summary_columns['summary'] + [filters_df.fillna('NA')]
+            columns_to_be_merged
         ).set_index('ev_id')
 
         return summary_df
@@ -155,7 +159,7 @@ class CircEvents:
                 lambda t: t.gene.gene_symbol
             )
 
-        gene_list_df = self.clear_anno_df.assign(
+        gene_list_df = self.anno_df.assign(
             host_gene=get_gene_symbol
         )[[
             'ev_id',
