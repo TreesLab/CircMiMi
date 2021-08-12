@@ -1,6 +1,6 @@
 # CircMiMi
 
-A package for constructing CLIP-seq data-supported "circRNA - miRNA - mRNA" and "circRNA - RBP - mRNA" interactions
+A package for constructing CLIP-seq data-supported circRNA-miRNA-mRNA interactions
 
 # Table of Contents
 - [Requirements](#requirements)
@@ -16,7 +16,6 @@ A package for constructing CLIP-seq data-supported "circRNA - miRNA - mRNA" and 
       - [Output files](#output-files)
         - [summary_list.tsv](#summary_listtsv)
         - [all_interactions.miRNA.tsv](#all_interactionsmirnatsv)
-        - [all_interactions.RBP.tsv](#all_interactionsrbptsv)
     - [(Optional) Create the network file for Cytoscape](#optional-create-the-network-file-for-cytoscape)
       - [Parameters](#parameters-2)
 - [Example](#example)
@@ -186,10 +185,9 @@ The input file(CIRC_FILE) is a TAB-separated file with the following columns:
 
 
 ### Output files
-The main pipeline of CircMiMi outputs three main files:
+The main pipeline of CircMiMi outputs two main files:
  - "summary_list.tsv"
  - "all_interactions.miRNA.tsv"
- - "all_interactions.RBP.tsv"
 
 
 #### summary_list.tsv
@@ -205,14 +203,11 @@ The summary list contains the counts of interactions and some checking results o
   6  |  #circRNA_miRNA | Count for the circRNA-miRNA interactions.
   7  |  #circRNA_mRNA  | Count for the miRNAs-mediated circRNA-mRNA interactions.
   8  |  #circRNA_miRNA_mRNA | Count for the circRNA-miRNA-mRNA interactions.
-  9  |  #circRNA_RBP | Count for the circRNA-RBP interactions.
-  10  |  #circRNA_mRNA_via_RBP  | Count for the RBP-mediated circRNA-mRNA interactions.
-  11  |  #circRNA_RBP_mRNA | Count for the circRNA-RBP-mRNA interactions.
-  12  |  donor site not at the annotated boundary | '1' if the donor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
- 13  |  acceptor site not at the annotated boundary | '1' if the acceptor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
- 14  |  donor/acceptor sites not at the same transcript isoform | '1' if the donor and acceptor are not at the same annotated transcript isoform. Otherwise '0'.
- 15  |  ambiguity with an co-linear explanation | '1' if the merged flanking sequence of the circRNA junction sites has an co-linear explanation. Otherwise '0'.
- 16  |  ambiguity with multiple hits | '1' if the merged flanking sequence of the circRNA junction sites is with multiple hits. Otherwise '0'.
+  9  |  donor site not at the annotated boundary | '1' if the donor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
+ 10  |  acceptor site not at the annotated boundary | '1' if the acceptor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
+ 11  |  donor/acceptor sites not at the same transcript isoform | '1' if the donor and acceptor are not at the same annotated transcript isoform. Otherwise '0'.
+ 12  |  ambiguity with an co-linear explanation | '1' if the merged flanking sequence of the circRNA junction sites has an co-linear explanation. Otherwise '0'.
+ 13  |  ambiguity with multiple hits | '1' if the merged flanking sequence of the circRNA junction sites is with multiple hits. Otherwise '0'.
 
 
 #### all_interactions.miRNA.tsv
@@ -250,27 +245,8 @@ The summary list contains the counts of interactions and some checking results o
  29  |  ENCORI__pancancerNum | The number of cancer types
 
 
-
-#### all_interactions.RBP.tsv
-
-\#   | Column          | Description
-:--: | :-------------- | :----------
-  1  |  chr            | Chromosome name
-  2  |  pos1           | One of the position of the circRNA junction site
-  3  |  pos2           | Another position of the circRNA junction site
-  4  |  strand         | + / -
-  5  |  host_gene      | Host gene of the circRNA
-  6  |  RBP            | The RBP which may bind on the circRNA
-  7  |  MaxRbpExpNum   | The maximum number of experiments supporting the RBP binding sites
-  8  |  num_RBP_binding_sites | The number of binding sites of the RBP on the circRNA
-  9  |  target_gene    | The RBP-targeted gene
- 10  |  geneID         | The gene ID of the RBP-targeted gene
- 11  |  num_RBP_binding_sites_on_target | The number of RBP-binding sites on the RBP-targeted gene
- 12  |  maxClipExpNum  | The maximum number of CLIP experiments supporting the RBP binding site
-
-
 #### Note.
-For now, the ENCORI and RBP data are only work for 'human' species.
+For now, the ENCORI data are only work for 'human' species.
 
 
 ## (Optional) Create the network file for Cytoscape
