@@ -25,11 +25,10 @@ $ circmimi_tools run -r ./refs -i circRNAs.gencode_format.tsv -o . --checkAA --m
 
 <!-- *(explain the options here)* -->
 
-There are three output files:
+There are two output files:
 
 - summary_list.tsv
 - all_interactions.miRNA.tsv
-- all_interactions.RBP.tsv
 
 For the format of these two files, please check the "[Output files](../README.md#output-files)" section.
 

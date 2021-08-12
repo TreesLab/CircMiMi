@@ -1,7 +1,7 @@
-chr	pos1	pos2	strand	pass	#circRNA_miRNA	#circRNA_mRNA	#circRNA_miRNA_mRNA	#circRNA_RBP	#circRNA_mRNA_via_RBP	#circRNA_RBP_mRNA	donor_site_not_at_the_annotated_boundary	acceptor_site_not_at_the_annotated_boundary	donor_acceptor_sites_not_at_the_same_transcript_isoform
-chr6	152329730	152331890	-	yes	440	18303	476964	14	19742	203424	0	0	0
-chr12	48939655	48941188	-	yes	91	16128	126243	47	19843	526195	0	0	0
-chr12	20875235	20883602	+	yes	155	16982	257383	7	18432	94499	0	0	0
-chr14	49795791	49831361	-	yes	364	18296	545178	59	19850	703619	0	0	0
-chr10	100354427	100354632	+	yes	37	12675	40560	48	19765	552497	0	0	0
-chr6	152329730	152331880	-	no	0	0	0	0	0	0	0	1	0
+chr	pos1	pos2	strand	pass	#circRNA_miRNA	#circRNA_mRNA	#circRNA_miRNA_mRNA	donor_site_not_at_the_annotated_boundary	acceptor_site_not_at_the_annotated_boundary	donor_acceptor_sites_not_at_the_same_transcript_isoform
+chr6	152329730	152331890	-	yes	440	18303	476964	0	0	0
+chr12	48939655	48941188	-	yes	91	16128	126243	0	0	0
+chr12	20875235	20883602	+	yes	155	16982	257383	0	0	0
+chr14	49795791	49831361	-	yes	364	18296	545178	0	0	0
+chr10	100354427	100354632	+	yes	37	12675	40560	0	0	0
+chr6	152329730	152331880	-	no	0	0	0	0	1	0
