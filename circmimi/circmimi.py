@@ -381,6 +381,23 @@ class Circmimi:
         )
         self.circ_events.submit_to_summary(total_count, type_='summary')
 
+        category_count = self.res_df[['ev_id', 'category_1', 'category_2', 'category_3']].groupby(
+            'ev_id'
+        ).agg(
+            'sum'
+        ).pipe(
+            self.circ_events.expand_to_all_events,
+            fillna_value=0
+        ).astype('int').rename(
+            {
+                'category_1': '#category_1',
+                'category_2': '#category_2',
+                'category_3': '#category_3',
+            },
+            axis=1
+        )
+        self.circ_events.submit_to_summary(category_count, type_='summary')
+
         if self.do_circRNA_RBP:
             circ_RBP_count = self.RBP_res_df[['ev_id', 'RBP']].drop_duplicates().rename(
                 {
