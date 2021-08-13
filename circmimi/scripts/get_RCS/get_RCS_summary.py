@@ -110,6 +110,9 @@ def cli():
             RCS_types[('acceptor', 'acceptor')],
             sep='\t'
         )
+    else:
+        for circ_id in circRNA_ids_reader:
+            print(circ_id, 0, 0, 0, sep='\t')
 
 
 if __name__ == "__main__":
