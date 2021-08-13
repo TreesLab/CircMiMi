@@ -304,6 +304,9 @@ class Circmimi:
             ]
         ).reset_index(drop=True)
 
+        self.category_df = self.res_df.pipe(self._get_category_df, to_binary=True)
+        self.res_df = pd.concat([self.res_df, self.category_df], axis=1)
+
         if self.do_circRNA_RBP:
             logger.debug('getting RBP_res_df')
             logger.debug('merging gene_symbol')
@@ -466,6 +469,41 @@ class Circmimi:
             )
 
         return uniq_exons_df
+
+    @staticmethod
+    def _get_category_df(res_df, to_binary=False):
+        def get_category(AGO, MTB, MDB, ECR):
+            if AGO:
+                if MTB or ECR:
+                    return '1'
+                else:
+                    return '2'
+            else:
+                if MTB or ECR:
+                    return '2'
+                else:
+                    return '3'
+
+        category_df = res_df.assign(
+            AGO=res_df['num_AGO_supported_binding_sites'] > 0,
+            MTB=res_df['miRTarBase'] == '1',
+            MDB=res_df['miRDB'] == '1',
+            ECR=res_df['ENCORI'] == '1'
+        )[['AGO', 'MTB', 'MDB', 'ECR']].assign(
+            category=lambda df: df.apply(lambda s: get_category(*s), axis=1)
+        )[['category']]
+
+        if to_binary:
+            category_df = category_df.assign(
+                category_1=(category_df['category'] == '1').apply(int),
+                category_2=(category_df['category'] == '2').apply(int),
+                category_3=(category_df['category'] == '3').apply(int)
+            ).drop(
+                'category',
+                axis=1
+            )
+
+        return category_df
 
 
 def get_mir_target_db(mir_tar_db_path):
