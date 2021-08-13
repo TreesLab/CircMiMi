@@ -34,7 +34,7 @@ def cli(debug_mode):
 @cli.command('interactions')
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
 @click.option('-i', '--circ', 'circ_file', metavar="CIRC_FILE", required=True)
-@click.option('-o', '--out-prefix', 'out_prefix', default='./out/', metavar="OUT_PREFIX")
+@click.option('-o', '--out-prefix', 'out_prefix', default='./', metavar="OUT_PREFIX")
 @click.option('-p', '--num_proc', default=1, type=click.INT, metavar="NUM_PROC",
     help="Number of processes")
 @click.option('--checkAA', 'checkAA', is_flag=True,
@@ -186,7 +186,7 @@ def check():
 @check.command('annotation')
 @click.argument('circ_file')
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
-@click.option('-o', '--out-prefix', 'out_prefix', default='./out/', metavar="OUT_PREFIX")
+@click.option('-o', '--out-prefix', 'out_prefix', default='./', metavar="OUT_PREFIX")
 def check_annotation(circ_file, ref_dir, out_prefix):
     from circmimi.reference.config import get_refs
     from circmimi.circ import CircEvents
@@ -272,7 +272,7 @@ def check_RCS(ref_file,
 @click.option('-i', '--circ', 'circ_file', metavar="CIRC_FILE", required=True)
 @click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR",
               required=True)
-@click.option('-o', '--out-prefix', 'out_prefix', default='./out/',
+@click.option('-o', '--out-prefix', 'out_prefix', default='./',
               metavar="OUT_PREFIX")
 @click.option('-p', '--num_proc', default=1, type=click.INT,
               metavar="NUM_PROC", help="Number of processes")
@@ -387,11 +387,11 @@ def create_network(in_file, out_file, idx_circRNA, idx_mediator, idx_mRNA, forma
 @cli.command('visualize')
 @click.argument('in_file')
 @click.argument('out_file')
-@click.option('-1', 'idx_circRNA', type=int, default=1,
+@click.option('-1', 'idx_circRNA', type=int, default=6,
               help='column key for circRNAs.')
-@click.option('-2', 'idx_mediator', type=int, default=2,
+@click.option('-2', 'idx_mediator', type=int, default=7,
               help='column key for mediators.')
-@click.option('-3', 'idx_mRNA', type=int, default=3,
+@click.option('-3', 'idx_mRNA', type=int, default=13,
               help='column key for mRNAs.')
 @click.option('-f', '--format', 'format_', default='xgmml',
               help="Assign the format of the OUT_FILE.", hidden=True)
