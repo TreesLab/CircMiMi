@@ -122,13 +122,19 @@ class CircEvents:
         self.original_df = self.original_df.assign(circ_id=all_ev_with_circ_id)
         self.df = self.df.assign(circ_id=all_ev_with_circ_id)
 
+    def _append_host_genes(self, host_genes):
+        all_ev_with_host_gene = self.expand_to_all_events(host_genes, np.nan)
+        self.original_df = self.original_df.assign(host_gene=all_ev_with_host_gene)
+        self.df = self.df.assign(host_gene=all_ev_with_host_gene)
+
     def check_annotation(self, anno_db_file):
         self._annotator = Annotator(anno_db_file)
         self.anno_df, anno_status = self.df.pipe(self._annotator.annotate)
 
-        self.host_genes = self._get_host_genes(self.anno_df)
-        self.circ_ids = self._get_circ_ids(self.host_genes)
-        self._update_circ_ids(self.circ_ids)
+        self._host_genes = self._get_host_genes(self.anno_df)
+        self._circ_ids = self._get_circ_ids(self._host_genes)
+        self._update_circ_ids(self._circ_ids)
+        self._append_host_genes(self._host_genes)
 
         self.submit_to_summary(anno_status, type_='filters')
 
@@ -181,31 +187,22 @@ class CircEvents:
             }
         ).reset_index().rename({0: 'pass'}, axis=1)
 
-        columns_to_be_merged = [self.host_gene, self.circ_ids]
-        columns_to_be_merged += self._summary_columns['summary']
-        columns_to_be_merged += [pass_column, filters_df.fillna('NA')]
-
         summary_df = self.original_df.reset_index().pipe(
             self._merge_columns,
-            columns_to_be_merged
+            self._summary_columns['summary'] + [pass_column, filters_df.fillna('NA')]
         ).set_index('ev_id')
 
         return summary_df
 
     @property
-    def clear_df(self):
+    def _passed_events(self):
         pass_df = self.get_summary()[lambda df: df['pass'] == 'yes'].reset_index()[['ev_id']]
-        clear_df = self.original_df.merge(pass_df, on='ev_id')
-        return clear_df
+        return pass_df
+
+    @property
+    def clear_df(self):
+        return self.original_df.merge(self._passed_events, on='ev_id').set_index('ev_id')
 
     @property
     def clear_anno_df(self):
-        return self.anno_df.merge(
-            self.clear_df.reset_index(),
-            on='ev_id',
-            how='inner'
-        )
-
-    @property
-    def clear_df_with_gene(self):
-        return self.clear_df.merge(self.host_gene, on='ev_id', how='left').set_index('ev_id')
+        return self.anno_df.merge(self._passed_events, on='ev_id', how='inner')
