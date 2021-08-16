@@ -7,6 +7,7 @@ from circmimi.ambiguous import AmbiguousChecker
 
 class CircEvents:
     INPUT_COLUMNS = ('chr', 'pos1', 'pos2', 'strand', 'circ_id')
+    DONOR_ACCEPTOR_COLUMNS = ('chr', 'donor', 'acceptor', 'strand', 'circ_id')
 
     def __init__(self, filename):
         self._filename = filename
@@ -52,14 +53,14 @@ class CircEvents:
             acceptor_site = pos2
 
         res = [chr_, donor_site, acceptor_site, strand, circ_id]
-        res = pd.Series(res, index=cls.INPUT_COLUMNS)
+        res = pd.Series(res, index=cls.DONOR_ACCEPTOR_COLUMNS)
 
         return res
 
     @classmethod
     def _get_donor_acceptor_df(cls, original_df):
         if original_df.empty:
-            df = pd.DataFrame([], columns=cls.INPUT_COLUMNS)
+            df = pd.DataFrame([], columns=cls.DONOR_ACCEPTOR_COLUMNS)
         else:
             df = original_df.apply(cls._get_donor_acceptor, axis=1)
 
