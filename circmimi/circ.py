@@ -74,9 +74,52 @@ class CircEvents:
     def submit_to_summary(self, summary_column, type_):
         self._summary_columns[type_].append(summary_column)
 
+    @staticmethod
+    def _get_host_genes(anno_df):
+
+        def get_gene_symbol(anno_df):
+            return anno_df['transcript'].apply(
+                lambda t: t.gene.gene_symbol
+            )
+
+        host_gene_df = anno_df.assign(
+            host_gene=get_gene_symbol
+        )[[
+            'ev_id',
+            'host_gene'
+        ]].drop_duplicates(
+        ).groupby(
+            'ev_id'
+        ).agg(lambda genes: ','.join(sorted(genes))).reset_index()
+
+        return host_gene_df
+
+    @staticmethod
+    def _get_circ_ids(host_genes):
+        genes = host_genes['host_gene']
+        gene_count = Counter(genes)
+        idx_dict = defaultdict(int)
+
+        circ_ids = []
+        for gene in genes:
+            if gene_count[gene] == 1:
+                circ_ids.append(f'circ{gene}')
+            else:
+                idx_dict[gene] += 1
+                circ_ids.append(f'circ{gene}_{idx_dict[gene]}')
+
+        circ_ids_df = host_genes.assign(
+            circ_id=pd.Series(circ_ids)
+        )[['ev_id', 'circ_id']]
+
+        return circ_ids_df
+
     def check_annotation(self, anno_db_file):
         self._annotator = Annotator(anno_db_file)
         self.anno_df, anno_status = self.df.pipe(self._annotator.annotate)
+
+        self.host_genes = self._get_host_genes(self.anno_df)
+        self.circ_ids = self._get_circ_ids(self.host_genes)
 
         self.submit_to_summary(anno_status, type_='filters')
 
@@ -129,7 +172,7 @@ class CircEvents:
             }
         ).reset_index().rename({0: 'pass'}, axis=1)
 
-        columns_to_be_merged = [self.gene_symbols, self.circ_ids]
+        columns_to_be_merged = [self.host_gene, self.circ_ids]
         columns_to_be_merged += self._summary_columns['summary']
         columns_to_be_merged += [pass_column, filters_df.fillna('NA')]
 
@@ -153,45 +196,8 @@ class CircEvents:
         )
 
     @property
-    def gene_symbols(self):
-        def get_gene_symbol(anno_df):
-            return anno_df['transcript'].apply(
-                lambda t: t.gene.gene_symbol
-            )
-
-        gene_list_df = self.anno_df.assign(
-            host_gene=get_gene_symbol
-        )[[
-            'ev_id',
-            'host_gene'
-        ]].drop_duplicates(
-        ).groupby(
-            'ev_id'
-        ).agg(lambda genes: ','.join(sorted(genes))).reset_index()
-
-        return gene_list_df
-
-    @property
     def clear_df_with_gene(self):
-        return self.clear_df.merge(self.gene_symbols, on='ev_id', how='left').set_index('ev_id')
-
-    @property
-    def circ_ids(self):
-        genes = self.gene_symbols['host_gene']
-        gene_count = Counter(genes)
-        idx_dict = defaultdict(int)
-
-        circ_ids = []
-        for gene in genes:
-            if gene_count[gene] == 1:
-                circ_ids.append(f'circ{gene}')
-            else:
-                idx_dict[gene] += 1
-                circ_ids.append(f'circ{gene}_{idx_dict[gene]}')
-
-        circ_ids_df = self.gene_symbols.assign(circ_id=pd.Series(circ_ids))[['ev_id', 'circ_id']]
-
-        return circ_ids_df
+        return self.clear_df.merge(self.host_gene, on='ev_id', how='left').set_index('ev_id')
 
     @property
     def clear_df_with_circ_id(self):
