@@ -67,16 +67,11 @@ class CircEvents:
         return df
 
     def expand_to_all_events(self, ev_df, fillna_value):
-        expanded_df = self.original_df.reset_index().rename(
-            {
-                'index': 'ev_id'
-            },
-            axis=1
-        ).loc[:, ['ev_id']].merge(
+        expanded_df = self.original_df.reset_index()[['ev_id']].merge(
             ev_df,
             on='ev_id',
             how='left'
-        ).fillna(fillna_value)
+        ).fillna(fillna_value).set_index('ev_id')
 
         return expanded_df
 
