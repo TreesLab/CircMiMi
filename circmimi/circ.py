@@ -5,6 +5,8 @@ from circmimi.ambiguous import AmbiguousChecker
 
 
 class CircEvents:
+    INPUT_COLUMNS = ('chr', 'pos1', 'pos2', 'strand', 'circ_id')
+
     def __init__(self, filename):
         self._filename = filename
         self.original_df = self._read_file(self._filename)
@@ -15,12 +17,12 @@ class CircEvents:
             'filters': []
         }
 
-    @staticmethod
-    def _read_file(filename):
+    @classmethod
+    def _read_file(cls, filename):
         df = pd.read_csv(
             filename,
             sep='\t',
-            names=['chr', 'pos1', 'pos2', 'strand'],
+            names=cls.INPUT_COLUMNS,
             dtype={
                 'chr': 'category',
                 'pos1': 'int',
@@ -31,9 +33,9 @@ class CircEvents:
 
         return df
 
-    @staticmethod
-    def _get_donor_acceptor(s):
-        chr_, pos1, pos2, strand = s[['chr', 'pos1', 'pos2', 'strand']]
+    @classmethod
+    def _get_donor_acceptor(cls, s):
+        chr_, pos1, pos2, strand, circ_id = s[list(cls.INPUT_COLUMNS)]
         pos1, pos2 = sorted([pos1, pos2])
 
         if strand == '+':
@@ -43,15 +45,15 @@ class CircEvents:
             donor_site = pos1
             acceptor_site = pos2
 
-        res = [chr_, donor_site, acceptor_site, strand]
-        res = pd.Series(res, index=['chr', 'donor', 'acceptor', 'strand'])
+        res = [chr_, donor_site, acceptor_site, strand, circ_id]
+        res = pd.Series(res, index=cls.INPUT_COLUMNS)
 
         return res
 
     @classmethod
     def _get_donor_acceptor_df(cls, original_df):
         if original_df.empty:
-            df = pd.DataFrame([], columns=['chr', 'donor', 'acceptor', 'strand'])
+            df = pd.DataFrame([], columns=cls.INPUT_COLUMNS)
         else:
             df = original_df.apply(cls._get_donor_acceptor, axis=1)
 
@@ -185,7 +187,9 @@ class CircEvents:
 
     @property
     def clear_df(self):
-        return self.get_summary()[lambda df: df['pass'] == 'yes'].loc[:, :'strand']
+        pass_df = self.get_summary()[lambda df: df['pass'] == 'yes'].reset_index()[['ev_id']]
+        clear_df = self.original_df.merge(pass_df, on='ev_id')
+        return clear_df
 
     @property
     def clear_anno_df(self):
