@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from collections import Counter, defaultdict
 from circmimi.annotation import Annotator
 from circmimi.ambiguous import AmbiguousChecker
@@ -116,12 +117,18 @@ class CircEvents:
 
         return circ_ids_df
 
+    def _update_circ_ids(self, circ_ids):
+        all_ev_with_circ_id = self.expand_to_all_events(circ_ids, np.nan)
+        self.original_df = self.original_df.assign(circ_id=all_ev_with_circ_id)
+        self.df = self.df.assign(circ_id=all_ev_with_circ_id)
+
     def check_annotation(self, anno_db_file):
         self._annotator = Annotator(anno_db_file)
         self.anno_df, anno_status = self.df.pipe(self._annotator.annotate)
 
         self.host_genes = self._get_host_genes(self.anno_df)
         self.circ_ids = self._get_circ_ids(self.host_genes)
+        self._update_circ_ids(self.circ_ids)
 
         self.submit_to_summary(anno_status, type_='filters')
 
@@ -202,7 +209,3 @@ class CircEvents:
     @property
     def clear_df_with_gene(self):
         return self.clear_df.merge(self.host_gene, on='ev_id', how='left').set_index('ev_id')
-
-    @property
-    def clear_df_with_circ_id(self):
-        return self.clear_df_with_gene.merge(self.circ_ids, on='ev_id', how='left').set_index('ev_id')
