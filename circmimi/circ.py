@@ -18,12 +18,17 @@ class CircEvents:
             'filters': []
         }
 
-    @classmethod
-    def _read_file(cls, filename):
+    def _read_file(self, filename):
+        df = pd.read_csv(filename, sep='\t', header=None, nrows=1)
+        if df.shape[1] > 4:
+            self.circ_ids_specified = True
+        else:
+            self.circ_ids_specified = False
+
         df = pd.read_csv(
             filename,
             sep='\t',
-            names=cls.INPUT_COLUMNS,
+            names=self.INPUT_COLUMNS,
             dtype={
                 'chr': 'category',
                 'pos1': 'int',
@@ -132,9 +137,11 @@ class CircEvents:
         self.anno_df, anno_status = self.df.pipe(self._annotator.annotate)
 
         self._host_genes = self._get_host_genes(self.anno_df)
-        self._circ_ids = self._get_circ_ids(self._host_genes)
-        self._update_circ_ids(self._circ_ids)
         self._append_host_genes(self._host_genes)
+
+        if not self.circ_ids_specified:
+            self._circ_ids = self._get_circ_ids(self._host_genes)
+            self._update_circ_ids(self._circ_ids)
 
         self.submit_to_summary(anno_status, type_='filters')
 
