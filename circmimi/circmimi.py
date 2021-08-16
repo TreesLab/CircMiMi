@@ -104,7 +104,7 @@ class Circmimi:
 
         self.pos_map_db = {
             regions_id: PosMap(regions)
-            for regions_id, regions in  self.uniq_exons_regions_df.values
+            for regions_id, regions in self.uniq_exons_regions_df.values
         }
 
         # miRNAs part
@@ -282,7 +282,7 @@ class Circmimi:
         # final result table
         logger.info('getting final results')
         logger.debug('getting res_df')
-        self.res_df = self.circ_events.clear_df_with_gene.pipe(
+        self.res_df = self.circ_events.clear_df.pipe(
             debug_log,
             msg='merging res_df'
         ).merge(
@@ -310,7 +310,7 @@ class Circmimi:
         if self.do_circRNA_RBP:
             logger.debug('getting RBP_res_df')
             logger.debug('merging gene_symbol')
-            self.RBP_res_df = self.circ_events.clear_df_with_gene.pipe(
+            self.RBP_res_df = self.circ_events.clear_df.pipe(
                 debug_log,
                 msg='merging RBP_overlap'
             ).merge(
