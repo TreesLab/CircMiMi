@@ -193,11 +193,14 @@ def check_annotation(circ_file, anno_db, out_file):
     circ_events = CircEvents(circ_file)
     circ_events.check_annotation(anno_db)
 
-    res_df = circ_events.region_id.reset_index().merge(
-        circ_events.get_summary().loc[:, 'pass':].drop('pass', axis=1),
-        on='ev_id',
-        how='left'
-    ).rename({'region_id': 'circRNA_id'}, axis=1).set_index('ev_id')
+    res_df = pd.concat(
+        [
+            circ_events.get_summary().loc[:, :'host_gene'],
+            circ_events.get_summary().loc[:, 'pass':].drop('pass', axis=1),
+            circ_events.region_id.rename('circRNA_id')
+        ],
+        axis=1
+    )
 
     res_df.to_csv(out_file, sep='\t', index=False)
 
@@ -294,6 +297,12 @@ def default_checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
 
     anno_db, ref_file, _, _, other_transcripts, _, _, _ = get_refs(ref_dir)
 
+    annotation_result_file = tp.NamedTemporaryFile(
+        dir=output_dir,
+        prefix='check.annotation.',
+        suffix='.tsv'
+    )
+
     ambiguous_result_file = tp.NamedTemporaryFile(
         dir=output_dir,
         prefix='check.AA.',
@@ -305,6 +314,12 @@ def default_checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
         suffix='.tsv'
     )
     out_file = add_prefix('checking.results.tsv', out_prefix)
+
+    ctx.invoke(
+        circ_file=circ_file,
+        anno_db=anno_db,
+        out_file=annotation_result_file.name
+    )
 
     ctx.invoke(
         check_ambiguous,
@@ -325,9 +340,17 @@ def default_checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
 
     import pandas as pd
 
+    ann_df = pd.read_csv(annotation_result_file.name, sep='\t', dtype='object')
     amb_df = pd.read_csv(ambiguous_result_file.name, sep='\t', dtype='object')
     rcs_df = pd.read_csv(RCS_result_file.name, sep='\t', dtype='object')
-    result_df = amb_df.merge(rcs_df, on='circRNA_id', how='outer')
+    result_df = pd.concat(
+        [
+            ann_df,
+            amb_df.set_index('circRNA_id'),
+            rcs_df.set_index('circRNA_id')
+        ],
+        axis=1
+    )
     result_df.to_csv(out_file, sep='\t', index=False)
 
 
