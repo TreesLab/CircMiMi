@@ -193,7 +193,7 @@ def check_annotation(circ_file, anno_db, out_file):
     circ_events = CircEvents(circ_file)
     circ_events.check_annotation(anno_db)
 
-    res_df = circ_events.region_id.merge(
+    res_df = circ_events.region_id.reset_index().merge(
         circ_events.get_summary().loc[:, 'pass':].drop('pass', axis=1),
         on='ev_id',
         how='left'
