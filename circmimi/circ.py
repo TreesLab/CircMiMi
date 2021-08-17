@@ -209,3 +209,12 @@ class CircEvents:
     @property
     def clear_anno_df(self):
         return self.anno_df.merge(self._passed_events, on='ev_id', how='inner')
+
+    @property
+    def region_id(self):
+        region_id_df = self.df.apply(
+            lambda s: f"{s['chr']}:{s['donor']}|{s['acceptor']}({s['strand']})",
+            axis=1
+        ).rename('region_id')
+
+        return region_id_df

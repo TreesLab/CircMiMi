@@ -184,27 +184,22 @@ def check():
 
 
 @check.command('annotation')
+@click.argument('anno_db')
 @click.argument('circ_file')
-@click.option('-r', '--ref', 'ref_dir', type=click.Path(), metavar="REF_DIR", required=True)
-@click.option('-o', '--out-prefix', 'out_prefix', default='./', metavar="OUT_PREFIX")
-def check_annotation(circ_file, ref_dir, out_prefix):
-    from circmimi.reference.config import get_refs
+@click.argument('out_file')
+def check_annotation(circ_file, anno_db, out_file):
     from circmimi.circ import CircEvents
-    from circmimi.utils import add_prefix
-
-    output_dir = os.path.dirname(out_prefix)
-    if output_dir == '':
-        output_dir = '.'
-
-    if output_dir != '.':
-        os.makedirs(output_dir, exist_ok=True)
-
-    anno_db, _, _, _, _, _, _, _ = get_refs(ref_dir)
 
     circ_events = CircEvents(circ_file)
     circ_events.check_annotation(anno_db)
-    res_file = add_prefix('circ.summary_list.tsv', out_prefix)
-    circ_events.get_summary().to_csv(res_file, sep='\t', index=False)
+
+    res_df = circ_events.region_id.merge(
+        circ_events.get_summary().loc[:, 'pass':].drop('pass', axis=1),
+        on='ev_id',
+        how='left'
+    ).rename({'region_id': 'circRNA_id'}, axis=1).set_index('ev_id')
+
+    res_df.to_csv(out_file, sep='\t', index=False)
 
 
 @check.command('ambiguous')
