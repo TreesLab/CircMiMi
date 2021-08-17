@@ -188,6 +188,7 @@ def check():
 @click.argument('circ_file')
 @click.argument('out_file')
 def check_annotation(circ_file, anno_db, out_file):
+    import pandas as pd
     from circmimi.circ import CircEvents
 
     circ_events = CircEvents(circ_file)
