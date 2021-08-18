@@ -307,6 +307,7 @@ def default_checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
     out_file = add_prefix('checking.results.tsv', out_prefix)
 
     ctx.invoke(
+        check_annotation,
         circ_file=circ_file,
         anno_db=anno_db,
         out_file=annotation_result_file.name
@@ -337,8 +338,8 @@ def default_checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
     result_df = pd.concat(
         [
             ann_df,
-            amb_df.set_index('circRNA_id'),
-            rcs_df.set_index('circRNA_id')
+            amb_df.drop('circRNA_id', axis=1),
+            rcs_df.drop('circRNA_id', axis=1)
         ],
         axis=1
     )
