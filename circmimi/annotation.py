@@ -115,19 +115,19 @@ class Annotator:
     def __init__(self, anno_db_file):
         self._db = Annotation(anno_db_file)
 
-    def _report_status(self, ev_id, status=None):
+    def _report_status(self, ev_id, status=None, value='1', init_value='0'):
         if ev_id in self._checking_result.index:
             if status is not None:
-                self._checking_result.loc[ev_id, status] = '1'
+                self._checking_result.loc[ev_id, status] = value
         else:
             ev_status = pd.Series(
-                ['0'] * len(self._CHECK_LIST),
+                [init_value] * len(self._CHECK_LIST),
                 index=self._CHECK_LIST,
                 name=ev_id
             )
 
             if status is not None:
-                ev_status[status] = '1'
+                ev_status[status] = value
 
             self._checking_result = self._checking_result.append(ev_status)
 
@@ -172,6 +172,8 @@ class Annotator:
 
             if (donor is not None) and (acceptor is not None):
                 self._report_status(ev_id, self._CHECK_LIST[2])
+            else:
+                self._report_status(ev_id, self._CHECK_LIST[2], np.nan)
         else:
             self._report_status(ev_id)
 
