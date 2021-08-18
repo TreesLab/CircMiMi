@@ -188,22 +188,12 @@ def check():
 @click.argument('circ_file')
 @click.argument('out_file')
 def check_annotation(circ_file, anno_db, out_file):
-    import pandas as pd
     from circmimi.circ import CircEvents
 
     circ_events = CircEvents(circ_file)
     circ_events.check_annotation(anno_db)
 
-    res_df = pd.concat(
-        [
-            circ_events.get_summary().loc[:, :'host_gene'],
-            circ_events.get_summary().loc[:, 'pass':].drop('pass', axis=1),
-            circ_events.region_id.rename('circRNA_id')
-        ],
-        axis=1
-    )
-
-    res_df.to_csv(out_file, sep='\t', index=False)
+    circ_events.get_filters_results(True).to_csv(out_file, sep='\t', index=False)
 
 
 @check.command('ambiguous')

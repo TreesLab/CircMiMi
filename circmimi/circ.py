@@ -168,11 +168,22 @@ class CircEvents:
 
         return merged_df
 
-    def get_summary(self):
+    def get_filters_results(self, show_detail=False):
         filters_df = pd.DataFrame(self.df.index).pipe(
             self._merge_columns,
             self._summary_columns['filters']
         )
+
+        if show_detail:
+            filters_df = self.original_df.pipe(
+                self._merge_columns,
+                [filters_df]
+            ).set_index('ev_id')
+
+        return filters_df
+
+    def get_summary(self):
+        filters_df = self.get_filters_results()
 
         pass_column = filters_df.fillna('2').set_index(
             'ev_id'
