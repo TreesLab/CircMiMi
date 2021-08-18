@@ -107,9 +107,9 @@ class Annotation:
 
 class Annotator:
     _CHECK_LIST = [
-        'donor_site_not_at_the_annotated_boundary',
-        'acceptor_site_not_at_the_annotated_boundary',
-        'donor_acceptor_sites_not_at_the_same_transcript_isoform'
+        'donor_site_at_the_annotated_boundary',
+        'acceptor_site_at_the_annotated_boundary',
+        'donor_acceptor_sites_at_the_same_transcript_isoform'
     ]
 
     def __init__(self, anno_db_file):
@@ -163,19 +163,18 @@ class Annotator:
 
         transcripts_data_df = pd.DataFrame(transcripts_data, columns=df_cols)
 
-        if common_transcripts == []:
-            if donor is None:
-                self._report_status(ev_id, self._CHECK_LIST[0])
+        # report status
+        if donor is not None:
+            self._report_status(ev_id, self._CHECK_LIST[0])
 
-            if acceptor is None:
-                self._report_status(ev_id, self._CHECK_LIST[1])
+        if acceptor is not None:
+            self._report_status(ev_id, self._CHECK_LIST[1])
 
-            if (donor is not None) and (acceptor is not None):
+        if (donor is not None) and (acceptor is not None):
+            if common_transcripts != []:
                 self._report_status(ev_id, self._CHECK_LIST[2])
-            else:
-                self._report_status(ev_id, self._CHECK_LIST[2], np.nan)
         else:
-            self._report_status(ev_id)
+            self._report_status(ev_id, self._CHECK_LIST[2], '-1')
 
         return transcripts_data_df
 
