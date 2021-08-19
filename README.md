@@ -7,17 +7,22 @@ A package for constructing CLIP-seq data-supported circRNA-miRNA-mRNA interactio
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
-    - [Generate the references](#generate-the-references)
-      - [Parameters](#parameters)
-      - [Available species and sources](#available-species-and-sources)
-    - [Run the main pipeline](#run-the-main-pipeline)
-      - [Parameters](#parameters-1)
-      - [Input file](#input-file)
-      - [Output files](#output-files)
-        - [summary_list.tsv](#summary_listtsv)
-        - [all_interactions.miRNA.tsv](#all_interactionsmirnatsv)
-    - [(Optional) Create the network file for Cytoscape](#optional-create-the-network-file-for-cytoscape)
-      - [Parameters](#parameters-2)
+  - [Generate the references](#generate-the-references)
+    - [Parameters](#parameters)
+    - [Available species and sources](#available-species-and-sources)
+  - [(Optional) Check the circRNAs](#optional-check-the-circrnas)
+    - [Parameters](#parameters-1)
+    - [Input file](#input-file)
+    - [Output file](#output-file)
+      - [checking.results.tsv](#checkingresultstsv)
+  - [Predict the interactions between circRNA-miRNA-mRNA](#predict-the-interactions-between-circrna-mirna-mrna)
+    - [Parameters](#parameters-2)
+    - [Input file](#input-file-1)
+    - [Output files](#output-files)
+      - [summary_list.tsv](#summary_listtsv)
+      - [all_interactions.miRNA.tsv](#all_interactionsmirnatsv)
+  - [(Optional) Visualize the interactions](#optional-visualize-the-interactions)
+    - [Parameters](#parameters-3)
 - [Example](#example)
 
 
@@ -28,6 +33,7 @@ A package for constructing CLIP-seq data-supported circRNA-miRNA-mRNA interactio
   - bedtools (2.29.0) (https://github.com/arq5x/bedtools2)
   - miranda (aug2010, 3.3a) (http://www.microrna.org/microrna/getDownloads.do)
   - blat (https://genome.ucsc.edu/FAQ/FAQblat.html)
+  - blast (https://blast.ncbi.nlm.nih.gov/Blast.cgi)
 
 
 # Installation
@@ -44,7 +50,7 @@ $ pip install circmimi
 
 For the external tools, they can also be installed via `conda` with the `bioconda`(https://bioconda.github.io/) channel:
 ```bash
-$ conda install -c bioconda bedtools=2.29.0 miranda blat
+$ conda install -c bioconda bedtools=2.29.0 miranda blat blast
 ```
 
 
@@ -62,21 +68,28 @@ it should print out with the help messages.
 1. Generate the references
 
 ```bash
-$ circmimi_tools genref --species hsa --source ensembl --version 98 ./refs
+$ circmimi_tools genref --species hsa --source ensembl --version 100 refs/
 ```
 
 
-2. Run the main pipeline of CircMiMi
-
+2. Check the circRNAs and do some pre-filtering (optional)
 ```bash
-$ circmimi_tools run -r ./refs -i circRNAs.tsv -o ./out/ -p 5 --checkAA --miranda-sc 175
+$ circmimi_tools checking -r refs/ -i circRNAs.tsv -o out/ -p 5
+$ cat out/checking.results.tsv | awk -F'\t' '($9==1)&&($12==0)&&($16==1)' > out/circRNAs.filtered.tsv
 ```
 
 
-3. Create the network file for Cytoscape
+3. Predict the interactions between circRNA-miRNA-mRNA
 
 ```bash
-$ circmimi_tools network create ./out/all_interactions.tsv ./out/all_interactions.xgmml
+$ circmimi_tools interactions -r refs/ -i out/circRNAs.filtered.tsv -o out/ -p 5 --miranda-sc 175
+```
+
+
+4. Visualize the interactions by creating a Cytoscape-acceptable XGMML file (optional)
+
+```bash
+$ circmimi_tools visualize out/all_interactions.miRNA.tsv out/all_interactions.miRNA.xgmml
 ```
 
 
@@ -92,7 +105,7 @@ Parameter             | Description
 :-------------------- | :------------------------------
 --species SPECIES     | Assign the species for references. Use the species code for SPECIES. ***[required]***
 --source SOURCE       | Available values for SOURCE: "ensembl", "ensembl_plants", "ensembl_metazoa", "gencode". ***[required]***
---version RELEASE_VER | The release version of the SOURCE. For examples,  "98" for ("hsa", "ensembl"), "M24" for ("mmu", "gencode"). If the version is not assigned, the latest one will be used.
+--version RELEASE_VER | The release version of the SOURCE. For examples,  "98" for ("hsa", "ensembl"), "M24" for ("mmu", "gencode"). If the version is not specified, the latest one will be used.
 REF_DIR               | The directory for all generated references.
 
 
@@ -139,10 +152,67 @@ xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |     |
 
 
 
-## Run the main pipeline
+## (Optional) Check the circRNAs
+```
+circmimi_tools checking -r REF_DIR -i CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC]
+```
+
+### Parameters
+Parameter                   | Description
+:-------------------------- | :------------------------------
+-r, --ref REF_DIR           | The directory of the pre-genereated reference files. ***[required]***
+-i, --circ CIRC_FILE        | The file of circRNAs. ***[required]***
+-o, --out-prefix OUT_PREFIX | The prefix for the output filenames. (default: "./")
+-p, --num_proc NUM_PROC     | The number of processes to use.
+
+
+### Input file
+
+The input file(CIRC_FILE) is a TAB-separated file with the following columns:
+
+\#   | Column  | Description
+:--: | :-----: | :----------
+  1  |  chr    | Chromosome name
+  2  |  pos1   | One of the positions of the circRNA junction site
+  3  |  pos2   | Another position of the circRNA junction site
+  4  |  strand | + / -
+  5  |  circ_id | (Optional) User-specified name/id of the circRNA
+
+#### Note.
+- The chromosome name must be the same as the name in the SOURCE.
+  - For example, "1" for "ensembl", and "chr1" for "gencode".
+
+
+### Output file
+
+#### checking.results.tsv
+
+\#   | Column          | Description
+:--: | :-------------- | :----------
+  1  |  chr            | Chromosome name
+  2  |  pos1           | One of the position of the circRNA junction site
+  3  |  pos2           | Another position of the circRNA junction site
+  4  |  strand         | + / -
+  5  |  circ_id        | The user-specified or auto-generated name/id of the circRNA.
+  6  |  host_gene      | The gene symbol of the host gene
+  7  |  donor_site_at_the_annotated_boundary | '1' if the donor site of the circRNA is at the annotated exon boundary. Otherwise '0'.
+  8  |  acceptor_site_at_the_annotated_boundary | '1' if the acceptor site of the circRNA is at the annotated exon boundary. Otherwise '0'.
+  9  |  donor_acceptor_sites_at_the_same_transcript_isoform | '1' if the donor and acceptor are at the same annotated transcript isoform. Otherwise '0'.
+ 10  |  with an alternative co-linear explanation | '1' if the merged flanking sequence of the circRNA junction sites has an co-linear explanation. Otherwise '0'.
+ 11  |  with multiple_hits | '1' if the merged flanking sequence of the circRNA junction sites is with multiple hits. Otherwise '0'.
+ 12  |  alignment ambiguity (with an alternative co-linear explanation or multiple hits) | '1' if the merged flanking sequence of the circRNA junction sites is with an alternative co-linear explanation or with multiple hits. Otherwise '0'.
+ 13  |  #RCS across flanking sequences | The number of RCS pairs of which across flanking sequences.
+ 14  |  #RCS within the flanking sequence (the donor side) | The number of RCS pairs of which within the flanking sequences of donor site.
+ 15  |  #RCS within the flanking sequence (the acceptor side) | The number of RCS pairs of which within the flanking sequences of acceptor site.
+ 16  |  #RCS_across-#RCS_within>=1 (yes: 1; no: 0) | 
+
+
+
+
+## Predict the interactions between circRNA-miRNA-mRNA
 
 ```
-circmimi_tools run -r REF_DIR -i CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC] [--checkAA] \
+circmimi_tools interactions -r REF_DIR -i CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC] \
 [--miranda-sc SCORE] [--miranda-en ENERGY] [--miranda-scale SCALE] [--miranda-strict] [--miranda-go X] [--miranda-ge Y]
 ```
 
@@ -151,9 +221,8 @@ Parameter                   | Description
 :-------------------------- | :------------------------------
 -r, --ref REF_DIR           | The directory of the pre-genereated reference files. ***[required]***
 -i, --circ CIRC_FILE        | The file of circRNAs. ***[required]***
--o, --out-prefix OUT_PREFIX | Assign the prefix for the output filenames. (default: "./out/")
--p, --num_proc NUM_PROC     | Assign the number of processes.
---checkAA                   | Check the circRNAs if there are ambiguous alignments.
+-o, --out-prefix OUT_PREFIX | The prefix for the output filenames. (default: "./")
+-p, --num_proc NUM_PROC     | The number of processes.
 
 The miRanda parameters are also available (see [the manual of miRanda](http://cbio.mskcc.org/microrna_data/manual.html)).
 
@@ -178,6 +247,7 @@ The input file(CIRC_FILE) is a TAB-separated file with the following columns:
   2  |  pos1   | One of the position of the circRNA junction site
   3  |  pos2   | Another position of the circRNA junction site
   4  |  strand | + / -
+  5  |  circ_id | (Optional) User-specified name/id of the circRNA
 
 #### Note.
 - The chromosome name must be the same as the name in the SOURCE.
@@ -185,7 +255,7 @@ The input file(CIRC_FILE) is a TAB-separated file with the following columns:
 
 
 ### Output files
-The main pipeline of CircMiMi outputs two main files:
+There would output two main files:
  - "summary_list.tsv"
  - "all_interactions.miRNA.tsv"
 
@@ -199,15 +269,17 @@ The summary list contains the counts of interactions and some checking results o
   2  |  pos1           | One of the position of the circRNA junction site
   3  |  pos2           | Another position of the circRNA junction site
   4  |  strand         | + / -
-  5  |  pass           | 'yes' for the circRNA passing all of the checking items (column 9 to 13). Otherwise 'no'.
-  6  |  #circRNA_miRNA | Count for the circRNA-miRNA interactions.
-  7  |  #circRNA_mRNA  | Count for the miRNAs-mediated circRNA-mRNA interactions.
-  8  |  #circRNA_miRNA_mRNA | Count for the circRNA-miRNA-mRNA interactions.
-  9  |  donor site not at the annotated boundary | '1' if the donor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
- 10  |  acceptor site not at the annotated boundary | '1' if the acceptor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
- 11  |  donor/acceptor sites not at the same transcript isoform | '1' if the donor and acceptor are not at the same annotated transcript isoform. Otherwise '0'.
- 12  |  ambiguity with an co-linear explanation | '1' if the merged flanking sequence of the circRNA junction sites has an co-linear explanation. Otherwise '0'.
- 13  |  ambiguity with multiple hits | '1' if the merged flanking sequence of the circRNA junction sites is with multiple hits. Otherwise '0'.
+  5  |  circ_id        | The user-specified or auto-generated name/id of the circRNA.
+  6  |  host_gene      | The gene symbol of the host gene
+  7  |  #circRNA_miRNA | Count for the circRNA-miRNA interactions.
+  8  |  #circRNA_mRNA  | Count for the miRNAs-mediated circRNA-mRNA interactions.
+  9  |  #circRNA_miRNA_mRNA | Count for the circRNA-miRNA-mRNA interactions.
+ 10  |  pass           | 'yes' if the circRNA passing all of the checking items (column 11 to 15). Otherwise 'no'.
+ 11  |  donor site not at the annotated boundary | '1' if the donor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
+ 12  |  acceptor site not at the annotated boundary | '1' if the acceptor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
+ 13  |  donor/acceptor sites not at the same transcript isoform | '1' if the donor and acceptor are not at the same annotated transcript isoform. Otherwise '0'.
+ 14  |  ambiguity with an co-linear explanation | '1' if the merged flanking sequence of the circRNA junction sites has an co-linear explanation. Otherwise '0'.
+ 15  |  ambiguity with multiple hits | '1' if the merged flanking sequence of the circRNA junction sites is with multiple hits. Otherwise '0'.
 
 
 #### all_interactions.miRNA.tsv
@@ -218,48 +290,52 @@ The summary list contains the counts of interactions and some checking results o
   2  |  pos1           | One of the position of the circRNA junction site
   3  |  pos2           | Another position of the circRNA junction site
   4  |  strand         | + / -
-  5  |  host_gene      | Host gene of the circRNA
-  6  |  mirna          | The miRNA which may bind on the circRNA
-  7  |  max_score      | The maximum binding score reported by miRanda
-  8  |  num_binding_sites | The number of binding sites of the miRNA on the circRNA
-  9  |  cross_boundary | '1' if there is a binding site across the junction of the circRNA. Otherwise '0'.
- 10  |  MaxAgoExpNum   | The maximum number of supporting CLIP-seq experiments
- 11  |  num_AGO_supported_binding_sites | The number of AGO-supported miRNA-binding sites
- 12  |  target_gene    | The miRNA-targeted gene
- 13  |  miRTarBase     | '1' if the miRNA-mRNA interaction is reported from miRTarBase. Otherwise '0'.
- 14  |  miRDB          | '1' if the miRNA-mRNA interaction is reported from miRDB. Otherwise '0'.
- 15  |  ENCORI         | '1' if the miRNA-mRNA interaction is reported from ENCORI. Otherwise '0'.
- 16  |  miRTarBase__ref_count | The number of references reporting the interaction
- 17  |  miRDB__targeting_score | The predicted target score from miRDB
- 18  |  ENCORI__geneID | The gene ID of the target gene
- 19  |  ENCORI__geneType | The gene type of the target gene
- 20  |  ENCORI__clipExpNum | The number of supporting CLIP-seq experiments
- 21  |  ENCORI__RBP    | RBP name
- 22  |  ENCORI__PITA   | The number of target sites predicted by PITA
- 23  |  ENCORI__RNA22  | The number of target sites predicted by RNA22
- 24  |  ENCORI__miRmap | The number of target sites predicted by miRmap
- 25  |  ENCORI__microT | The number of target sites predicted by microT
- 26  |  ENCORI__miRanda | The number of target sites predicted by miRanda
- 27  |  ENCORI__PicTar | The number of target sites predicted by PicTar
- 28  |  ENCORI__TargetScan | The number of target sites predicted by TargetScan
- 29  |  ENCORI__pancancerNum | The number of cancer types
+  5  |  circ_id        | The user-specified or auto-generated name/id of the circRNA.
+  6  |  host_gene      | Host gene of the circRNA
+  7  |  mirna          | The miRNA which may bind on the circRNA
+  8  |  max_score      | The maximum binding score reported by miRanda
+  9  |  num_binding_sites | The number of binding sites of the miRNA on the circRNA
+ 10  |  cross_boundary | '1' if there is a binding site across the junction of the circRNA. Otherwise '0'.
+ 11  |  MaxAgoExpNum   | The maximum number of supporting CLIP-seq experiments
+ 12  |  num_AGO_supported_binding_sites | The number of AGO-supported miRNA-binding sites
+ 13  |  target_gene    | The miRNA-targeted gene
+ 14  |  miRTarBase     | '1' if the miRNA-mRNA interaction is reported from miRTarBase. Otherwise '0'.
+ 15  |  miRDB          | '1' if the miRNA-mRNA interaction is reported from miRDB. Otherwise '0'.
+ 16  |  ENCORI         | '1' if the miRNA-mRNA interaction is reported from ENCORI. Otherwise '0'.
+ 17  |  miRTarBase__ref_count | The number of references reporting the interaction
+ 18  |  miRDB__targeting_score | The predicted target score from miRDB
+ 19  |  ENCORI__geneID | The gene ID of the target gene
+ 20  |  ENCORI__geneType | The gene type of the target gene
+ 21  |  ENCORI__clipExpNum | The number of supporting CLIP-seq experiments
+ 22  |  ENCORI__RBP    | RBP name
+ 23  |  ENCORI__PITA   | The number of target sites predicted by PITA
+ 24  |  ENCORI__RNA22  | The number of target sites predicted by RNA22
+ 25  |  ENCORI__miRmap | The number of target sites predicted by miRmap
+ 26  |  ENCORI__microT | The number of target sites predicted by microT
+ 27  |  ENCORI__miRanda | The number of target sites predicted by miRanda
+ 28  |  ENCORI__PicTar | The number of target sites predicted by PicTar
+ 29  |  ENCORI__TargetScan | The number of target sites predicted by TargetScan
+ 30  |  ENCORI__pancancerNum | The number of cancer types
 
 
 #### Note.
-For now, the ENCORI data are only work for 'human' species.
+For now, the ENCORI data are only work for 'human' and 'mouse'.
 
 
-## (Optional) Create the network file for Cytoscape
+## (Optional) Visualize the interactions
 
 ```
-circmimi_tools network create IN_FILE OUT_FILE
+circmimi_tools visualize [options] IN_FILE OUT_FILE
 ```
 
 ### Parameters
 Parameter     | Description
 :------------ | :------------------------------
-IN_FILE       | Input the file "all_interactions.tsv" produced from the CircMiMi main pipeline.
-OUT_FILE      | The output filename. The file extension should be ".xgmml" or ".xml", so that the Cytoscape would recognize this file as an XGMML network file.
+IN_FILE       | Input the file "all_interactions.miRNA.tsv", which is the output file from 'interactions'.
+OUT_FILE      | The output filename. The file extension should be ".xgmml" or ".xml", so that the Cytoscape could recognize this file as an XGMML network file.
+-1 INT        | column key for circRNAs.
+-2 INT        | column key for mediators.
+-3 INT        | column key for mRNAs.
 
 
 This command can generate a Cytoscape-executable file (.xgmml) for visualization of the input circRNA-miRNA-mRNA regulatory axes in Cytoscape.
