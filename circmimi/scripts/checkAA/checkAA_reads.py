@@ -372,7 +372,7 @@ class AmbAlnResult:
 
     def _init_result(self):
         self.read_ids = self._get_read_ids(self.reads_file)
-        self.result = {read_id: [0, 0] for read_id in self.read_ids}
+        self.result = {read_id: [0, 0, 0] for read_id in self.read_ids}
 
     @classmethod
     def _get_read_ids(cls, reads_file):
@@ -393,6 +393,10 @@ class AmbAlnResult:
         for id_ in self.multiple_hits_ids:
             self.result[id_][1] = 1
 
+        for id_, checking_result in self.result.items():
+            if (checking_result[0] == 1) or (checking_result[1] == 1):
+                self.result[id_][2] = 1
+
     def save_result(self, out_file):
         with open(out_file, 'w') as out:
             csv_writer = csv.writer(out, delimiter='\t')
@@ -401,7 +405,8 @@ class AmbAlnResult:
                 [
                     'circRNA_id',
                     'with an alternative co-linear explanation',
-                    'with multiple_hits'
+                    'with multiple_hits',
+                    'alignment ambiguity (with an alternative co-linear explanation or multiple hits)'
                 ]
             )
 
