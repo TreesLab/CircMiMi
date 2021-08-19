@@ -28,7 +28,8 @@ OUTPUT_TITLES = [
     'circRNA_id',
     '#RCS across flanking sequences',
     '#RCS within the flanking sequence (the donor side)',
-    '#RCS within the flanking sequence (the acceptor side)'
+    '#RCS within the flanking sequence (the acceptor side)',
+    '#RCS_across-#RCS_within>=1 (yes: 1; no: 0)'
 ]
 
 
@@ -103,16 +104,23 @@ def cli():
             [(data.region1_type, data.region2_type) for data in RCS_gp]
         )
 
+        across = RCS_types[('donor', 'acceptor')]
+        within_donor = RCS_types[('donor', 'donor')]
+        within_acceptor = RCS_types[('acceptor', 'acceptor')]
+        across_minus_within = across - (within_donor + within_acceptor)
+        across_minus_within_le_one = int(across_minus_within >= 1)
+
         print(
             circRNA_id,
-            RCS_types[('donor', 'acceptor')],
-            RCS_types[('donor', 'donor')],
-            RCS_types[('acceptor', 'acceptor')],
+            across,
+            within_donor,
+            within_acceptor,
+            across_minus_within_le_one,
             sep='\t'
         )
     else:
         for circ_id in circRNA_ids_reader:
-            print(circ_id, 0, 0, 0, sep='\t')
+            print(circ_id, 0, 0, 0, 0, sep='\t')
 
 
 if __name__ == "__main__":
