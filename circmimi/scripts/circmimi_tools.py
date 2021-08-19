@@ -265,14 +265,15 @@ def check_RCS(ref_file,
               metavar="OUT_PREFIX")
 @click.option('-p', '--num_proc', default=1, type=click.INT,
               metavar="NUM_PROC", help="Number of processes")
+@click.option('-d', '--dist', default=10000, type=click.INT)
 @click.pass_context
-def default_checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
+def default_checking(ctx, circ_file, ref_dir, out_prefix, num_proc, dist):
     """
     Check the circRNAs.
 
     Check the circRNAs if there are
     (i) ambiguous alignments for the fragment around the circRNA junction;
-    (ii) RCS pair in the flanking introns.
+    (ii) RCS pair in the flanking sequences.
     """
 
     import tempfile as tp
@@ -327,7 +328,8 @@ def default_checking(ctx, circ_file, ref_dir, out_prefix, num_proc):
         ref_file=ref_file,
         circ_file=circ_file,
         out_file=RCS_result_file.name,
-        num_proc=num_proc
+        num_proc=num_proc,
+        dist=dist
     )
 
     import pandas as pd
