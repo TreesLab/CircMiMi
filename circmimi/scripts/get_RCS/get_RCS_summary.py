@@ -26,9 +26,9 @@ INPUT_TITLES = [
 
 OUTPUT_TITLES = [
     'circRNA_id',
-    '#RCS_across_flanking_introns',
-    '#RCS_within_donor\'s_intron',
-    '#RCS_within_acceptor\'s_intron'
+    '#RCS across flanking sequences',
+    '#RCS within the flanking sequence (the donor side)',
+    '#RCS within the flanking sequence (the acceptor side)'
 ]
 
 
