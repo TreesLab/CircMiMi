@@ -173,8 +173,6 @@ class Annotator:
         if (donor is not None) and (acceptor is not None):
             if common_transcripts != []:
                 self._report_status(ev_id, self._CHECK_LIST[2])
-        else:
-            self._report_status(ev_id, self._CHECK_LIST[2], '-1')
 
         return transcripts_data_df
 
