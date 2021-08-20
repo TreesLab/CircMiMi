@@ -74,7 +74,7 @@ $ circmimi_tools genref --species hsa --source ensembl --version 100 refs/
 
 2. Check the circRNAs and do some pre-filtering (optional)
 ```bash
-$ circmimi_tools checking -r refs/ -i circRNAs.tsv -o out/ -p 5
+$ circmimi_tools checking -r refs/ -i circRNAs.tsv -o out/ -p 5 --dist 10000
 $ cat out/checking.results.tsv | awk -F'\t' '($9==1)&&($12==0)&&($16==1)' > out/circRNAs.filtered.tsv
 ```
 
@@ -154,7 +154,7 @@ xtr  | Xenopus tropicalis      |  V  |     |     |     |  V  |  V  |     |     |
 
 ## (Optional) Check the circRNAs
 ```
-circmimi_tools checking -r REF_DIR -i CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC]
+circmimi_tools checking -r REF_DIR -i CIRC_FILE [-o OUT_PREFIX] [-p NUM_PROC] [--dist INTEGER]
 ```
 
 ### Parameters
@@ -164,6 +164,7 @@ Parameter                   | Description
 -i, --circ CIRC_FILE        | The file of circRNAs. ***[required]***
 -o, --out-prefix OUT_PREFIX | The prefix for the output filenames. (default: "./")
 -p, --num_proc NUM_PROC     | The number of processes to use.
+-d, --dist INTEGER          | The distance range for RCS checking. (default: 10000)
 
 
 ### Input file
