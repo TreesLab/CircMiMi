@@ -75,7 +75,7 @@ $ circmimi_tools genref --species hsa --source ensembl --version 100 refs/
 2. Check the circRNAs and do some pre-filtering (optional)
 ```bash
 $ circmimi_tools checking -r refs/ -i circRNAs.tsv -o out/ -p 5 --dist 10000
-$ cat out/checking.results.tsv | awk -F'\t' '($9==1)&&($12==0)&&($16==1)' > out/circRNAs.filtered.tsv
+$ cat out/checking.results.tsv | awk -F'\t' '($9==1)&&($12==0)&&($16==1)' | cut -f '-5' > out/circRNAs.filtered.tsv
 ```
 
 
