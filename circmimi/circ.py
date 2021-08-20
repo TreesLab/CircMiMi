@@ -193,7 +193,7 @@ class CircEvents:
             'sum',
             axis=1
         ).eq(
-            0
+            3
         ).replace(
             {
                 True: 'yes',
