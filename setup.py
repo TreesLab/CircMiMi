@@ -50,8 +50,7 @@ setup(
         ]
     },
     description=("A package for constructing CLIP-seq data-supported "
-                 "\"circRNA - miRNA - mRNA\" and \"circRNA - RBP - mRNA\""
-                 " interactions"),
+                 "\"circRNA - miRNA - mRNA\" interactions"),
     long_description=long_description,
     long_description_content_type="text/markdown"
 )
