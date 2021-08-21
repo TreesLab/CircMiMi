@@ -29,7 +29,7 @@ $ cat circRNAs.gencode_format.checking.results.tsv | awk -F'\t' '($9==1)&&($12==
 ### 3. Predicting the interactions
 
 ```
-$ circmimi_tools run -r refs/ -i circRNAs.gencode_format.filtered.tsv -o circRNAs.gencode_format. --miranda-sc 175
+$ circmimi_tools interactions -r refs/ -i circRNAs.gencode_format.filtered.tsv -o circRNAs.gencode_format. --miranda-sc 150
 ```
 
 <!-- *(explain the options here)* -->

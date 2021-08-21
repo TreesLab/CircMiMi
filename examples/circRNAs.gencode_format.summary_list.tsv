@@ -1,0 +1,3 @@
+chr	pos1	pos2	strand	circ_id	host_gene	#circRNA_miRNA	#circRNA_mRNA	#circRNA_miRNA_mRNA	#category_1	#category_2	#category_3	pass	donor_site_at_the_annotated_boundary	acceptor_site_at_the_annotated_boundary	donor_acceptor_sites_at_the_same_transcript_isoform
+chr6	152329730	152331890	-	circSYNE1	SYNE1	180	17305	193935	107791	107157	22676	yes	1	1	1
+chr14	49795791	49831361	-	circNEMF	NEMF	167	17377	264605	169538	125359	50861	yes	1	1	1

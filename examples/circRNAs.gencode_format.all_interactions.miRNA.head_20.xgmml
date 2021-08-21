@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<graph xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cy="http://www.cytoscape.org" xmlns="http://www.cs.rpi.edu/XGMML" id="4596" label="circmimi_result" directed="1" cy:documentVersion="3.0">
+  <node id="host_gene" label="host_gene">
+    <att name="data_type" value="circRNA" type="string"/>
+    <graphics type="circle" fill="#F292AF"/>
+  </node>
+  <node id="mirna" label="mirna">
+    <att name="data_type" value="mediator" type="string"/>
+    <graphics type="ROUNDED_RECTANGLE" fill="#8BE26E"/>
+  </node>
+  <node id="target_gene" label="target_gene">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="SYNE1" label="SYNE1">
+    <att name="data_type" value="circRNA" type="string"/>
+    <graphics type="circle" fill="#F292AF"/>
+  </node>
+  <node id="hsa-let-7e-5p" label="hsa-let-7e-5p">
+    <att name="data_type" value="mediator" type="string"/>
+    <graphics type="ROUNDED_RECTANGLE" fill="#8BE26E"/>
+  </node>
+  <node id="A1CF" label="A1CF">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="AAGAB" label="AAGAB">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="AAK1" label="AAK1">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="AASDHPPT" label="AASDHPPT">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABCA13" label="ABCA13">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABCA2" label="ABCA2">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABCB10" label="ABCB10">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABCB9" label="ABCB9">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABCC1" label="ABCC1">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABCC10" label="ABCC10">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABCC2" label="ABCC2">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABCC5" label="ABCC5">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABHD13" label="ABHD13">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABHD14B" label="ABHD14B">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABHD17C" label="ABHD17C">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <node id="ABHD18" label="ABHD18">
+    <att name="data_type" value="target_gene" type="string"/>
+    <graphics type="diamond" fill="#6D9AF4"/>
+  </node>
+  <edge id="" label="host_gene - mirna" source="host_gene" target="mirna">
+    <att name="data_type" value="circRNA-mediator" type="string"/>
+    <att name="source" value="host_gene" type="string"/>
+    <att name="target" value="mirna" type="string"/>
+    <graphics fill="#FFC1C1"/>
+  </edge>
+  <edge id="" label="mirna - target_gene" source="mirna" target="target_gene">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="mirna" type="string"/>
+    <att name="target" value="target_gene" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="SYNE1 - hsa-let-7e-5p" source="SYNE1" target="hsa-let-7e-5p">
+    <att name="data_type" value="circRNA-mediator" type="string"/>
+    <att name="source" value="SYNE1" type="string"/>
+    <att name="target" value="hsa-let-7e-5p" type="string"/>
+    <graphics fill="#FFC1C1"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - A1CF" source="hsa-let-7e-5p" target="A1CF">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="A1CF" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - AAGAB" source="hsa-let-7e-5p" target="AAGAB">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="AAGAB" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - AAK1" source="hsa-let-7e-5p" target="AAK1">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="AAK1" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - AASDHPPT" source="hsa-let-7e-5p" target="AASDHPPT">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="AASDHPPT" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABCA13" source="hsa-let-7e-5p" target="ABCA13">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABCA13" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABCA2" source="hsa-let-7e-5p" target="ABCA2">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABCA2" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABCB10" source="hsa-let-7e-5p" target="ABCB10">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABCB10" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABCB9" source="hsa-let-7e-5p" target="ABCB9">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABCB9" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABCC1" source="hsa-let-7e-5p" target="ABCC1">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABCC1" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABCC10" source="hsa-let-7e-5p" target="ABCC10">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABCC10" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABCC2" source="hsa-let-7e-5p" target="ABCC2">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABCC2" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABCC5" source="hsa-let-7e-5p" target="ABCC5">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABCC5" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABHD13" source="hsa-let-7e-5p" target="ABHD13">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABHD13" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABHD14B" source="hsa-let-7e-5p" target="ABHD14B">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABHD14B" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABHD17C" source="hsa-let-7e-5p" target="ABHD17C">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABHD17C" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+  <edge id="" label="hsa-let-7e-5p - ABHD18" source="hsa-let-7e-5p" target="ABHD18">
+    <att name="data_type" value="mediator-target_gene" type="string"/>
+    <att name="source" value="hsa-let-7e-5p" type="string"/>
+    <att name="target" value="ABHD18" type="string"/>
+    <graphics fill="#9BDDA2"/>
+  </edge>
+</graph>
