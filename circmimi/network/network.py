@@ -7,8 +7,8 @@ class CyNetwork:
     def __init__(self):
         self.graph = nx.DiGraph()
 
-    def load_data(self, file_, k1, k2, k3):
-        for data in read_table(file_):
+    def load_data(self, file_, k1, k2, k3, header=True):
+        for data in read_table(file_, header=header):
             circRNA = data[k1 - 1]
             mediator = data[k2 - 1]
             target_gene = data[k3 - 1]

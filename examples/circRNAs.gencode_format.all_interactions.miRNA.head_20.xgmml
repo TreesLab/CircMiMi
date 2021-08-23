@@ -1,17 +1,5 @@
 <?xml version='1.0' encoding='utf-8' standalone='yes'?>
-<graph xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cy="http://www.cytoscape.org" xmlns="http://www.cs.rpi.edu/XGMML" id="4596" label="circmimi_result" directed="1" cy:documentVersion="3.0">
-  <node id="host_gene" label="host_gene">
-    <att name="data_type" value="circRNA" type="string"/>
-    <graphics type="circle" fill="#F292AF"/>
-  </node>
-  <node id="mirna" label="mirna">
-    <att name="data_type" value="mediator" type="string"/>
-    <graphics type="ROUNDED_RECTANGLE" fill="#8BE26E"/>
-  </node>
-  <node id="target_gene" label="target_gene">
-    <att name="data_type" value="target_gene" type="string"/>
-    <graphics type="diamond" fill="#6D9AF4"/>
-  </node>
+<graph xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cy="http://www.cytoscape.org" xmlns="http://www.cs.rpi.edu/XGMML" id="4702" label="circmimi_result" directed="1" cy:documentVersion="3.0">
   <node id="SYNE1" label="SYNE1">
     <att name="data_type" value="circRNA" type="string"/>
     <graphics type="circle" fill="#F292AF"/>
@@ -84,18 +72,6 @@
     <att name="data_type" value="target_gene" type="string"/>
     <graphics type="diamond" fill="#6D9AF4"/>
   </node>
-  <edge id="" label="host_gene - mirna" source="host_gene" target="mirna">
-    <att name="data_type" value="circRNA-mediator" type="string"/>
-    <att name="source" value="host_gene" type="string"/>
-    <att name="target" value="mirna" type="string"/>
-    <graphics fill="#FFC1C1"/>
-  </edge>
-  <edge id="" label="mirna - target_gene" source="mirna" target="target_gene">
-    <att name="data_type" value="mediator-target_gene" type="string"/>
-    <att name="source" value="mirna" type="string"/>
-    <att name="target" value="target_gene" type="string"/>
-    <graphics fill="#9BDDA2"/>
-  </edge>
   <edge id="" label="SYNE1 - hsa-let-7e-5p" source="SYNE1" target="hsa-let-7e-5p">
     <att name="data_type" value="circRNA-mediator" type="string"/>
     <att name="source" value="SYNE1" type="string"/>

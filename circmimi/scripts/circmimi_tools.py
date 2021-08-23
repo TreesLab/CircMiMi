@@ -407,7 +407,19 @@ def create_network(in_file, out_file, idx_circRNA, idx_mediator, idx_mRNA, forma
               help='column key for mRNAs.')
 @click.option('-f', '--format', 'format_', default='xgmml',
               help="Assign the format of the OUT_FILE.", hidden=True)
-def visualize_interactions(in_file, out_file, idx_circRNA, idx_mediator, idx_mRNA, format_):
+@click.option('--header', 'header', flag_value=True, type=click.BOOL,
+              default=True, hidden=True,
+              help="Use this option to specify if there are titles in the IN_FILE.")
+@click.option('--no-header', 'header', flag_value=False, type=click.BOOL,
+              help="Use this option to specify if there are no titles in the IN_FILE.")
+def visualize_interactions(in_file,
+                           out_file,
+                           idx_circRNA,
+                           idx_mediator,
+                           idx_mRNA,
+                           header,
+                           format_):
+
     """
     Visualize the interactions.
 
@@ -422,7 +434,8 @@ def visualize_interactions(in_file, out_file, idx_circRNA, idx_mediator, idx_mRN
         in_file,
         k1=idx_circRNA,
         k2=idx_mediator,
-        k3=idx_mRNA
+        k3=idx_mRNA,
+        header=header
     )
 
     layout = Layout()

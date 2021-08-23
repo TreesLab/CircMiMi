@@ -23,8 +23,11 @@ def read_table_with_titles(filename, sep='\t', titles=None):
             yield data
 
 
-def read_table(filename, sep='\t'):
+def read_table(filename, sep='\t', header=True):
     with open(filename) as f_in:
+        if header:
+            _ = f_in.readline()
+
         for line in f_in:
             data = line.rstrip('\n').split(sep)
             yield data
