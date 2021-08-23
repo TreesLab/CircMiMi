@@ -163,7 +163,7 @@ Parameter                   | Description
 -r, --ref REF_DIR           | The directory of the pre-genereated reference files. ***[required]***
 -i, --circ CIRC_FILE        | The file of circRNAs. ***[required]***
 -o, --out-prefix OUT_PREFIX | The prefix for the output filenames. (default: "./")
--p, --num_proc NUM_PROC     | The number of processes to use.
+-p, --num_proc NUM_PROC     | The number of processors.
 -d, --dist INTEGER          | The distance range for RCS checking. (default: 10000)
 
 
@@ -223,7 +223,7 @@ Parameter                   | Description
 -r, --ref REF_DIR           | The directory of the pre-genereated reference files. ***[required]***
 -i, --circ CIRC_FILE        | The file of circRNAs. ***[required]***
 -o, --out-prefix OUT_PREFIX | The prefix for the output filenames. (default: "./")
--p, --num_proc NUM_PROC     | The number of processes.
+-p, --num_proc NUM_PROC     | The number of processors.
 
 The miRanda parameters are also available (see [the manual of miRanda](http://cbio.mskcc.org/microrna_data/manual.html)).
 
