@@ -150,11 +150,12 @@ def get_fasta(bed_file, ref_file, use_blocks=False, bedtools_bin='bedtools'):
 
 
 class CircRNAs:
-    def __init__(self, chr_, pos1, pos2, strand):
+    def __init__(self, chr_, pos1, pos2, strand, circ_id=None):
         self.chr_ = chr_
         self.pos1 = int(pos1)
         self.pos2 = int(pos2)
         self.strand = strand
+        self.circ_id = circ_id
 
         self.get_donor_acceptor()
 
@@ -211,7 +212,10 @@ class CircRNAs:
 
     @property
     def id(self):
-        return f"{self.chr_}:{self.donor_site}|{self.acceptor_site}({self.strand})"
+        if self.circ_id:
+            return self.circ_id
+        else:
+            return f"{self.chr_}:{self.donor_site}|{self.acceptor_site}({self.strand})"
 
 
 def get_flanking_seq(genome_file, circRNAs_file, out_file):
