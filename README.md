@@ -352,7 +352,7 @@ To do the visualization with Cytoscape(https://cytoscape.org/index.html), please
 By default, CircMiMi did not embed any layout in the XGMML file, but only nodes and edges which are all at the origin,
  so that you may create your own layout by interest.
 
-Here, for example, we apply the built-in "Group Attributes Layout" with the column "data_type"(='circRNA', 'mediator', or 'target_gene'). Then, as we can see in the figure, the nodes are separated and grouped by their "data_type".
+Here, for example, we apply the built-in "Group Attributes Layout" with the column "data_type"(which equals to 'circRNA', 'mediator', or 'target_gene'). As you can see, the nodes are now separated and grouped by their "data_type".
 
 
 ![circmimi_to_Cytoscape.png](examples/circmimi_to_Cytoscape.png)
