@@ -23,6 +23,7 @@ A package for constructing CLIP-seq data-supported circRNA-miRNA-mRNA interactio
       - [all_interactions.miRNA.tsv](#all_interactionsmirnatsv)
   - [(Optional) Visualize the interactions](#optional-visualize-the-interactions)
     - [Parameters](#parameters-3)
+    - [Import the XGMML file into Cytoscape](#import-the-xgmml-file-into-cytoscape)
 - [Example](#example)
 
 
@@ -340,6 +341,10 @@ OUT_FILE      | The output filename. The file extension should be ".xgmml" or ".
 
 
 This command can generate a Cytoscape-executable file (.xgmml) for visualization of the input circRNA-miRNA-mRNA regulatory axes in Cytoscape.
+
+### Import the XGMML file into Cytoscape
+
+![circmimi_to_Cytoscape.png](examples/circmimi_to_Cytoscape.png)
 
 
 
