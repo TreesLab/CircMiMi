@@ -321,7 +321,7 @@ The summary list contains the counts of interactions and some checking results o
 
 
 #### Note.
-For now, the ENCORI data are only work for 'human' and 'mouse'.
+For now, the ENCORI data are only provided for 'human' and 'mouse'.
 
 
 ## (Optional) Visualize the interactions
@@ -343,6 +343,17 @@ OUT_FILE      | The output filename. The file extension should be ".xgmml" or ".
 This command can generate a Cytoscape-executable file (.xgmml) for visualization of the input circRNA-miRNA-mRNA regulatory axes in Cytoscape.
 
 ### Import the XGMML file into Cytoscape
+
+To do the visualization with Cytoscape(https://cytoscape.org/index.html), please refer to the followings:
+
+1. Open the Cytoscape.
+2. Import the XGMML file from [File] -> [Import] -> [Network from File...], and then choose the ".xgmml" file.
+
+By default, CircMiMi did not embed any layout in the XGMML file, but only nodes and edges which are all at the origin,
+ so that you may create your own layout by interest.
+
+Here, for example, we apply the built-in "Group Attributes Layout" with the column "data_type"(='circRNA', 'mediator', or 'target_gene'). Then, as we can see in the figure, the nodes are separated and grouped by their "data_type".
+
 
 ![circmimi_to_Cytoscape.png](examples/circmimi_to_Cytoscape.png)
 
