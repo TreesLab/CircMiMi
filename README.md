@@ -318,6 +318,9 @@ The summary list contains the counts of interactions and some checking results o
  28  |  ENCORI__PicTar | The number of target sites predicted by PicTar
  29  |  ENCORI__TargetScan | The number of target sites predicted by TargetScan
  30  |  ENCORI__pancancerNum | The number of cancer types
+ 31  |  category_1     | '1' if the circRNA-miRNA-mRNA interaction is of category 1. Otherwise '0'.
+ 32  |  category_2     | '1' if the circRNA-miRNA-mRNA interaction is of category 2. Otherwise '0'.
+ 33  |  category_3     | '1' if the circRNA-miRNA-mRNA interaction is of category 3. Otherwise '0'.
 
 
 #### Note.
