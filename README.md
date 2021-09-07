@@ -44,7 +44,7 @@ The recommended way is via `conda`, a package and environment management system.
 
 You may install `circmimi` by the following steps:
 ```bash
-$ conda create -n circmimi python3
+$ conda create -n circmimi python=3
 $ conda activate circmimi
 $ pip install circmimi
 ```
