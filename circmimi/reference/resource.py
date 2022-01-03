@@ -22,6 +22,8 @@ import re
 
 
 class Resource:
+    wget_options = []
+
     def __init__(self, url):
         self.url = url
         self.filename = os.path.basename(url)
@@ -39,7 +41,7 @@ class Resource:
             self.filename = dest_path.rstrip('.gz')
 
         else:
-            res = sp.run(['wget', self.url, '-P', dir_])
+            res = sp.run(['wget', self.url, '-P', dir_] + self.wget_options)
 
             if res.returncode == 0:
                 self.filename = dest_path
@@ -334,19 +336,22 @@ class GencodeAnnotation(GencodeResource):
     file_pattern = r"^gencode.v[^.]+.annotation.gtf.gz$"
 
 
-class MiRBaseResource(FTPResource):
-    ftp_site = "mirbase.org"
-    release_dir = "/pub/mirbase/"
-    release_pattern = r"([0-9]+(?:\.[0-9]+)?)"
+class MiRBaseResource(Resource):
+    url_templ = "https://www.mirbase.org/ftp/{version}/{file_pattern}"
+    wget_options = ['--no-check-certificate']
 
-    def get_dir_path(self):
-        dir_path = os.path.join(
-            '/',
-            'pub/mirbase',
-            '{}'.format(self.version)
+    def __init__(self, species, version):
+        self.species = species
+        self.version = version
+        url = self.get_url()
+        super().__init__(url)
+
+    def get_url(self):
+        url = self.url_templ.format(
+            version=self.version,
+            file_pattern=self.file_pattern
         )
-
-        return dir_path
+        return url
 
     def rename_with_version(self):
         dirname, filename = os.path.split(self.filename)
@@ -364,15 +369,15 @@ class MiRBaseResource(FTPResource):
 
 
 class MiRBaseMiRNA(MiRBaseResource):
-    file_pattern = r"mature\.fa\.gz"
+    file_pattern = "mature.fa.gz"
 
 
 class MiRBaseDiff(MiRBaseResource):
-    file_pattern = r"miRNA\.diff\.gz"
+    file_pattern = "miRNA.diff.gz"
 
 
 class MiRBaseDat(MiRBaseResource):
-    file_pattern = r"miRNA\.dat\.gz"
+    file_pattern = "miRNA.dat.gz"
 
 
 class MiRTarBaseResource(Resource):
