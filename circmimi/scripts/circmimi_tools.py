@@ -497,5 +497,37 @@ def update_miRNAs(in_file, out_file, mapping_file, column_key, inplace, remove_d
     updater.update_file(in_file, out_file, column_key, inplace, remove_deleted)
 
 
+@cli.command('calc-pvalue', hidden=True)
+@click.argument('interaction_file')
+@click.option('--mir_ref_file')
+@click.option('--mir_target_file')
+@click.option('-o', '--out_prefix', default='./')
+def calculate_pvalue_of_interactions(interaction_file, out_prefix, mir_ref_file, mir_target_file):
+    import pandas as pd
+    from circmimi.stats import do_the_hypergeometric_test
+    from circmimi.circmimi import get_mir_target_db
+
+    df = pd.read_csv(interaction_file, sep='\t', dtype='object')
+    circ_mir_target_df = df[['circ_id', 'mirna', 'target_gene']].drop_duplicates().reset_index(drop=True)
+
+    mir_target_db = get_mir_target_db(mir_target_file)
+
+    circ_target_df_with_pv = do_the_hypergeometric_test(
+        circ_mir_target_df,
+        mir_ref_file,
+        mir_target_db
+    )
+
+    circ_target_df_with_pv.to_csv(out_prefix + "circRNA_target_gene.pvalue.tsv", sep='\t', index=False)
+
+    result_df = df.merge(
+        circ_target_df_with_pv[['circ_id', 'target_gene', 'p_value']],
+        on=['circ_id', 'target_gene'],
+        how='left'
+    )
+
+    result_df.to_csv(out_prefix + "all_interactions.miRNA.pvalue.tsv", sep='\t', index=False)
+
+
 if __name__ == "__main__":
     cli()

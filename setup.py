@@ -36,7 +36,8 @@ setup(
         'pandas>=0.25.1',
         'openpyxl',
         'networkx>=2.4',
-        'lxml>=4.5.0'
+        'lxml>=4.5.0',
+        'scipy>=1.7.3'
     ],
     entry_points={
         'console_scripts': [

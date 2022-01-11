@@ -5,6 +5,7 @@ from circmimi.bed import BedUtils
 from circmimi.seq import Seq
 from circmimi.miranda import get_binding_sites, MirandaUtils
 from circmimi.rbp import PosMap, RBPBindingSites, RBPBindingSitesFilters
+from circmimi.stats import do_the_hypergeometric_test
 
 
 logger = logging.getLogger(__name__)
@@ -328,6 +329,19 @@ class Circmimi:
                 )
         else:
             self.RBP_res_df = None
+
+        # calculate P-value
+        self.circ_mir_target_df = self.res_df[['circ_id', 'mirna', 'target_gene']].drop_duplicates().reset_index(drop=True)
+        self.circ_target_df_with_pv = do_the_hypergeometric_test(
+            self.circ_mir_target_df,
+            self.mir_ref_file,
+            self.mir_target_db
+        )
+        self.res_df = self.res_df.merge(
+            self.circ_target_df_with_pv[['circ_id', 'target_gene', 'p_value']],
+            on=['circ_id', 'target_gene'],
+            how='left'
+        )
 
         # submit summary
         logger.info('generating summary')
