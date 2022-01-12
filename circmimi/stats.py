@@ -1,6 +1,7 @@
 import re
 import numpy as np
 from scipy.stats import hypergeom
+from statsmodels.stats import multitest
 
 
 def _count_miRNAs(mir_ref_file):
@@ -65,6 +66,9 @@ def do_the_hypergeometric_test(circ_mi_target_df, mir_ref_file, mir_target_db):
     )
 
     # adjusting p-values
-
+    corrected_p_values = circ_target_df_with_pv.groupby('circ_id')['p_value'].transform(
+        lambda pv: multitest.multipletests(pv, method='fdr_bh')[1]
+    )
+    circ_target_df_with_pv = circ_target_df_with_pv.assign(corrected_p_value=corrected_p_values)
 
     return circ_target_df_with_pv

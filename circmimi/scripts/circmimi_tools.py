@@ -521,7 +521,7 @@ def calculate_pvalue_of_interactions(interaction_file, out_prefix, mir_ref_file,
     circ_target_df_with_pv.to_csv(out_prefix + "circRNA_target_gene.pvalue.tsv", sep='\t', index=False)
 
     result_df = df.merge(
-        circ_target_df_with_pv[['circ_id', 'target_gene', 'p_value']],
+        circ_target_df_with_pv[['circ_id', 'target_gene', 'p_value', 'corrected_p_value']],
         on=['circ_id', 'target_gene'],
         how='left'
     )
