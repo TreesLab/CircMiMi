@@ -331,6 +331,7 @@ class Circmimi:
             self.RBP_res_df = None
 
         # calculate P-value
+        logger.info('calculating the P-values for the interactions of circRNAs and target genes')
         self.circ_mir_target_df = self.res_df[['circ_id', 'mirna', 'target_gene']].drop_duplicates().reset_index(drop=True)
         self.circ_target_df_with_pv = do_the_hypergeometric_test(
             self.circ_mir_target_df,

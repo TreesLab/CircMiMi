@@ -39,8 +39,8 @@ def cli(debug_mode):
     help="Number of processes")
 @click.option('--checkAA', 'checkAA', is_flag=True,
     help="Check if the circRNA has ambiguous alignments.", hidden=True)
-@click.option('--miranda-sc', 'sc', metavar='S', type=click.FLOAT)
-@click.option('--miranda-en', 'en', metavar='-E', type=click.FLOAT)
+@click.option('--miranda-sc', 'sc', metavar='S', type=click.FLOAT, default=155, help='(Default: 155)')
+@click.option('--miranda-en', 'en', metavar='-E', type=click.FLOAT, default=-20, help='(Default: -20)')
 @click.option('--miranda-scale', 'scale', metavar='Z', type=click.FLOAT)
 @click.option('--miranda-strict', 'strict', is_flag=True)
 @click.option('--miranda-go', 'go', metavar='-X', type=click.FLOAT)
@@ -104,7 +104,7 @@ def predict_interactions(circ_file, ref_dir, out_prefix, num_proc, checkAA, **mi
     circmimi_result.save_result(res_file)
 
     circ_target_pv_file = add_prefix('circRNA_target_gene.pvalue.tsv', out_prefix)
-    circmimi_result.circ_target_df_with_pv.to_csv(circ_target_df_with_pv, sep='\t', index=False)
+    circmimi_result.circ_target_df_with_pv.to_csv(circ_target_pv_file, sep='\t', index=False)
 
     logger.info('miRNA part ... done')
 
