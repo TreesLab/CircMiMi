@@ -66,9 +66,16 @@ def do_the_hypergeometric_test(circ_mi_target_df, mir_ref_file, mir_target_db):
     )
 
     # adjusting p-values
-    corrected_p_values = circ_target_df_with_pv.groupby('circ_id')['p_value'].transform(
+    bonferroni_corrected_p_values = circ_target_df_with_pv.groupby('circ_id')['p_value'].transform(
+        lambda pv: multitest.multipletests(pv, method='bonferroni')[1]
+    )
+    bh_corrected_p_values = circ_target_df_with_pv.groupby('circ_id')['p_value'].transform(
         lambda pv: multitest.multipletests(pv, method='fdr_bh')[1]
     )
-    circ_target_df_with_pv = circ_target_df_with_pv.assign(corrected_p_value=corrected_p_values)
+
+    circ_target_df_with_pv = circ_target_df_with_pv.assign(
+        bonferroni_corrected_p_values=bonferroni_corrected_p_values,
+        bh_corrected_p_value=bh_corrected_p_values
+    )
 
     return circ_target_df_with_pv

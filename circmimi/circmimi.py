@@ -338,7 +338,13 @@ class Circmimi:
             self.mir_target_db
         )
         self.res_df = self.res_df.merge(
-            self.circ_target_df_with_pv[['circ_id', 'target_gene', 'p_value', 'corrected_p_value']],
+            self.circ_target_df_with_pv[[
+                'circ_id',
+                'target_gene',
+                'p_value',
+                'bonferroni_corrected_p_values',
+                'bh_corrected_p_value'
+            ]],
             on=['circ_id', 'target_gene'],
             how='left'
         )
