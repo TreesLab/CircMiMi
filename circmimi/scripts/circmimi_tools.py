@@ -102,6 +102,10 @@ def predict_interactions(circ_file, ref_dir, out_prefix, num_proc, checkAA, **mi
     logger.info('Saving results ...')
     res_file = add_prefix('all_interactions.miRNA.tsv', out_prefix)
     circmimi_result.save_result(res_file)
+
+    circ_target_pv_file = add_prefix('circRNA_target_gene.pvalue.tsv', out_prefix)
+    circmimi_result.circ_target_df_with_pv.to_csv(circ_target_df_with_pv, sep='\t', index=False)
+
     logger.info('miRNA part ... done')
 
     # RBP_res_file = add_prefix('all_interactions.RBP.tsv', out_prefix)
