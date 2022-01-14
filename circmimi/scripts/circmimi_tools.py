@@ -508,6 +508,10 @@ def update_miRNAs(in_file, out_file, mapping_file, column_key, inplace, remove_d
 @click.option('-o', '--out_prefix', default='./')
 @click.option('-p', '--num_proc', type=click.INT, default=1)
 def calculate_pvalue_of_interactions(interaction_file, out_prefix, mir_ref_file, mir_target_file, num_proc):
+    """
+    This command is used to calculate the P-value of the interaction between circRNA and target gene.
+    """
+
     import pandas as pd
     from circmimi.stats import do_the_hypergeometric_test
     from circmimi.circmimi import get_mir_target_db

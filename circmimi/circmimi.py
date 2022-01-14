@@ -351,6 +351,9 @@ class Circmimi:
             how='left'
         )
 
+        # only retain interactions with 'bh_corrected_p_value < 0.05'
+        self.res_df = self.res_df[self.res_df['bh_corrected_p_value'] < 0.05]
+
         # submit summary
         logger.info('generating summary')
         circ_miRNA_count = self.res_df[['ev_id', 'mirna']].drop_duplicates().rename(
