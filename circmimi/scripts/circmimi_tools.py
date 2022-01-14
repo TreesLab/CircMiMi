@@ -506,7 +506,8 @@ def update_miRNAs(in_file, out_file, mapping_file, column_key, inplace, remove_d
 @click.option('--mir_ref_file')
 @click.option('--mir_target_file')
 @click.option('-o', '--out_prefix', default='./')
-def calculate_pvalue_of_interactions(interaction_file, out_prefix, mir_ref_file, mir_target_file):
+@click.option('-p', '--num_proc', type=click.INT, default=1)
+def calculate_pvalue_of_interactions(interaction_file, out_prefix, mir_ref_file, mir_target_file, num_proc):
     import pandas as pd
     from circmimi.stats import do_the_hypergeometric_test
     from circmimi.circmimi import get_mir_target_db
@@ -519,13 +520,20 @@ def calculate_pvalue_of_interactions(interaction_file, out_prefix, mir_ref_file,
     circ_target_df_with_pv = do_the_hypergeometric_test(
         circ_mir_target_df,
         mir_ref_file,
-        mir_target_db
+        mir_target_db,
+        num_proc=num_proc
     )
 
     circ_target_df_with_pv.to_csv(out_prefix + "circRNA_target_gene.pvalue.tsv", sep='\t', index=False)
 
     result_df = df.merge(
-        circ_target_df_with_pv[['circ_id', 'target_gene', 'p_value', 'corrected_p_value']],
+        circ_target_df_with_pv[[
+            'circ_id',
+            'target_gene',
+            'p_value',
+            'bonferroni_corrected_p_values',
+            'bh_corrected_p_value'
+        ]],
         on=['circ_id', 'target_gene'],
         how='left'
     )
