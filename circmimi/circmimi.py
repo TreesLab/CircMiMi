@@ -23,6 +23,7 @@ class Circmimi:
                  other_ref_file=None,
                  work_dir='.',
                  num_proc=1,
+                 pv_filter=True,
                  miranda_options=None):
 
         self.anno_db_file = anno_db_file
@@ -35,6 +36,7 @@ class Circmimi:
         self.other_ref_file = other_ref_file
         self.work_dir = work_dir
         self.num_proc = num_proc
+        self.pv_filter = pv_filter
         self.miranda_options = miranda_options
 
         self.circ_events = None
@@ -352,7 +354,8 @@ class Circmimi:
         )
 
         # only retain interactions with 'bh_corrected_p_value < 0.05'
-        self.res_df = self.res_df[self.res_df['bh_corrected_p_value'] < 0.05]
+        if self.pv_filter:
+            self.res_df = self.res_df[self.res_df['bh_corrected_p_value'] < 0.05]
 
         # submit summary
         logger.info('generating summary')

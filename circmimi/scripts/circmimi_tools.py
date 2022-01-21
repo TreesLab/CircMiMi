@@ -39,13 +39,22 @@ def cli(debug_mode):
     help="Number of processes")
 @click.option('--checkAA', 'checkAA', is_flag=True,
     help="Check if the circRNA has ambiguous alignments.", hidden=True)
+@click.option('--no-pvalue-filtering', 'pv_filter', flag_value=False, default=True,
+    help="If this option is set, the results will contain all interactions without P-values filtering.")
 @click.option('--miranda-sc', 'sc', metavar='S', type=click.FLOAT, default=155, help='(Default: 155)')
 @click.option('--miranda-en', 'en', metavar='-E', type=click.FLOAT, default=-20, help='(Default: -20)')
 @click.option('--miranda-scale', 'scale', metavar='Z', type=click.FLOAT)
 @click.option('--miranda-strict', 'strict', is_flag=True)
 @click.option('--miranda-go', 'go', metavar='-X', type=click.FLOAT)
 @click.option('--miranda-ge', 'ge', metavar='-Y', type=click.FLOAT)
-def predict_interactions(circ_file, ref_dir, out_prefix, num_proc, checkAA, **miranda_options):
+def predict_interactions(circ_file,
+                         ref_dir,
+                         out_prefix,
+                         num_proc,
+                         checkAA,
+                         pv_filter,
+                         **miranda_options):
+
     """
     Predict the interactions.
 
@@ -92,6 +101,7 @@ def predict_interactions(circ_file, ref_dir, out_prefix, num_proc, checkAA, **mi
         other_ref_file,
         work_dir=output_dir,
         num_proc=num_proc,
+        pv_filter=pv_filter,
         miranda_options=miranda_options_list
     )
 
