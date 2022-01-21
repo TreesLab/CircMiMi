@@ -424,7 +424,7 @@ def create_network(in_file, out_file, idx_circRNA, idx_mediator, idx_mRNA, forma
 @click.option('--header', 'header', flag_value=True, type=click.BOOL,
               default=True, hidden=True,
               help="Use this option to specify if there are titles in the IN_FILE.")
-@click.option('--no-header', 'header', flag_value=False, type=click.BOOL,
+@click.option('--no-header', 'header', flag_value=False, type=click.BOOL, default=True,
               help="Use this option to specify if there are no titles in the IN_FILE.")
 def visualize_interactions(in_file,
                            out_file,
