@@ -338,8 +338,7 @@ class Circmimi:
         self.circ_target_df_with_pv = do_the_hypergeometric_test(
             self.circ_mir_target_df,
             self.mir_ref_file,
-            self.mir_target_db,
-            num_proc=self.num_proc
+            self.mir_target_db
         )
         self.res_df = self.res_df.merge(
             self.circ_target_df_with_pv[[

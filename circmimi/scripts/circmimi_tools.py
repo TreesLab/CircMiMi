@@ -516,8 +516,7 @@ def update_miRNAs(in_file, out_file, mapping_file, column_key, inplace, remove_d
 @click.option('--mir_ref_file')
 @click.option('--mir_target_file')
 @click.option('-o', '--out_prefix', default='./')
-@click.option('-p', '--num_proc', type=click.INT, default=1)
-def calculate_pvalue_of_interactions(interaction_file, out_prefix, mir_ref_file, mir_target_file, num_proc):
+def calculate_pvalue_of_interactions(interaction_file, out_prefix, mir_ref_file, mir_target_file):
     """
     This command is used to calculate the P-value of the interaction between circRNA and target gene.
     """
@@ -534,8 +533,7 @@ def calculate_pvalue_of_interactions(interaction_file, out_prefix, mir_ref_file,
     circ_target_df_with_pv = do_the_hypergeometric_test(
         circ_mir_target_df,
         mir_ref_file,
-        mir_target_db,
-        num_proc=num_proc
+        mir_target_db
     )
 
     circ_target_df_with_pv.to_csv(out_prefix + "circRNA_target_gene.pvalue.tsv", sep='\t', index=False)
