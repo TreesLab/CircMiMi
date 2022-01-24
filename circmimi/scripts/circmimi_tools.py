@@ -543,8 +543,8 @@ def calculate_pvalue_of_interactions(interaction_file, out_prefix, mir_ref_file,
             'circ_id',
             'target_gene',
             'p_value',
+            'bh_corrected_p_value',
             'bonferroni_corrected_p_values',
-            'bh_corrected_p_value'
         ]],
         on=['circ_id', 'target_gene'],
         how='left'
