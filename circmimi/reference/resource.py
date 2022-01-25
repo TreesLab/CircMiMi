@@ -434,7 +434,7 @@ class Gene2AccessionResource(Resource):
 
 
 class MiRDBData(Resource):
-    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/miRDB_data/v{version}/miRDB_v{version}_{species}.tsv.gz"
+    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/miRDB_data/v{version}/miRDB_v{version}_{species}.simple.tsv.gz"
     available_species = ('hsa', 'mmu', 'rno', 'cfa', 'gga')
 
     def __init__(self, species, version):
@@ -521,8 +521,8 @@ class EncoriRBPTargetData(Resource):
 
 
 class EncoriMiRNATargetData(Resource):
-    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_miRNA/mir_target_ref.ENCORI.miRBase_v22.tsv.gz"
-    url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_miRNA/mir_target_ref.ENCORI_mouse.miRBase_v22.tsv.gz"
+    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_miRNA/mir_target_ref.ENCORI.miRBase_v22.simple.tsv.gz"
+    url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_miRNA/mir_target_ref.ENCORI_mouse.miRBase_v22.simple.tsv.gz"
 
     def __init__(self, species):
         self.species = species

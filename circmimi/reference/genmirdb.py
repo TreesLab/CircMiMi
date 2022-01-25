@@ -28,7 +28,7 @@ def gene_accession_filter(data, species_tax_id):
             yield line
 
 
-def generate(species, version, ref_dir, out_file, show_accession=False):
+def generate(species, version, ref_dir, out_file, show_accession=False, simple_ref=False):
     species = species_list[species]
 
     with cwd(ref_dir):
@@ -107,5 +107,8 @@ def generate(species, version, ref_dir, out_file, show_accession=False):
                     'target_gene'
                 ]
             ).agg('max').reset_index()
+
+        if simple_ref:
+            mirdb_df_with_symbol = mirdb_df_with_symbol[['mirna', 'target_gene']]
 
         mirdb_df_with_symbol.to_csv(out_file, sep='\t', index=None)

@@ -44,7 +44,7 @@ class MirRef(RefFile):
 
 
 class MiRTarBaseRef(RefFile):
-    def generate(self, species):
+    def generate(self, species, simple_ref=False):
         df = pd.read_excel(self.src_name, engine='openpyxl')
 
         formatted_data = df[
@@ -67,6 +67,9 @@ class MiRTarBaseRef(RefFile):
             },
             axis=1
         )
+
+        if simple_ref:
+            formatted_data = formatted_data[['mirna', 'target_gene']]
 
         self.filename = "miRTarBase.{}.tsv".format(species.key)
 
@@ -312,7 +315,7 @@ def generate(species, source, version, ref_dir):
 
         # miRTarBase
         miRTarBase_ref = MiRTarBaseRef(mir_target_files[0].filename)
-        miRTarBase_ref.generate(species)
+        miRTarBase_ref.generate(species, simple_ref=True)
 
         # miRNAs updater
         updater = MatureMiRNAUpdater("21", "22", species.key)
