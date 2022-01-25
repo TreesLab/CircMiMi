@@ -37,7 +37,8 @@ setup(
         'openpyxl',
         'networkx>=2.4',
         'lxml>=4.5.0',
-        'scipy>=1.7.3'
+        'scipy>=1.7.3',
+        'statsmodels>=0.13.1'
     ],
     entry_points={
         'console_scripts': [
