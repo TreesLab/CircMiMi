@@ -85,6 +85,7 @@ $ cat out/checking.results.tsv | awk -F'\t' '($9==1)&&($12==0)&&($16==1)' | cut 
 ```bash
 $ circmimi_tools interactions -r refs/ -i out/circRNAs.filtered.tsv -o out/ -p 5 --miranda-sc 175
 ```
+Note. Step 2. is optional, you may just input the raw "circRNAs.tsv".
 
 
 4. Visualize the interactions by creating a Cytoscape-acceptable XGMML file (optional)
@@ -126,7 +127,7 @@ dre  | Danio rerio             |  V  |     |     |     |  V  |  V  |     |     |
 dme  | Drosophila melanogaster |  V  |     |     |     |  V  |  V  |     |     |
 gga  | Gallus gallus           |  V  |     |     |     |  V  |  V  |  V  |     |
 hsa  | Homo sapiens            |  V  |  V  |     |     |  V  |  V  |  V  |  V  |
-mmu  | Mus musculus            |  V  |  V  |     |     |  V  |  V  |  V  |     |
+mmu  | Mus musculus            |  V  |  V  |     |     |  V  |  V  |  V  |  V  |
 osa  | Oryza sativa            |     |     |  V  |     |  V  |  V  |     |     |
 ola  | Oryzias latipes         |  V  |     |     |     |  V  |  V  |     |     |
 oar  | Ovis aries              |  V  |     |     |     |  V  |  V  |     |     |
@@ -230,8 +231,8 @@ The miRanda parameters are also available (see [the manual of miRanda](http://cb
 
 Parameters | Description
 :-------------------------- | :------------------------------
---miranda-sc SCORE | Set the alignment score threshold to SCORE. Only alignments with scores >= SCORE will be used for further analysis. (default: 140.0)
---miranda-en ENERGY | Set the energy threshold to ENERGY. Only alignments with energies <= ENERGY will be used for further analysis. A negative value is required for filtering to occur. (default: 1.0)
+--miranda-sc SCORE | Set the alignment score threshold to SCORE. Only alignments with scores >= SCORE will be used for further analysis. (default: 155)
+--miranda-en ENERGY | Set the energy threshold to ENERGY. Only alignments with energies <= ENERGY will be used for further analysis. A negative value is required for filtering to occur. (default: -20)
 --miranda-scale SCALE | Set the scaling parameter to SCALE. This scaling is applied to match / mismatch scores in the critical 7bp region near the 5' end of the microRNA. Many known examples of miRNA:Target duplexes are highly complementary in this region. This parameter can be thought of as a contrast function to more effectively detect alignments of this type. (default: 4.0)
 --miranda-strict | Require strict alignment in the seed region (offset positions 2-8). This option prevents the detection of target sites which contain gaps or non-cannonical base pairing in this region.
 --miranda-go X | Set the gap-opening penalty to X for alignments. This value must be negative. (default: -4.0)
@@ -280,8 +281,6 @@ The summary list contains the counts of interactions and some checking results o
  11  |  donor site not at the annotated boundary | '1' if the donor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
  12  |  acceptor site not at the annotated boundary | '1' if the acceptor site of the circRNA is NOT at the annotated exon boundary. Otherwise '0'.
  13  |  donor/acceptor sites not at the same transcript isoform | '1' if the donor and acceptor are not at the same annotated transcript isoform. Otherwise '0'.
- 14  |  ambiguity with an co-linear explanation | '1' if the merged flanking sequence of the circRNA junction sites has an co-linear explanation. Otherwise '0'.
- 15  |  ambiguity with multiple hits | '1' if the merged flanking sequence of the circRNA junction sites is with multiple hits. Otherwise '0'.
 
 
 #### all_interactions.miRNA.tsv
@@ -297,30 +296,19 @@ The summary list contains the counts of interactions and some checking results o
   7  |  mirna          | The miRNA which may bind on the circRNA
   8  |  max_score      | The maximum binding score reported by miRanda
   9  |  num_binding_sites | The number of binding sites of the miRNA on the circRNA
- 10  |  cross_boundary | '1' if there is a binding site across the junction of the circRNA. Otherwise '0'.
+ 10  |  cross_boundary | Whether if there are binding sites across the junction of the circRNA.
  11  |  MaxAgoExpNum   | The maximum number of supporting CLIP-seq experiments
  12  |  num_AGO_supported_binding_sites | The number of AGO-supported miRNA-binding sites
  13  |  target_gene    | The miRNA-targeted gene
- 14  |  miRTarBase     | '1' if the miRNA-mRNA interaction is reported from miRTarBase. Otherwise '0'.
- 15  |  miRDB          | '1' if the miRNA-mRNA interaction is reported from miRDB. Otherwise '0'.
- 16  |  ENCORI         | '1' if the miRNA-mRNA interaction is reported from ENCORI. Otherwise '0'.
- 17  |  miRTarBase__ref_count | The number of references reporting the interaction
- 18  |  miRDB__targeting_score | The predicted target score from miRDB
- 19  |  ENCORI__geneID | The gene ID of the target gene
- 20  |  ENCORI__geneType | The gene type of the target gene
- 21  |  ENCORI__clipExpNum | The number of supporting CLIP-seq experiments
- 22  |  ENCORI__RBP    | RBP name
- 23  |  ENCORI__PITA   | The number of target sites predicted by PITA
- 24  |  ENCORI__RNA22  | The number of target sites predicted by RNA22
- 25  |  ENCORI__miRmap | The number of target sites predicted by miRmap
- 26  |  ENCORI__microT | The number of target sites predicted by microT
- 27  |  ENCORI__miRanda | The number of target sites predicted by miRanda
- 28  |  ENCORI__PicTar | The number of target sites predicted by PicTar
- 29  |  ENCORI__TargetScan | The number of target sites predicted by TargetScan
- 30  |  ENCORI__pancancerNum | The number of cancer types
- 31  |  category_1     | '1' if the circRNA-miRNA-mRNA interaction is of category 1. Otherwise '0'.
- 32  |  category_2     | '1' if the circRNA-miRNA-mRNA interaction is of category 2. Otherwise '0'.
- 33  |  category_3     | '1' if the circRNA-miRNA-mRNA interaction is of category 3. Otherwise '0'.
+ 14  |  miRTarBase     | Whether if the miRNA-mRNA interaction is reported from miRTarBase.
+ 15  |  miRDB          | Whether if the miRNA-mRNA interaction is reported from miRDB.
+ 16  |  ENCORI         | Whether if the miRNA-mRNA interaction is reported from ENCORI.
+ 17  |  category_1     | Whether if the circRNA-miRNA-mRNA interaction is of category 1.
+ 18  |  category_2     | Whether if the circRNA-miRNA-mRNA interaction is of category 2.
+ 19  |  category_3     | Whether if the circRNA-miRNA-mRNA interaction is of category 3.
+ 20  |  p_value        | P-value from the hypergeometric test for the circRNA-mRNA interaction.
+ 21  |  bh_corrected_p_value | P-value corrected by the "Benjamini-Hochberg" method.
+ 22  |  bonferroni_corrected_p_value | P-value corrected by the "Bonferroni" method.
 
 
 #### Note.
@@ -341,6 +329,7 @@ OUT_FILE      | The output filename. The file extension should be ".xgmml" or ".
 -1 INT        | column key for circRNAs.
 -2 INT        | column key for mediators.
 -3 INT        | column key for mRNAs.
+--no-header   | This flag option should be speciefied if there are no headers in the IN_FILE.
 
 
 This command can generate a Cytoscape-executable file (.xgmml) for visualization of the input circRNA-miRNA-mRNA regulatory axes in Cytoscape.
