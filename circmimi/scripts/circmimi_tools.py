@@ -413,7 +413,7 @@ def create_network(in_file, out_file, idx_circRNA, idx_mediator, idx_mRNA, forma
 @cli.command('visualize')
 @click.argument('in_file')
 @click.argument('out_file')
-@click.option('-1', 'idx_circRNA', type=int, default=6,
+@click.option('-1', 'idx_circRNA', type=int, default=5,
               help='column key for circRNAs.')
 @click.option('-2', 'idx_mediator', type=int, default=7,
               help='column key for mediators.')
