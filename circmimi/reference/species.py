@@ -7,7 +7,7 @@ species_list = {
     'bmo': Species('bmo', 'bombyx_mori', 'Bombyx mori', '7091'),
     'bta': Species('bta', 'bos_taurus', 'Bos taurus', '9913'),
     'cel': Species('cel', 'caenorhabditis_elegans', 'Caenorhabditis elegans', '6239'),
-    'cfa': Species('cfa', 'canis_familiaris', 'Canis familiaris', '9615'),
+    'cfa': Species('cfa', 'canis_lupus_familiaris', 'Canis familiaris', '9615'),
     'cgr': Species('cgr', 'cricetulus_griseus_chok1gshd', 'Cricetulus griseus', '10029'),
     'dre': Species('dre', 'danio_rerio', 'Danio rerio', '7955'),
     'dme': Species('dme', 'drosophila_melanogaster', 'Drosophila melanogaster', '7227'),
