@@ -339,14 +339,21 @@ class MirandaUtils:
 
     @staticmethod
     def get_genomic_position(miranda_df, pos_map_db):
-        miranda_df_with_genomic_position = miranda_df.assign(
-            genomic_regions=lambda df: df.apply(
-                lambda s: pos_map_db[s['reference_id']].get_real_blocks(
-                    s['ref_start'],
-                    s['ref_end']
-                ),
-                axis=1
-            )
+        genomic_regions = miranda_df.apply(
+            lambda s: pos_map_db[s['reference_id']].get_real_blocks(
+                s['ref_start'],
+                s['ref_end']
+            ),
+            axis=1
         )
+
+        if genomic_regions.empty:
+            miranda_df_with_genomic_position = miranda_df.assign(
+                genomic_regions='NA'
+            )
+        else:
+            miranda_df_with_genomic_position = miranda_df.assign(
+                genomic_regions=genomic_regions
+            )
 
         return miranda_df_with_genomic_position

@@ -72,6 +72,12 @@ class Circmimi:
         self.do_circRNA_RBP = False
         self.do_RBP_mRNA = False
 
+    def _init_results(self):
+        res_df_columns = ['ev_id'] + list(CircEvents.INPUT_COLUMNS)
+        self.res_df = pd.DataFrame([], columns=res_df_columns)
+        self.circ_target_df_with_pv = pd.DataFrame([])
+
+
     def run(self, circ_file):
         logger.info('loading circRNAs')
         self.circ_events = CircEvents(circ_file)
@@ -90,6 +96,12 @@ class Circmimi:
             )
 
         logger.info('getting all possible isoforms of these circRNAs')
+
+        if self.circ_events.clear_df.empty:
+            logger.info("No isoforms were found!")
+            self._init_results()
+            return
+
         self.uniq_exons_df = self.circ_events.clear_anno_df.pipe(
             self._get_uniq_exons
         )

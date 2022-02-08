@@ -164,6 +164,8 @@ class Annotator:
         transcripts_data_df = pd.DataFrame(transcripts_data, columns=df_cols)
 
         # report status
+        self._report_status(ev_id)
+
         if donor is not None:
             self._report_status(ev_id, self._CHECK_LIST[0])
 

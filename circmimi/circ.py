@@ -1,3 +1,5 @@
+import os.path
+import re
 import pandas as pd
 import numpy as np
 from collections import Counter, defaultdict
@@ -20,8 +22,20 @@ class CircEvents:
         }
 
     def _read_file(self, filename):
-        df = pd.read_csv(filename, sep='\t', header=None, nrows=1)
-        if df.shape[1] > 4:
+        if not os.path.exists(filename):
+            raise FileNotFoundError(f"The file \"{filename}\" does not exist!")
+
+        circRNA_data = get_circRNA_data(open(filename).read())
+
+        if not circRNA_data:
+            raise NoValidCircRNAEvents("Empty!")
+
+        all_num_cols = sorted(set([len(circRNA) for circRNA in circRNA_data]))
+
+        if not ((len(all_num_cols) == 1) and (all_num_cols[0] in [4, 5])):
+            raise NoValidCircRNAEvents("Format error!")
+
+        if all_num_cols[0] == 5:
             self.circ_ids_specified = True
         else:
             self.circ_ids_specified = False
@@ -229,3 +243,50 @@ class CircEvents:
         ).rename('region_id')
 
         return region_id_df
+
+
+class Formatter:
+    @staticmethod
+    def format_input_data(input_data):
+        '''Deal with spaces between rows.'''
+        input_data = re.sub(r"\s*\n\s*", "\n", input_data).strip('\n')
+        return input_data
+
+    @staticmethod
+    def format_circRNA_event(circRNA_text):
+        '''Deal with spaces between columns.'''
+        circRNA_text = re.sub(r"\s+", "\t", circRNA_text).strip('\t')
+        return circRNA_text
+
+    @staticmethod
+    def format_chromosome_name(chr_name):
+        chr_name = chr_name.lstrip('chr')
+
+        if chr_name == 'MT':
+            chr_name = 'M'
+
+        return chr_name
+
+
+def get_circRNA_data(input_data):
+    all_circRNA_data = []
+
+    input_data = Formatter.format_input_data(input_data)
+    for circRNA_text in input_data.split('\n'):
+        circRNA_text = Formatter.format_circRNA_event(circRNA_text)
+
+        if circRNA_text == '':
+            continue
+
+        circRNA_data = circRNA_text.split('\t')
+        # circRNA_data[0] = Formatter.format_chromosome_name(circRNA_data[0])
+
+        all_circRNA_data.append(circRNA_data)
+
+    return all_circRNA_data
+
+
+class NoValidCircRNAEvents(Exception):
+    pass
+
+
