@@ -382,7 +382,7 @@ class MiRBaseDat(MiRBaseResource):
 
 class MiRTarBaseResource(Resource):
     url_templ = "https://mirtarbase.cuhk.edu.cn/~miRTarBase/miRTarBase_2019/cache/download/{version}/miRTarBase_MTI.xlsx"
-    url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/miRTarBase_backup/{version}/miRTarBase_MTI.xlsx"
+    url_templ_2 = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/miRTarBase_backup/{version}/miRTarBase_MTI.xlsx"
 
     def __init__(self, species, version):
         self.species = species
@@ -434,7 +434,7 @@ class Gene2AccessionResource(Resource):
 
 
 class MiRDBData(Resource):
-    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/miRDB_data/v{version}/miRDB_v{version}_{species}.simple.tsv.gz"
+    url_templ = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/miRDB_data/v{version}/miRDB_v{version}_{species}.simple.tsv.gz"
     available_species = ('hsa', 'mmu', 'rno', 'cfa', 'gga')
 
     def __init__(self, species, version):
@@ -454,8 +454,8 @@ class MiRDBData(Resource):
 
 
 class EncoriRBPData(Resource):
-    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.{}.{}.bed.gz"
-    url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_binding_sites.{}.no_chr.{}.bed.gz"
+    url_templ = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_RBP/ENCORI_RBP_binding_sites.{}.{}.bed.gz"
+    url_templ_2 = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_RBP/ENCORI_RBP_binding_sites.{}.no_chr.{}.bed.gz"
 
     def __init__(self, species, source, version, only_AGO=False):
         self.species = species
@@ -500,8 +500,8 @@ class EncoriRBPData(Resource):
 
 
 class EncoriRBPTargetData(Resource):
-    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_RBP_Target.grouped.tsv.gz"
-    url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_RBP/ENCORI_mouse_RBP_Target.grouped.tsv.gz"
+    url_templ = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_RBP/ENCORI_RBP_Target.grouped.tsv.gz"
+    url_templ_2 = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_RBP/ENCORI_mouse_RBP_Target.grouped.tsv.gz"
 
     def __init__(self, species):
         self.species = species
@@ -521,8 +521,8 @@ class EncoriRBPTargetData(Resource):
 
 
 class EncoriMiRNATargetData(Resource):
-    url_templ = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_miRNA/mir_target_ref.ENCORI.miRBase_v22.simple.tsv.gz"
-    url_templ_2 = "ftp://treeslab1.genomics.sinica.edu.tw/CircMiMi/ENCORI_miRNA/mir_target_ref.ENCORI_mouse.miRBase_v22.simple.tsv.gz"
+    url_templ = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_miRNA/mir_target_ref.ENCORI.miRBase_v22.simple.tsv.gz"
+    url_templ_2 = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_miRNA/mir_target_ref.ENCORI_mouse.miRBase_v22.simple.tsv.gz"
 
     def __init__(self, species):
         self.species = species
