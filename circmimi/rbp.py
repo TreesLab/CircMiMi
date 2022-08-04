@@ -124,13 +124,7 @@ class RBPBindingSites:
             ]
         ).apply(
             cls._get_joined_overlap
-        ).reset_index(
-            [
-                'name',
-                'sample_id'
-            ],
-            drop=True
-        ).sort_index()
+        )
 
         return groupby_df
 
