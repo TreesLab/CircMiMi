@@ -229,4 +229,4 @@ class AmbiguousChecker:
             if status is not None:
                 ev_status[status] = value
 
-            self._checking_result = self._checking_result.append(ev_status)
+            self._checking_result = pd.concat([self._checking_result, ev_status.to_frame().T]).rename_axis('ev_id')
