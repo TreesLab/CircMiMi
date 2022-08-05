@@ -16,6 +16,9 @@ class RegionAttr:
         self._fix_attrs_from_ensembl()
 
     def _fix_attrs_from_ensembl(self):
+        if "gene_name" not in self._attrs:
+            self._attrs['gene_name'] = self._attrs['gene_id']
+
         if "gene_biotype" in self._attrs:
             self._attrs["gene_type"] = self._attrs["gene_biotype"]
 
