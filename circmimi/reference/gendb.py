@@ -38,7 +38,7 @@ class RegionAttr:
             )
 
     def get(self, *attr_names):
-        return [self._attrs.get(attr) for attr in attr_names]
+        return [self._attrs.get(attr, 'NA') for attr in attr_names]
 
 
 class GetSite:
