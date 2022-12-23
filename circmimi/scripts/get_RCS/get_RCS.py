@@ -169,7 +169,7 @@ class RCS:
         up_fa_file = save_tmp(up_fa, dir_=self.tmp_dir)
 
         # downstream
-        down_bed = Bed6(chr_, pos2 - 1, pos2 - 1 + self.dist, circ_id, '.', strand)
+        down_bed = Bed6(chr_, pos2, pos2 + self.dist, circ_id, '.', strand)
         down_bed_file = save_tmp(down_bed, dir_=self.tmp_dir)
 
         down_fa = get_fasta(down_bed_file.name, self.ref_file)
