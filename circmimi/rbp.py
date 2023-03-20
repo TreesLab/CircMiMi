@@ -219,12 +219,12 @@ class PosMap:
             real_blocks.append(self._to_region(start_pos, end_pos))
         else:
             while rel_end > l:
-                end_pos = self.get_real_pos(l - 1, r)
+                end_pos = self.get_real_pos(l, r)
                 real_blocks.append(self._to_region(start_pos, end_pos))
 
                 rel_end -= l
                 l, r = next(regions)
-                start_pos = self.get_real_pos(0, r)
+                start_pos = self.get_real_pos(1, r)
 
             end_pos = self.get_real_pos(rel_end, r)
             real_blocks.append(self._to_region(start_pos, end_pos))
