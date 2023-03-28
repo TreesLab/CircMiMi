@@ -38,7 +38,9 @@ setup(
         'networkx>=2.4',
         'lxml>=4.5.0',
         'scipy>=1.7.3',
-        'statsmodels>=0.13.1'
+        'statsmodels>=0.13.1',
+        'requests',
+        'tqdm'
     ],
     entry_points={
         'console_scripts': [

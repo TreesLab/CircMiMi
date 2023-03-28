@@ -192,6 +192,21 @@ def generate_miRNA_database(species, version, ref_dir, out_file, show_accession)
     genmirdb.generate(species, version, ref_dir, out_file, show_accession)
 
 
+@cli.command('genENCdb', hidden=True)
+@click.option('--species', 'species', metavar="SPECIES_KEY", required=True)
+@click.option('-O', '--out_dir', 'out_dir', metavar="OUT_DIR", default='.')
+def generate_ENCORI_RBP_database(species, out_dir):
+    from circmimi.reference.ENCORI import EncoriClipData
+
+    encori_data = EncoriClipData(species)
+    
+    raw_data_dir = os.path.join(out_dir, f"ENCORI_RBP_data_{species}")
+    encori_data.download(raw_data_dir)
+
+    out_file = os.path.join(out_dir, f"ENCORI_RBP_binding_sites.{encori_data.assembly}.all.bed")
+    encori_data.merge_files(out_file)
+
+
 @cli.group(hidden=True)
 def check():
     pass

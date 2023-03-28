@@ -1,5 +1,6 @@
 import os
 import gzip
+import zipfile
 from contextlib import contextmanager
 
 
@@ -18,3 +19,10 @@ def open_file(filename):
         opened_file = open(filename)
 
     return opened_file
+
+
+def read_zip_file(zipped_file, member_file):
+    with zipfile.ZipFile(zipped_file) as zip_files:
+        with zip_files.open(member_file) as f_in:
+            for line in f_in:
+                yield line.decode()
