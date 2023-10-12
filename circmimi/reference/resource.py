@@ -337,7 +337,10 @@ class GencodeAnnotation(GencodeResource):
 
 
 class MiRBaseResource(Resource):
-    url_templ = "https://www.mirbase.org/ftp/{version}/{file_pattern}"
+    # url_templ = "https://www.mirbase.org/ftp/{version}/{file_pattern}"
+
+    # hotfix
+    url_templ = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/miRBase_backup/{version}/{file_pattern}"
     wget_options = ['--no-check-certificate']
 
     def __init__(self, species, version):
@@ -398,6 +401,7 @@ class MiRTarBaseResource(Resource):
 
         except urllib.error.URLError:
             url = self.url_templ_2.format(species=self.species, version=self.version)
+            self.wget_options = ['--no-check-certificate']
 
         return url
 
@@ -435,6 +439,7 @@ class Gene2AccessionResource(Resource):
 
 class MiRDBData(Resource):
     url_templ = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/miRDB_data/v{version}/miRDB_v{version}_{species}.simple.tsv.gz"
+    wget_options = ['--no-check-certificate']
     available_species = ('hsa', 'mmu', 'rno', 'cfa', 'gga')
 
     def __init__(self, species, version):
@@ -456,6 +461,7 @@ class MiRDBData(Resource):
 class EncoriRBPData(Resource):
     url_templ = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_RBP/ENCORI_RBP_binding_sites.{}.{}.bed.gz"
     url_templ_2 = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_RBP/ENCORI_RBP_binding_sites.{}.no_chr.{}.bed.gz"
+    wget_options = ['--no-check-certificate']
 
     def __init__(self, species, source, version, only_AGO=False):
         self.species = species
@@ -502,6 +508,7 @@ class EncoriRBPData(Resource):
 class EncoriRBPTargetData(Resource):
     url_templ = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_RBP/ENCORI_RBP_Target.grouped.tsv.gz"
     url_templ_2 = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_RBP/ENCORI_mouse_RBP_Target.grouped.tsv.gz"
+    wget_options = ['--no-check-certificate']
 
     def __init__(self, species):
         self.species = species
@@ -523,6 +530,7 @@ class EncoriRBPTargetData(Resource):
 class EncoriMiRNATargetData(Resource):
     url_templ = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_miRNA/mir_target_ref.ENCORI.miRBase_v22.simple.tsv.gz"
     url_templ_2 = "https://treeslab1.genomics.sinica.edu.tw/CircMiMi/refs/ENCORI_miRNA/mir_target_ref.ENCORI_mouse.miRBase_v22.simple.tsv.gz"
+    wget_options = ['--no-check-certificate']
 
     def __init__(self, species):
         self.species = species
