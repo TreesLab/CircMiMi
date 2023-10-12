@@ -193,16 +193,16 @@ class Circmimi:
             self.AGO_overlap_count = self.AGO_overlap[[
                 'name',
                 'sample_id'
-            ]].groupby(
-                'name'
-            ).count(
-            ).reset_index(
-            ).rename(
+            ]].rename(
                 {
                     'name': 'genomic_regions_id',
                     'sample_id': 'AGO_support'
                 },
                 axis=1
+            ).groupby(
+                'genomic_regions_id'
+            ).count(
+            ).reset_index(
             ).astype(
                 {
                     'AGO_support': 'object'
